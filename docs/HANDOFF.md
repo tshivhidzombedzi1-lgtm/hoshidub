@@ -1,22 +1,22 @@
 # Hoshidub: project handoff
 
-Read this first if you are a new session (human or AI) picking up the project. It records what exists, what works, what is left, and the rules the owner has set. Last updated 2026-09-29.
+Read this first if you are a new session (human or AI) picking up the project. It records what exists, what works, what is left, and the rules the owner has set. Last updated 2026-09-30.
 
 ## 0. Next agent: start here
 
-The owner has handed the rest of the launch to you. You have no memory of earlier sessions, and this file is the memory. Everything is committed in git. The owner's bundle (`hoshidub-bundle.zip`) has the source, the signed installer, the voice engine parts and the website.
+The owner has handed the rest of the launch to you. You have no memory of earlier sessions, and this file is the memory. Everything is on GitHub (private): code in https://github.com/tshivhidzombedzi1-lgtm/hoshidub, and the signed installer plus the voice engine parts in its **Release v0.1.0** (a private backup; customers can't download from a private repo, so public downloads come from the website). The owner's Apex MQL5 EA is backed up in `apex-ea/` (a separate product; leave it alone unless he asks).
 
 ### Decisions already made (don't reopen them)
 - **Payments: Stripe** (the owner has a verified Stripe account). **Not Lemon Squeezy.** Earlier docs and code mention Lemon Squeezy; see "Switch to Stripe" below.
 - **Licensing: our own small licence server in PHP on the Hostinger hosting** (`website/php/`), because Stripe doesn't issue licence keys. No customer accounts or passwords on the site: customers get their key by email and manage billing in Stripe's customer portal ("My account" link).
-- **Downloads are hosted on Hostinger**, next to the site: `public_html/downloads/Hoshidub-Setup-0.1.0.exe` and `public_html/downloads/runtime/` (manifest plus 8 parts of 400 MB, made by `tools/resplit_runtime.py`, byte-identical to `dist/runtime`).
+- **Downloads are hosted on Hostinger**, next to the site: `public_html/downloads/Hoshidub-Setup-0.1.0.exe` and `public_html/downloads/runtime/` (manifest plus the 8 parts of 400 MB in `dist/runtime`, runtime pack version 2).
 
-### State on 2026-09-29
+### State on 2026-09-30
 | Piece | State |
 |---|---|
 | Website | Live at https://grey-woodpecker-803820.hostingersite.com (static files in `public_html`). Local changes not uploaded yet: Download button → `/downloads/Hoshidub-Setup-0.1.0.exe`, "My account" link, corrected disk requirements. |
-| Installer | `dist/Hoshidub-Setup-0.1.0.exe` (115 MB), VMP-signed ("Signature is valid: streaming, 1387 days left"). `dubit.runtimeBase` = `https://grey-woodpecker-803820.hostingersite.com/downloads/runtime`. It still uses the Lemon Squeezy licence URL. |
-| Voice engine parts | `dist/runtime-web/` (3.09 GB, 8 parts + manifest). **Not uploaded yet.** |
+| Installer | `dist/Hoshidub-Setup-0.1.0.exe` (115 MB, built 2026-09-30 00:28), VMP-signed ("Signature is valid: streaming, 1387 days left"), also in GitHub Release v0.1.0. Includes: the Crunchyroll fix (ad blocker switches itself off on allowed sites; with it on, the player threw "Maximum call stack size exceeded" and spun at 0:00), Hoshi's `character/hoshi.yaml` (0.1.0 builds before that left it out), and `adopt.js`. `dubit.runtimeBase` = `https://grey-woodpecker-803820.hostingersite.com/downloads/runtime`. It still uses the Lemon Squeezy licence URL. |
+| Voice engine parts | `dist/runtime/` (runtime pack **version 2**, 3.13 GB, 8 × 400 MB + manifest; adds accelerate, bitsandbytes, psutil so Hoshi works; check contents with `python tools/check_runtime_pack.py`). In GitHub Release v0.1.0. **Not uploaded to Hostinger yet.** `dist/runtime-web/` is the old version 1: don't use it. |
 | Licence server | `website/php/api/` written: `license.php` (activate / validate / deactivate, same JSON shape as Lemon Squeezy, so `src/main/license.js` works unchanged), `stripe-webhook.php` (signature check, creates and emails keys, switches keys off when a subscription ends), `resend.php` ("lost my key"), `lib.php`, `.htaccess`; `website/php/config.sample.php`. **Written but never run: this PC has no PHP.** Test it before going live (PHP 8.1+; `php -S` with a test config and hand-signed webhook payloads). |
 
 ### Your job, in this order (one step per message to the owner, short and plain)
@@ -35,8 +35,9 @@ The owner has handed the rest of the launch to you. You have no memory of earlie
    - Test the installed app by launching it through Explorer (a `.lnk` also works), not from agent shells, or you test a different filesystem view.
    - Since commit after 7979980 the app also fixes this itself: `src/main/adopt.js` runs at startup and moves a runtime/models found in `%LOCALAPPDATA%\DubIt` or `%LOCALAPPDATA%\Packages\*\LocalCache\Local\{Hoshidub,DubIt}` into `%LOCALAPPDATA%\Hoshidub` (only what's missing; logged as "moved existing downloads into place"; unit tests in `tests/unit/adopt.test.js`).
    - The installed app only looks for models in `%LOCALAPPDATA%\Hoshidub\models`, not the dev folder `anime-dub/models`.
-   - **Hoshi doesn't work in the installed app:** the runtime pack was built before `accelerate` was added, so the log says "Hoshi unavailable: … requires `accelerate`". Add `accelerate` to `tools/build_runtime.py`, rebuild the runtime pack, re-split it (`tools/resplit_runtime.py`) and re-upload. The version in `manifest.json` should change so installed copies update. The dev venv already has it.
-   - Never launch the app with `--inspect` to debug a Crunchyroll session: Widevine VMP then refuses playback and the video spins forever at 0:00.
+   - **Fixed 2026-09-30: Hoshi in the installed app.** Runtime pack version 1 lacked accelerate, bitsandbytes and psutil, and the installer lacked `hoshi.yaml`. Both are fixed in the new builds. On the owner's PC they were patched by hand (`anime-dub/fix-hoshi-libraries.cmd`, `fix-hoshi-character.cmd`, run through Explorer). An installed app with runtime v1 doesn't update itself yet: add an update check (compare `dubit-runtime.json` with the online manifest version) before public launch.
+   - **Fixed 2026-09-30: Crunchyroll spinning forever.** Cause: the Ghostery ad blocker, not DRM. Debug ports (`--inspect`, `--remote-debugging-port`) do NOT break playback; an earlier note blaming `--inspect` was wrong. The owner's copy has the blocker turned off in settings; the new build handles it automatically (`AdBlock.applyFor`).
+   - **Open: "the audio is bad".** The owner compared it with YouTube's translated audio. Ask which part: robotic English voices, Japanese still audible (duck slider defaults to 25%), music pumping, or crackle/sync. Dolby Atmos isn't a fix (YouTube swaps whole voice tracks; we only get the mixed audio).
 6. **Domain:** the owner buys `hoshidub.com` and connects it. Then change `dubit.runtimeBase` to `https://hoshidub.com/downloads/runtime` and rebuild, but keep the files reachable on the old address too, because installers already downloaded point there.
 7. Then §5 "Not done yet", items 4 onwards.
 
