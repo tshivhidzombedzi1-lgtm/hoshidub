@@ -145,5 +145,5 @@ def setup(packs):
 
 if __name__ == "__main__":
     if len(sys.argv) > 1 and sys.argv[1] == "--setup":
-        sys.exit(0 if setup(sys.argv[2].split(",")) else 1)
+        sys.exit(0 if setup([p for p in sys.argv[2].split(",") if p in PACKS]) else 1)
     print(json.dumps(check()))

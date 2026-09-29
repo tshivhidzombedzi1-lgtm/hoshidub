@@ -9,16 +9,69 @@
     "start": "electron .",
     "spike": "electron spike/spike.js",
     "test": "npm run test:unit && npm run test:engine && npm run test:e2e",
-    "test:unit": "node --test tests/unit/subtitles.test.js tests/unit/subsync.test.mjs",
+    "test:unit": "node --test tests/unit/subtitles.test.js tests/unit/subsync.test.mjs tests/unit/runtime.test.js",
     "test:engine": "cd engine && ..\\..\\.venv\\Scripts\\python.exe -m pytest tests -q -p no:cacheprovider",
     "test:e2e": "playwright test",
-    "icon": "electron tools/make-icon.js"
+    "icon": "electron tools/make-icon.js",
+    "dist": "electron-builder --win nsis"
   },
   "devDependencies": {
     "@playwright/test": "^1.63.0",
-    "electron": "github:castlabs/electron-releases#v44.1.0+wvcus"
-  },
-  "dependencies": {
+    "electron": "github:castlabs/electron-releases#v44.1.0+wvcus",
+    "electron-builder": "^26.15.3",
     "@fontsource-variable/inter": "^5.3.0"
+  },
+  "author": "Dub It",
+  "build": {
+    "appId": "app.dubit.desktop",
+    "productName": "Dub It",
+    "copyright": "Copyright \u00a9 2026 Dub It",
+    "electronDist": "node_modules/electron/dist",
+    "electronVersion": "44.1.0",
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "src/**/*",
+      "package.json",
+      "!src/**/*.map"
+    ],
+    "extraResources": [
+      {
+        "from": "engine",
+        "to": "engine",
+        "filter": [
+          "*.py"
+        ]
+      }
+    ],
+    "asar": true,
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "build/icon.ico",
+      "artifactName": "Dub-It-Setup-${version}.${ext}"
+    },
+    "nsis": {
+      "oneClick": true,
+      "perMachine": false,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Dub It",
+      "deleteAppDataOnUninstall": false,
+      "installerIcon": "build/icon.ico",
+      "uninstallerIcon": "build/icon.ico"
+    },
+    "afterSign": "tools/after-pack.js"
+  },
+  "dubit": {
+    "runtimeBase": ""
   }
 }

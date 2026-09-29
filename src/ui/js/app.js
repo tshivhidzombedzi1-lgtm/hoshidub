@@ -60,7 +60,7 @@ function showPage(page) {
   const host = hostOf(state.nav.url);
   $('nav-crunchyroll').toggleAttribute('aria-current', page === 'browser' && host.endsWith('crunchyroll.com'));
   $('nav-youtube').toggleAttribute('aria-current', page === 'browser' && host.endsWith('youtube.com'));
-  if (page !== 'browser' && state.nav.showingBrowser) koe.nav.home();     // keeps the page alive, just hidden
+  if (page !== 'browser') koe.nav.home();     // always hide the browser view (keeps the page alive), even if our state lags
   if (page === 'browser' && !state.nav.showingBrowser) koe.nav.resume();
 }
 
@@ -221,7 +221,8 @@ const mb = (bytes) => Math.round(bytes / 1e6);
 
 function setupSize() {
   const s = state.setup;
-  const need = ['core', 'voices-en'].filter((k) => !s.packs[k]).reduce((t, k) => t + (s.sizes_mb[k] || 0), 0);
+  const need = ['core', 'voices-en'].filter((k) => !s.packs[k]).reduce((t, k) => t + (s.sizes_mb[k] || 0), 0)
+    + (s.runtime === false ? s.sizes_mb.runtime || 0 : 0);
   return need + ($('setup-ear').checked && !s.packs.ear ? s.sizes_mb.ear || 0 : 0);
 }
 
@@ -233,6 +234,8 @@ function renderSetupButton() {
 function showSetup() {
   const s = state.setup;
   const gpu = $('gpu-line');
+  if (s.error) { $('setup-error').textContent = s.error; $('setup-error').hidden = false; }
+  gpu.hidden = s.runtime === false;               // the graphics card is checked once the engine is installed
   gpu.textContent = s.gpu?.cuda ? `${s.gpu.name.replace(/^NVIDIA (GeForce )?/, '')} · ${s.gpu.vram_gb} GB · fast dubbing ready`
     : 'No NVIDIA graphics card · voices start a little later';
   gpu.classList.toggle('slow', !s.gpu?.cuda);
@@ -262,7 +265,8 @@ function bindSetup() {
     $('dl-ear').textContent = 'Downloading…';
     koe.setup.start(['ear']);
   });
-  koe.setup.onProgress(({ done, total }) => {
+  koe.setup.onProgress(({ done, total, phase }) => {
+    if (phase === 'unpack') { $('setup-text').textContent = 'Unpacking the dubbing engine…'; return; }
     const secs = (performance.now() - dlStart) / 1000;
     const rate = secs > 1 ? done / secs : 0;
     const left = rate ? (total - done) / rate : 0;

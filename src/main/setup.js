@@ -6,7 +6,11 @@ const path = require('path');
 const readline = require('readline');
 const log = require('./log');
 
-const PACKS_SCRIPT = path.resolve(__dirname, '..', '..', 'engine', 'packs.py');
+const fs = require('fs');
+const paths = require('./paths');
+const { Runtime } = require('./runtime');
+
+const PACKS_SCRIPT = path.join(paths.engineDir(), 'packs.py');
 const REQUIRED = ['core', 'voices-en'];
 
 class Setup extends EventEmitter {
@@ -15,7 +19,10 @@ class Setup extends EventEmitter {
     this.python = python;
     this.status = null;
     this.running = null;
+    this.runtime = new Runtime({ dir: paths.RUNTIME_DIR, downloads: `${paths.RUNTIME_DIR}.download`, base: paths.runtimeBase() });
   }
+
+  hasRuntime() { return fs.existsSync(this.python); }
 
   run(args) {
     return spawn(this.python, [PACKS_SCRIPT, ...args], {
@@ -29,6 +36,13 @@ class Setup extends EventEmitter {
       this.status = { skipped: true, packs: {}, sizes_mb: {}, gpu: {}, ready: true };
       return Promise.resolve(this.status);
     }
+    if (!this.hasRuntime()) {                 // installed copy on a fresh PC: nothing can run until the runtime arrives
+      return this.runtime.manifest().then(
+        (m) => (this.status = { runtime: false, packs: {}, gpu: {}, ready: false,
+          sizes_mb: { runtime: Math.round(m.total / 1e6), core: 330, 'voices-en': 6, ear: 3090 } }),
+        () => this.fail('Dub It couldn\'t reach its download server. Check your internet connection and reopen the app.'),
+      );
+    }
     return new Promise((resolve) => {
       let out = '';
       const p = this.run([]);
@@ -37,6 +51,7 @@ class Setup extends EventEmitter {
       p.on('exit', () => {
         try {
           const s = JSON.parse(out.trim().split('\n').pop());
+          s.runtime = true;
           s.ready = REQUIRED.every((k) => s.packs[k]);
           this.status = s;
           resolve(s);
@@ -55,7 +70,26 @@ class Setup extends EventEmitter {
   // download packs; emits progress {done,total}, done, and error events
   start(packs) {
     if (this.running) return false;
+    if (!this.hasRuntime()) {                 // runtime first, then the model packs, as one continuous download
+      this.running = true;
+      const sizes = this.status?.sizes_mb || {};
+      const later = (sizes.core || 0) + (sizes['voices-en'] || 0) + (packs.includes('ear') ? sizes.ear || 0 : 0);
+      this.runtime.install((p) => this.emit('progress', { ...p, total: p.total + later * 1e6 }))
+        .then(async () => {
+          this.python = this.runtime.python();
+          this.emit('runtime', this.python);
+          this.running = null;
+          await this.check();
+          this.start(packs);
+        })
+        .catch((e) => { this.running = null; log.error('runtime install failed', { err: e.message }); this.emit('error', e.message); });
+      return true;
+    }
     const wanted = [...new Set([...REQUIRED.filter((k) => !this.status?.packs?.[k]), ...packs])];
+    if (!wanted.length) {                     // everything is already on disk
+      this.check().then((s) => this.emit('done', s));
+      return true;
+    }
     log.info('setup started', { packs: wanted });
     const p = this.run(['--setup', wanted.join(',')]);
     this.running = p;

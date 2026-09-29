@@ -125,8 +125,10 @@ function createWindow() {
     if (win && !win.isDestroyed()) win.setTitleBarOverlay({ color: '#00000000', symbolColor: windowButtonColor(), height: 72 });
   });
   const ws = store.get('window');
+  const testing = !!process.env.KOE_TEST_INACTIVE;          // automated tests: keep windows out of the user's way
   win = new BrowserWindow({
-    width: ws.width, height: ws.height, x: ws.x, y: ws.y,
+    width: ws.width, height: ws.height, x: testing ? -30000 : ws.x, y: testing ? 0 : ws.y,
+    skipTaskbar: testing,
     minWidth: 980, minHeight: 620,
     title: 'Dub It',
     icon: path.join(UI_DIR, 'icon.png'),
@@ -442,6 +444,7 @@ app.whenReady().then(async () => {
   engine.on('status', (info) => sendUi('engine:status', info));
   setup = new Setup(engine.python);
   setup.on('progress', (p) => sendUi('setup:progress', p));
+  setup.on('runtime', (python) => { engine.python = python; });
   setup.on('error', (e) => sendUi('setup:error', e));
   setup.on('done', (s) => {
     sendUi('setup:done', s);

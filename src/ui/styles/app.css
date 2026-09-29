@@ -59,10 +59,8 @@ kbd {
   display: flex; flex-direction: column; align-items: center; gap: 6px;
   padding: 12px 0;
   border-radius: var(--r-panel);
-  -webkit-app-region: drag;
 }
-.rail > * { -webkit-app-region: no-drag; }
-.brand { height: 44px; display: grid; place-items: center; margin-bottom: 8px; -webkit-app-region: drag; }
+.brand { height: 44px; display: grid; place-items: center; margin-bottom: 8px; }
 .brand-mark {
   display: grid; place-items: center; width: 36px; height: 36px; border-radius: 11px;
   font: 700 19px/1 "Yu Gothic UI", "Meiryo", var(--font);
@@ -92,10 +90,6 @@ kbd {
   margin-right: calc(100vw - env(titlebar-area-x, 0px) - env(titlebar-area-width, calc(100vw - 150px)) - var(--gap));
   border-radius: var(--r-pill);
   -webkit-app-region: drag;
-}
-.app::before {
-  /* the strip above the toolbar and the space around the window buttons still drag the window */
-  content: ""; position: fixed; left: 0; right: 0; top: 0; height: 72px; -webkit-app-region: drag; z-index: -1;
 }
 .toolbar > *:not(.toast-host) { -webkit-app-region: no-drag; }
 .nav-group { display: flex; gap: 2px; }

@@ -8,9 +8,9 @@ const path = require('path');
 const readline = require('readline');
 const log = require('./log');
 
-const ROOT = path.resolve(__dirname, '..', '..');            // koe/
-const DEFAULT_PYTHON = path.resolve(ROOT, '..', '.venv', 'Scripts', 'python.exe');
-const SCRIPT = path.join(ROOT, 'engine', 'koe_engine.py');
+const paths = require('./paths');
+
+const SCRIPT = path.join(paths.engineDir(), 'koe_engine.py');
 
 function freePort() {
   return new Promise((resolve, reject) => {
@@ -27,7 +27,7 @@ function freePort() {
 class Engine extends EventEmitter {
   constructor() {
     super();
-    this.python = process.env.KOE_PYTHON || DEFAULT_PYTHON;
+    this.python = paths.python();
     this.token = crypto.randomBytes(24).toString('hex');
     this.port = null;
     this.proc = null;
