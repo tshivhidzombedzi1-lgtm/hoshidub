@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta http-equiv="Content-Security-Policy"
         content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src ws://127.0.0.1:*; media-src 'self' blob:; worker-src 'self' blob:">
-  <title>Dub It</title>
+  <title>Otodub</title>
   <link rel="stylesheet" href="styles/tokens.css">
   <link rel="stylesheet" href="styles/glass.css">
   <link rel="stylesheet" href="styles/app.css">
@@ -87,7 +87,7 @@
         <div class="home-inner">
           <p class="eyebrow"><svg><use href="#i-sparkle"/></svg> Live English dub</p>
           <h1 id="home-title">Watch in Japanese.<br>Hear it in English.</h1>
-          <p class="lede">Open a streaming site, play an episode, and press <kbd>Dub</kbd>. Dub It gives every character their own English voice as they speak.</p>
+          <p class="lede">Open a streaming site, play an episode, and press <kbd>Dub</kbd>. Otodub gives every character their own English voice as they speak.</p>
           <div class="tiles">
             <button class="tile glass" id="tile-crunchyroll">
               <span class="tile-mark brand-cr" aria-hidden="true">C</span>
@@ -105,7 +105,7 @@
               <span class="tile-sub" id="continue-sub"></span>
             </button>
           </div>
-          <p class="fineprint"><svg><use href="#i-shield"/></svg> Dub It listens to what's playing, like a friend in the room. It never records or saves video.</p>
+          <p class="fineprint"><svg><use href="#i-shield"/></svg> Otodub listens to what's playing, like a friend in the room. It never records or saves video.</p>
         </div>
         <button class="home-hoshi" id="home-hoshi" aria-label="Talk to Hoshi">
           <p class="hoshi-bubble home" id="home-bubble">Hi! I'm Hoshi. Let's watch something together!</p>
@@ -171,16 +171,16 @@
             <h2>Privacy</h2>
             <label class="row"><span><b>Block ads and trackers</b><small>Faster pages, less tracking. Turn it off for one site with the shield in the address bar.</small></span>
               <input type="checkbox" class="switch" id="set-adblock"></label>
-            <div class="row"><span><b>Sign out of all sites</b><small>Clears logins, cookies and history in Dub It's browser</small></span>
+            <div class="row"><span><b>Sign out of all sites</b><small>Clears logins, cookies and history in Otodub's browser</small></span>
               <button class="btn danger" id="set-clear">Sign out…</button></div>
-            <p class="note"><svg><use href="#i-shield"/></svg> Everything runs on this PC. Dub It has no account, sends no analytics, and never records video.</p>
+            <p class="note"><svg><use href="#i-shield"/></svg> Everything runs on this PC. Otodub has no account, sends no analytics, and never records video.</p>
           </div>
 
           <div class="group glass glass-strong">
             <h2>About</h2>
             <div class="row"><span><b>Dubbing engine</b><small id="about-engine">—</small></span>
               <button class="btn" id="set-logs">Open logs</button></div>
-            <div class="row"><span><b>Dub It</b><small id="about-version">—</small><small>A product of MCP Labs</small></span></div>
+            <div class="row"><span><b>Otodub</b><small id="about-version">—</small><small>A product of MCP Labs</small></span></div>
             <div class="row"><span><b>Created by Tshivhidzo (Moss) Mbedzi</b><small>Founder &amp; Director, MCP Labs · Pretoria, South Africa</small>
               <small class="links"><a href="https://www.linkedin.com/in/tshivhidzo-mbedzi-a74040233/" target="_blank" rel="noopener">LinkedIn</a> · <a href="https://www.youtube.com/@FTMORangeBreakoutProea" target="_blank" rel="noopener">YouTube</a> · <a href="https://discord.gg/5SBWbgG7Xp" target="_blank" rel="noopener">Discord</a></small></span></div>
             <p class="note">Speech recognition by OpenAI Whisper (MIT). Voices by Kokoro (Apache 2.0). Some icons adapted from Lucide (ISC). Hoshi's conversation design builds on Project Riko by rayenfeng (MIT). Hoshi's brain: Qwen3 by Alibaba Cloud (Apache 2.0). Streaming sites are accessed with your own accounts under their terms.</p>
@@ -275,13 +275,13 @@
       <div class="ob-steps" id="ob-steps">
         <div class="ob-step" data-step="0">
           <div class="ob-art"><span class="brand-mark big"><svg><use href="#i-logo"/></svg></span></div>
-          <h2 id="ob-title">Welcome to Dub It</h2>
+          <h2 id="ob-title">Welcome to Otodub</h2>
           <p>Watch anime in Japanese and hear every line in English, live, with a different voice for each character.</p>
         </div>
         <div class="ob-step" data-step="1" hidden>
           <div class="ob-art"><svg><use href="#i-play"/></svg></div>
           <h2>Use your own account</h2>
-          <p>Open Crunchyroll from the sidebar and sign in like you would in any browser. Dub It remembers you.</p>
+          <p>Open Crunchyroll from the sidebar and sign in like you would in any browser. Otodub remembers you.</p>
         </div>
         <div class="ob-step" data-step="2" hidden>
           <div class="ob-art"><svg><use href="#i-wave"/></svg></div>
@@ -301,8 +301,8 @@
   <div class="onboarding" id="setup" hidden role="dialog" aria-modal="true" aria-labelledby="setup-title">
     <div class="ob-card glass glass-strong setup-card">
       <div class="ob-art"><span class="brand-mark big"><svg><use href="#i-logo"/></svg></span></div>
-      <h2 id="setup-title">Getting Dub It ready</h2>
-      <p class="up-sub">Dub It runs on your PC, so it needs to download its voices once.</p>
+      <h2 id="setup-title">Getting Otodub ready</h2>
+      <p class="up-sub">Otodub runs on your PC, so it needs to download its voices once.</p>
       <div class="gpu-line" id="gpu-line"></div>
       <label class="ear-opt" id="ear-opt"><input type="checkbox" id="setup-ear">
         <span><b>Also get translate-by-ear</b><small>For shows without subtitles · 3.1 GB</small></span></label>

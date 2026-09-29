@@ -1,8 +1,8 @@
 {
   "name": "koe",
-  "productName": "Dub It",
+  "productName": "Otodub",
   "version": "0.1.0",
-  "description": "Dub It: watch anime with a live English dub.",
+  "description": "Otodub: watch anime with a live English dub.",
   "main": "src/main/main.js",
   "private": true,
   "scripts": {
@@ -24,7 +24,7 @@
   "author": "MCP Labs",
   "build": {
     "appId": "app.dubit.desktop",
-    "productName": "Dub It",
+    "productName": "Otodub",
     "copyright": "Copyright © 2026 MCP Labs",
     "electronDist": "node_modules/electron/dist",
     "electronVersion": "44.1.0",
@@ -58,14 +58,14 @@
       ],
       "icon": "build/icon.ico",
       "artifactName": "Dub-It-Setup-${version}.${ext}",
-      "legalTrademarks": "Dub It is a product of MCP Labs"
+      "legalTrademarks": "Otodub is a product of MCP Labs"
     },
     "nsis": {
       "oneClick": true,
       "perMachine": false,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
-      "shortcutName": "Dub It",
+      "shortcutName": "Otodub",
       "deleteAppDataOnUninstall": false,
       "installerIcon": "build/icon.ico",
       "uninstallerIcon": "build/icon.ico"

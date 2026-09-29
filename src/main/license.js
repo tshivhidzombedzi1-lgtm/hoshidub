@@ -77,7 +77,7 @@ class License {
     if (!/^[A-Za-z0-9-]{16,}$/.test(key)) return { ok: false, error: 'That doesn\'t look like a licence key. Copy it from your receipt email.' };
     let r;
     try {
-      r = await this.call('activate', { license_key: key, instance_name: `${os.hostname()} (Dub It)` });
+      r = await this.call('activate', { license_key: key, instance_name: `${os.hostname()} (Otodub)` });
     } catch {
       return { ok: false, error: 'Couldn\'t reach the licence server. Check your internet connection and try again.' };
     }

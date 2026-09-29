@@ -1,4 +1,4 @@
-// Where things live, for both a source checkout and an installed copy of Dub It.
+// Where things live, for both a source checkout and an installed copy of Otodub.
 const fs = require('fs');
 const path = require('path');
 const { app } = require('electron');

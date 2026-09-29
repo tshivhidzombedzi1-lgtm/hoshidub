@@ -1,4 +1,4 @@
-// Structured local log in %APPDATA%\Dub It\logs\koe.log, rotated at 2 MB. Nothing leaves the machine.
+// Structured local log in %APPDATA%\Otodub\logs\koe.log, rotated at 2 MB. Nothing leaves the machine.
 const fs = require('fs');
 const path = require('path');
 
