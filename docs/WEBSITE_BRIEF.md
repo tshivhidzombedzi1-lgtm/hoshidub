@@ -148,7 +148,7 @@ Avoid the "AI-generated website" look: no purple-to-blue gradient hero on white,
 ## 6. Site map and page specs
 
 ### 6.1 Home `/`
-1. **Nav** (glass, sticky): wave mark + "Hoshidub" · Features · Hoshi · Pricing · FAQ · **Download** (primary pill).
+1. **Nav** (glass, sticky): wave mark + "Hoshidub" · Features · Hoshi · Pricing · FAQ · About · **Download** (primary pill).
 2. **Hero:**
    - Headline: **Watch in Japanese. Hear it in English.**
    - Sub: *Hoshidub gives every character their own English voice, live, the moment they speak. Hoshi watches along.*
@@ -185,7 +185,30 @@ The same table as the home section, plus a plan comparison and billing FAQ.
 - Terms: personal use with your own streaming subscriptions; no DRM circumvention; no recording or redistribution. **OWNER DECIDES:** have a lawyer review both before launch.
 
 ### 6.5 Support `/support` and Press `/press`
-Support: FAQ + Discord link + contact email (**OWNER DECIDES**). Press kit: logo files, Hoshi renders, screenshots, a one-paragraph description, founder bio.
+Support: FAQ + Discord link + contact email (**OWNER DECIDES**). Press kit: logo files, Hoshi renders, screenshots, a one-paragraph description, and the founder bio from §6.6.
+
+### 6.6 About and founder `/about` (required)
+The founder must be visible: this page, the footer credit, the press kit, and the `Organization`/`Person` structured data.
+
+**Founder:** **Tshivhidzo (Moss) Mbedzi**, Founder & Director of **MCP Labs**, Pretoria, South Africa.
+**Photo:** **OWNER DECIDES**: a friendly headshot (square, at least 800×800). Until provided, show Hoshi beside the bio instead of a placeholder silhouette.
+**Links:** LinkedIn `https://www.linkedin.com/in/tshivhidzo-mbedzi-a74040233/` · YouTube `https://www.youtube.com/@FTMORangeBreakoutProea` · Discord `https://discord.gg/5SBWbgG7Xp`
+
+**Short bio (footer, press, store listings):**
+> Hoshidub is made by Tshivhidzo "Moss" Mbedzi, founder of MCP Labs in Pretoria, South Africa. Moss builds AI products that make advanced technology feel simple, from algorithmic trading systems used by traders in more than 20 countries to Hoshidub, the app that lets anyone watch anime in their own language.
+
+**Long bio (About page):**
+> Tshivhidzo "Moss" Mbedzi is a South African technology entrepreneur and the founder and director of MCP Labs, an independent AI lab in Pretoria focused on automation, AI agents and consumer AI products. He built Hoshidub because anime deserves to be watched, not read: a live dub that gives every character a voice, and a companion, Hoshi, so nobody has to watch alone.
+>
+> Before Hoshidub, Moss founded TSHIVHIDZO Trading Solutions and published more than 14 algorithmic trading systems on the MQL5 marketplace, used by traders across 20+ countries. He also runs The IT Guy E-Waste Solutions, providing IT support and responsible e-waste recycling in Limpopo. He holds a Higher Certificate in Information Technology from IIE Rosebank College and completed the Introduction to Information Security course at UNISA's Centre for Software Engineering. That security-first training shows in Hoshidub's design: it runs on your own PC, never records video, and keeps your data private.
+>
+> His mission is simple: make sophisticated technology accessible to everyone.
+
+**About MCP Labs (one line):** *MCP Labs is an independent AI lab in Pretoria, South Africa, building automation systems and consumer AI products. Hoshidub is its first consumer app.*
+
+**Structured data:** add `Organization` (MCP Labs, Pretoria, ZA, `sameAs` LinkedIn) and `Person` (Tshivhidzo Mbedzi, jobTitle "Founder & Director", worksFor MCP Labs, `sameAs` the links above) in JSON-LD on `/about`, and set the `SoftwareApplication` `publisher` to MCP Labs.
+
+Don't publish personal contact details (phone, personal email or home location) beyond the links above. **OWNER DECIDES** on a public business email (for example hello@hoshidub.com).
 
 ---
 
@@ -241,7 +264,7 @@ The site ships only when every box is true:
 - [ ] No streaming-service logos, key art or footage anywhere; the not-affiliated line is in the footer.
 - [ ] Every CTA works: Download → latest installer; Get Pro → Lemon Squeezy checkout; waitlist stores the email.
 - [ ] Copy matches this brief's tone: short, warm, no hype words, no spoilers.
-- [ ] Credits present: "A product of MCP Labs" and "Created by Tshivhidzo (Moss) Mbedzi".
+- [ ] Credits present: "A product of MCP Labs" and "Created by Tshivhidzo (Moss) Mbedzi" in the footer, plus the `/about` page with the founder bio, links and JSON-LD from §6.6.
 
 ---
 
