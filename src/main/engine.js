@@ -62,6 +62,7 @@ class Engine extends EventEmitter {
       cwd: path.dirname(SCRIPT),
       windowsHide: true,
       env: { ...process.env, PYTHONUNBUFFERED: '1', PYTHONIOENCODING: 'utf-8', HF_HUB_DISABLE_XET: '1',
+        KOE_MODELS: process.env.KOE_MODELS || path.join(paths.LOCAL, 'models'),
         KOE_BUDDY_DIR: require('path').join(require('electron').app.getPath('userData'), 'hoshi') },
     });
     this.proc = proc;

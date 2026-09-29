@@ -4,9 +4,10 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 const log = require('./log');
+const paths = require('./paths');
 
 const API = process.env.KOE_LICENSE_API || 'https://api.lemonsqueezy.com/v1/licenses';
-const PRODUCT_ID = process.env.KOE_PRODUCT_ID ? Number(process.env.KOE_PRODUCT_ID) : null;   // set once the store exists
+const PRODUCT_ID = paths.productId() ? Number(paths.productId()) : null;   // package.json "dubit.productId", set once the store exists
 const FREE_SECONDS = Number(process.env.KOE_FREE_SECONDS || 30 * 60);
 const REVALIDATE_MS = 24 * 3600 * 1000;
 const OFFLINE_GRACE_MS = 7 * 24 * 3600 * 1000;

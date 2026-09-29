@@ -1,10 +1,10 @@
-"""Build the Dub It runtime pack: a portable Python with the engine's libraries, split into download parts.
+"""Build the Hoshidub runtime pack: a portable Python with the engine's libraries, split into download parts.
 
     python tools/build_runtime.py            -> dist/runtime/manifest.json + runtime.zip.001, .002, ...
 
 Starts from python-build-standalone (a relocatable CPython) and copies in site-packages from the dev venv, so
 the libraries are exactly the ones the tests ran against. Files the engine never needs are left out.
-The app downloads the parts on first run, checks each SHA-256, joins them and unzips into %LOCALAPPDATA%\\DubIt.
+The app downloads the parts on first run, checks each SHA-256, joins them and unzips into %LOCALAPPDATA%\\Hoshidub.
 """
 import fnmatch
 import hashlib
@@ -38,7 +38,7 @@ def log(msg):
 
 def fetch_python():
     api = "https://api.github.com/repos/astral-sh/python-build-standalone/releases/latest"
-    rel = json.load(urllib.request.urlopen(urllib.request.Request(api, headers={"User-Agent": "DubIt-build"})))
+    rel = json.load(urllib.request.urlopen(urllib.request.Request(api, headers={"User-Agent": "Hoshidub-build"})))
     want = f"cpython-{sys.version_info.major}.{sys.version_info.minor}.*-x86_64-pc-windows-msvc-install_only.tar.gz"
     asset = next(a for a in rel["assets"] if fnmatch.fnmatch(a["name"], want))
     dest = KOE / "build" / asset["name"]

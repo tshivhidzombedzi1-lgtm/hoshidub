@@ -4,7 +4,19 @@ const path = require('path');
 const { app } = require('electron');
 
 const SOURCE_ROOT = path.resolve(__dirname, '..', '..');          // koe/ when running from source
-const LOCAL = path.join(process.env.LOCALAPPDATA || app.getPath('appData'), 'DubIt');
+const LOCAL_ROOT = process.env.LOCALAPPDATA || app.getPath('appData');
+const LOCAL = localDir();
+
+// downloads (runtime, models) live in %LOCALAPPDATA%\Hoshidub. Builds from before the rename used "DubIt":
+// move that folder over once rather than download gigabytes again; if it's in use, keep using it this run.
+function localDir() {
+  const now = path.join(LOCAL_ROOT, 'Hoshidub');
+  const old = path.join(LOCAL_ROOT, 'DubIt');
+  if (!fs.existsSync(now) && fs.existsSync(old)) {
+    try { fs.renameSync(old, now); } catch { return old; }
+  }
+  return now;
+}
 
 // the Python runtime: downloaded on first run for installed copies, the dev venv when working from source
 const RUNTIME_DIR = path.join(LOCAL, 'runtime');
@@ -21,10 +33,13 @@ function python() {
   return fs.existsSync(DEV_PYTHON) ? DEV_PYTHON : RUNTIME_PYTHON;
 }
 
-// where the runtime pack is downloaded from (a GitHub release), set in package.json "dubit.runtimeBase"
-function runtimeBase() {
-  if (process.env.KOE_RUNTIME_BASE) return process.env.KOE_RUNTIME_BASE;
-  try { return require(path.join(SOURCE_ROOT, 'package.json')).dubit.runtimeBase || ''; } catch { return ''; }
+// release settings baked into the build, from package.json "dubit" (an env var overrides each one for tests)
+function setting(key, envName) {
+  if (process.env[envName]) return process.env[envName];
+  try { return require(path.join(SOURCE_ROOT, 'package.json')).dubit[key] || ''; } catch { return ''; }
 }
+const runtimeBase = () => setting('runtimeBase', 'KOE_RUNTIME_BASE');     // where the runtime pack downloads from (a GitHub release)
+const productId = () => setting('productId', 'KOE_PRODUCT_ID');           // Lemon Squeezy product that Pro keys must belong to
+const checkoutUrl = () => setting('checkoutUrl', 'KOE_CHECKOUT_URL');     // Lemon Squeezy checkout link behind "Get Pro"
 
-module.exports = { LOCAL, RUNTIME_DIR, RUNTIME_PYTHON, engineDir, python, runtimeBase };
+module.exports = { LOCAL, RUNTIME_DIR, RUNTIME_PYTHON, engineDir, python, runtimeBase, productId, checkoutUrl };

@@ -19,7 +19,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]          # anime-dub/ (dev layout)
 MODELS = Path(os.environ.get("KOE_MODELS")
-              or Path(os.environ.get("LOCALAPPDATA", Path.home())) / "DubIt" / "models")
+              or Path(os.environ.get("LOCALAPPDATA", Path.home())) / "Hoshidub" / "models")
 
 BASE = os.environ.get("KOE_PACK_BASE", "https://huggingface.co")   # tests point this at a local server
 KOKORO = "hexgrad/Kokoro-82M"
@@ -136,7 +136,7 @@ def _fetch(repo, filename, dest, on_bytes, size, sha256):
         part.unlink()
         have = 0
     url = f"{BASE}/{repo}/resolve/main/{filename}"
-    req = urllib.request.Request(url, headers={"User-Agent": "DubIt/0.1", **({"Range": f"bytes={have}-"} if have else {})})
+    req = urllib.request.Request(url, headers={"User-Agent": "Hoshidub/0.1", **({"Range": f"bytes={have}-"} if have else {})})
     with urllib.request.urlopen(req, timeout=60) as res:
         if have and res.status != 206:        # server ignored the range: start over
             have = 0
@@ -165,7 +165,7 @@ def remote_meta(repo, filename):
         def redirect_request(self, *a, **k):
             return None
     req = urllib.request.Request(f"{BASE}/{repo}/resolve/main/{filename}", method="HEAD",
-                                 headers={"User-Agent": "DubIt/0.1"})
+                                 headers={"User-Agent": "Hoshidub/0.1"})
     try:
         headers = urllib.request.build_opener(Stay).open(req, timeout=30).headers
     except urllib.error.HTTPError as e:                  # 302 lands here, headers included

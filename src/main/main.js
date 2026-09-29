@@ -11,7 +11,7 @@ const { License } = require('./license');
 const { Setup } = require('./setup');
 const { AdBlock } = require('./adblock');
 
-const CHECKOUT_URL = process.env.KOE_CHECKOUT_URL || '';   // Lemon Squeezy checkout link, set once the store exists
+const CHECKOUT_URL = require('./paths').checkoutUrl();   // package.json "dubit.checkoutUrl": Lemon Squeezy checkout, set once the store exists
 
 if (process.env.KOE_USER_DATA) app.setPath('userData', process.env.KOE_USER_DATA);
 if (!app.requestSingleInstanceLock()) {
