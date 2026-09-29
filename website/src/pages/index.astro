@@ -30,7 +30,7 @@ const app = {
       <p class="lede">Hoshidub gives every character their own English voice, the moment they speak. And Hoshi watches along with you.</p>
       <div class="hero-cta">
         <DownloadButton />
-        <a class="btn" href="#tour">See it in action</a>
+        <a class="btn" href="#how">Watch how it works</a>
       </div>
       <ul class="hero-points small">
         <li>Works with the streaming you already pay for</li>
@@ -55,8 +55,16 @@ const app = {
   </section>
 
   <!-- how it works -->
-  <section class="section wrap" aria-labelledby="how-title">
+  <section class="section wrap" id="how" aria-labelledby="how-title">
     <div class="head center"><p class="eyebrow">How it works</p><h2 id="how-title">Three steps. That’s it.</h2></div>
+    <figure class="reel reveal">
+      <video id="reel" controls muted loop playsinline preload="metadata" width="1280" height="720" poster="/video/how-it-works-poster.jpg"
+             aria-label="A 45 second tour: sign in to your streaming service, press Dub, hear every character in their own English voice, chat with Hoshi, and watch the glass follow the show.">
+        <source src="/video/how-it-works.webm" type="video/webm" />
+        <source src="/video/how-it-works.mp4" type="video/mp4" />
+      </video>
+      <figcaption class="small">A 45-second tour, made from the app’s own screens. No sound.</figcaption>
+    </figure>
     <ol class="steps">
       <li class="glass reveal"><span class="n">1</span><h3>Open your show</h3><p class="muted">Use the streaming service you already pay for, inside Hoshidub, signed in with your own account.</p></li>
       <li class="glass reveal"><span class="n">2</span><h3>Press Dub</h3><p class="muted">One button. Hoshidub finds the official English subtitles, or listens and translates if there are none.</p></li>
@@ -175,6 +183,17 @@ const app = {
   </section>
 </Base>
 
+<script>
+  // the tour video plays (muted) while it's on screen, and stays still for reduced-motion users
+  const reel = document.getElementById('reel') as HTMLVideoElement | null;
+  if (reel && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    new IntersectionObserver(([e]) => {
+      if (e.isIntersecting) reel.play().catch(() => { /* autoplay refused: controls still work */ });
+      else reel.pause();
+    }, { threshold: 0.5 }).observe(reel);
+  }
+</script>
+
 
 <style>
   .hero { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr); gap: 24px; align-items: center; padding-block: clamp(40px, 7vw, 90px) 20px; }
@@ -218,6 +237,9 @@ const app = {
     .co { position: static; max-width: none; animation: none; }
   }
 
+  .reel { margin: 0 auto 28px; max-width: 1000px; display: grid; gap: 10px; justify-items: center; }
+  .reel video { width: 100%; height: auto; aspect-ratio: 16 / 9; border-radius: 18px; background: #0c0c12; display: block;
+    border: 1px solid var(--glass-edge); box-shadow: 0 40px 90px -20px rgba(8, 6, 30, 0.55); }
   .steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
   .steps li { padding: 26px; border-radius: 22px; display: grid; gap: 10px; align-content: start; }
   .n { width: 38px; height: 38px; border-radius: 12px; display: grid; place-items: center; font-weight: 750; color: #fff; background: var(--brand-gradient); }

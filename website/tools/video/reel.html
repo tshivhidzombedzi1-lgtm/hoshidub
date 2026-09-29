@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Hoshidub tour reel</title>
+<!--
+  Storyboard for the home page "How it works" video. Built from the real app screenshots.
+  Recorded headless by tools/video/record.mjs (1280x720, about 44 s, no sound).
+-->
+<style>
+  @font-face { font-family: Inter; src: url(../../public/fonts/Inter.woff2) format('woff2'); font-weight: 100 900; }
+  :root { --pink: #ff5fa2; --violet: #9b7bff; --blue: #4d8dff; --green: #30d158; --text: #f4f4f8; --text2: #b9b9c8;
+    --grad: linear-gradient(120deg, #ff5fa2, #9b7bff 55%, #4d8dff); --ease: cubic-bezier(.2,.8,.2,1); }
+  * { box-sizing: border-box; margin: 0; }
+  html, body { width: 1280px; height: 720px; overflow: hidden; background: #0c0c12; color: var(--text); font-family: Inter, 'Segoe UI', sans-serif; }
+  .aurora { position: absolute; inset: 0; background:
+    radial-gradient(50% 60% at 85% 0%, rgba(155,123,255,.45), transparent 70%),
+    radial-gradient(45% 55% at 0% 100%, rgba(255,95,162,.35), transparent 70%),
+    radial-gradient(40% 50% at 60% 100%, rgba(77,141,255,.30), transparent 70%); }
+
+  /* title and end cards */
+  .card { position: absolute; inset: 0; display: grid; place-content: center; justify-items: center; gap: 18px; text-align: center; opacity: 0; transition: opacity .7s var(--ease), transform .9s var(--ease); transform: scale(.97); }
+  .card.on { opacity: 1; transform: none; }
+  .card img { width: 84px; height: 84px; border-radius: 22px; box-shadow: 0 20px 50px rgba(155,123,255,.45); }
+  .card h1 { font-size: 64px; letter-spacing: -.035em; line-height: 1.02; font-weight: 780; }
+  .card p { font-size: 22px; color: var(--text2); }
+  .grad { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+  /* the app window */
+  .win { position: absolute; left: 50%; top: 34px; width: 900px; translate: -50% 0; border-radius: 14px; overflow: hidden; background: #15151d;
+    border: 1px solid rgba(255,255,255,.14); box-shadow: 0 40px 90px -20px rgba(0,0,0,.7); opacity: 0; transform: translateY(30px) scale(.97); transition: opacity .8s var(--ease), transform .9s var(--ease); }
+  .win.on { opacity: 1; transform: none; }
+  .bar { height: 30px; display: flex; align-items: center; justify-content: space-between; padding-left: 12px; font-size: 12px; color: var(--text2); background: #1b1b24; border-bottom: 1px solid rgba(255,255,255,.08); }
+  .bar b { display: inline-flex; align-items: center; gap: 8px; font-weight: 550; }
+  .bar b img { width: 14px; height: 14px; }
+  .ctl { display: flex; gap: 26px; padding-right: 16px; font-size: 13px; }
+  .screen { position: relative; line-height: 0; }
+  .screen > img { width: 100%; display: block; }
+  .screen > img.alt { position: absolute; inset: 0; opacity: 0; transition: opacity 1.2s var(--ease); }
+  .screen > img.alt.on { opacity: 1; }
+
+  /* overlays, placed in % of the 1360x860 screenshot */
+  .ov { position: absolute; opacity: 0; transition: opacity .6s var(--ease), transform .6s var(--ease); line-height: 1.35; }
+  .ov.on { opacity: 1; }
+  .pill { left: 88.9%; top: 1.1%; width: 4.4%; height: 3.3%; border-radius: 99px; box-shadow: 0 0 0 2px var(--green), 0 0 22px var(--green); }
+  .panel { left: 88%; top: 8.4%; width: 11.3%; height: 90.6%; }
+  .dub { left: 75.9%; top: 8.4%; width: 23.3%; height: 90.6%; border-radius: 12px; padding: 12px; background: rgba(30,28,48,.93); backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,.14); display: grid; align-content: start; gap: 9px; font-size: 11px; }
+  .dub .t { display: flex; justify-content: space-between; align-items: center; font-weight: 750; font-size: 14px; }
+  .sw { width: 30px; height: 18px; border-radius: 99px; background: var(--green); position: relative; }
+  .sw::after { content: ""; position: absolute; right: 2px; top: 2px; width: 14px; height: 14px; border-radius: 50%; background: #fff; }
+  .st { display: flex; gap: 8px; align-items: center; padding: 8px; border-radius: 10px; background: rgba(255,255,255,.07); }
+  .st i { width: 7px; height: 7px; border-radius: 50%; background: var(--green); box-shadow: 0 0 0 3px rgba(48,209,88,.25); flex: none; }
+  .st span { display: grid; } .st small { color: var(--text2); font-size: 10px; }
+  .lab { font-size: 9px; font-weight: 700; letter-spacing: .08em; color: #8a8a9c; }
+  .tl { display: grid; gap: 6px; }
+  .tl div { padding: 6px 8px; border-radius: 9px; border: 1px solid transparent; opacity: 0; transform: translateY(6px); transition: all .4s var(--ease); }
+  .tl div.on { opacity: 1; transform: none; }
+  .tl div.now { background: color-mix(in srgb, var(--c) 18%, transparent); border-color: color-mix(in srgb, var(--c) 50%, transparent); }
+  .tl em { font-style: normal; font-size: 9px; padding: 0 6px; border-radius: 99px; background: var(--c); color: #fff; margin-left: 4px; }
+  .tl b { font-size: 10px; } .tl p { font-size: 11.5px; font-weight: 550; } .tl small { display: block; font-size: 9.5px; color: #8a8a9c; }
+  .show { left: 3.4%; top: 8.4%; width: 71.7%; height: 90.6%; border-radius: 12px; overflow: hidden;
+    background: linear-gradient(180deg, #0d1b3d 0%, #25306b 45%, #7a4f8e 75%, #d88aa0 100%); }
+  .show svg { position: absolute; inset: auto 0 0 0; width: 100%; height: 55%; }
+  .show .moon { position: absolute; right: 16%; top: 12%; width: 70px; height: 70px; border-radius: 50%; background: #fff6e6; box-shadow: 0 0 60px 20px rgba(255,240,220,.35); }
+  .sub { position: absolute; left: 50%; bottom: 7%; translate: -50% 0; max-width: 80%; text-align: center; font-size: 22px; font-weight: 650; text-shadow: 0 2px 6px #000, 0 0 2px #000; opacity: 0; transition: opacity .25s; }
+  .sub.on { opacity: 1; }
+  .sub em { display: block; font-style: normal; font-size: 12px; font-weight: 700; color: var(--c); letter-spacing: .06em; text-transform: uppercase; }
+  .mixb { position: absolute; left: 3%; top: 5%; display: flex; gap: 8px; }
+  .mixb span { padding: 5px 10px; border-radius: 99px; background: rgba(0,0,0,.45); backdrop-filter: blur(8px); font-size: 11px; font-weight: 600; }
+  .chat { left: 76.8%; top: 60%; width: 21.5%; display: grid; gap: 6px; font-size: 11px; }
+  .chat p { padding: 7px 9px; border-radius: 12px; max-width: 92%; opacity: 0; transform: translateY(8px); transition: all .45s var(--ease); }
+  .chat p.on { opacity: 1; transform: none; }
+  .chat .me { justify-self: end; background: #0a84ff; color: #fff; border-bottom-right-radius: 4px; }
+  .chat .her { justify-self: start; background: #3b3160; color: #fff; border-bottom-left-radius: 4px; }
+
+  /* cursor and click ripple */
+  .cursor { position: absolute; left: 0; top: 0; width: 22px; height: 22px; z-index: 5; opacity: 0; transition: left 1.3s var(--ease), top 1.3s var(--ease), opacity .4s; pointer-events: none; }
+  .cursor.on { opacity: 1; }
+  .cursor svg { width: 22px; height: 22px; filter: drop-shadow(0 2px 3px rgba(0,0,0,.5)); }
+  .ripple { position: absolute; width: 40px; height: 40px; margin: -20px 0 0 -20px; border-radius: 50%; border: 2px solid #fff; z-index: 4; animation: rip .6s ease-out forwards; pointer-events: none; }
+  @keyframes rip { from { transform: scale(.3); opacity: 1; } to { transform: scale(1.4); opacity: 0; } }
+
+  /* step caption under the window */
+  .cap { position: absolute; left: 50%; bottom: 16px; translate: -50% 0; display: flex; align-items: center; gap: 14px; padding: 10px 20px 10px 10px; border-radius: 99px;
+    background: rgba(28,28,40,.85); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,.14); font-size: 19px; font-weight: 600; white-space: nowrap;
+    opacity: 0; transform: translateY(12px); transition: opacity .45s var(--ease), transform .45s var(--ease); z-index: 6; }
+  .cap.on { opacity: 1; transform: none; }
+  .cap .n { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; background: var(--grad); font-weight: 800; font-size: 16px; }
+</style>
+</head>
+<body>
+  <div class="aurora"></div>
+
+  <section class="card" id="title">
+    <img src="../../public/img/icon-512.png" alt="" />
+    <h1>How <span class="grad">Hoshidub</span> works</h1>
+    <p>Watch in Japanese. Hear it in English.</p>
+  </section>
+
+  <div class="win" id="win">
+    <div class="bar"><b><img src="../../public/favicon.svg" alt="" />Hoshidub</b><span class="ctl">—&nbsp;&nbsp;▢&nbsp;&nbsp;✕</span></div>
+    <div class="screen" id="screen">
+      <img id="shot" src="../../public/img/screens/02-home.webp" alt="" />
+      <img class="alt" id="shot-hoshi" src="../../public/img/screens/14-hoshi-panel.webp" alt="" />
+      <img class="alt" id="shot-dark" src="../../public/img/screens/12-glass-dark-page.webp" alt="" />
+      <img class="alt" id="shot-light" src="../../public/img/screens/13-glass-light-page.webp" alt="" />
+
+      <div class="ov show" id="show">
+        <div class="moon"></div>
+        <svg viewBox="0 0 1000 300" preserveAspectRatio="none"><path d="M0 300 L0 210 C150 190 230 160 320 170 C410 180 450 130 520 120 L620 40 L720 120 C790 130 830 180 920 170 L1000 175 L1000 300 Z" fill="#140f2a" opacity=".9"/><path d="M590 64 L620 40 L650 64 C640 60 632 70 620 63 C608 70 600 60 590 64Z" fill="#f2eefe"/></svg>
+        <div class="mixb"><span>♪ Music 100%</span><span>Effects 100%</span><span style="color:#ff8fbf">JP voices −15 dB</span></div>
+        <p class="sub" id="sub"><em id="sub-who"></em><span id="sub-text"></span></p>
+      </div>
+
+      <div class="ov pill" id="pill"></div>
+      <div class="ov dub" id="dub">
+        <div class="t">Live Dub <span class="sw"></span></div>
+        <div class="st"><i></i><span><b>On · official subtitles</b><small>0.0 s behind</small></span></div>
+        <div class="lab">TRANSCRIPT</div>
+        <div class="tl" id="tl"></div>
+      </div>
+      <div class="ov chat" id="chat">
+        <p class="me">Who's the girl with the lantern?</p>
+        <p class="her">That's Mika! She's been guiding them since the bridge. I love her.</p>
+        <p class="me">Does she make it?</p>
+        <p class="her">No idea yet, and no spoilers from me. Let's watch!</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="cursor" id="cursor"><svg viewBox="0 0 24 24"><path d="M4 2l15 11-7 1.2L15.5 22 12.6 23 9.2 15.3 4 20z" fill="#fff" stroke="#111" stroke-width="1.2" stroke-linejoin="round"/></svg></div>
+  <div class="cap" id="cap"><span class="n" id="cap-n">1</span><span id="cap-t"></span></div>
+
+  <section class="card" id="end">
+    <img src="../../public/img/icon-512.png" alt="" />
+    <h1>Don't read it. <span class="grad">Dub it.</span></h1>
+    <p>Free for Windows · hoshidub.com</p>
+  </section>
+
+<script>
+  const $ = (id) => document.getElementById(id);
+  const on = (id, v = true) => $(id).classList.toggle('on', v);
+  const screenBox = () => $('screen').getBoundingClientRect();
+  // move the cursor to a point given in % of the screenshot
+  const point = (x, y) => { const r = screenBox(); return [r.left + r.width * x / 100, r.top + r.height * y / 100]; };
+  const moveTo = (x, y) => { const [px, py] = point(x, y); $('cursor').style.left = px + 'px'; $('cursor').style.top = py + 'px'; };
+  const click = (x, y) => { const [px, py] = point(x, y); const r = document.createElement('div'); r.className = 'ripple'; r.style.left = px + 'px'; r.style.top = py + 'px'; document.body.appendChild(r); setTimeout(() => r.remove(), 700); };
+  const caption = (n, t) => { on('cap', false); setTimeout(() => { $('cap-n').textContent = n; $('cap-t').textContent = t; on('cap'); }, 350); };
+
+  const lines = [
+    { who: 'Aki', c: '#4d8dff', v: 'Voice 1', jp: 'もう逃げないって決めたんだ。', en: 'I decided I’m done running.' },
+    { who: 'Ren', c: '#ff5fa2', v: 'Voice 2', jp: 'だったら、一緒に行こう。', en: 'Then let’s go together.' },
+    { who: 'Mika', c: '#9b7bff', v: 'Voice 3', jp: '二人とも、急いで！', en: 'You two, hurry up!' },
+    { who: 'Aki', c: '#4d8dff', v: 'Voice 1', jp: '本気で言ってる？', en: 'You mean that?' },
+  ];
+  const say = (i) => {
+    const l = lines[i];
+    [...$('tl').children].forEach((d) => d.classList.remove('now'));
+    const d = document.createElement('div'); d.style.setProperty('--c', l.c);
+    d.innerHTML = `<b>${l.who}</b><em>${l.v}</em><small>${l.jp}</small><p>${l.en}</p>`;
+    $('tl').appendChild(d); requestAnimationFrame(() => d.classList.add('on', 'now'));
+    $('sub').style.setProperty('--c', l.c); $('sub-who').textContent = l.who; $('sub-text').textContent = l.en; on('sub');
+  };
+
+  const T = [
+    [0.2, () => on('title')],
+    [3.2, () => on('title', false)],
+    [3.8, () => { on('win'); moveTo(60, 75); }],
+    [4.3, () => { on('cursor'); caption(1, 'Open your streaming service and sign in with your own account'); }],
+    [5.4, () => moveTo(21, 50)],
+    [7.2, () => click(21, 50)],
+    [8.2, () => on('show')],
+    [10.0, () => { caption(2, 'Press Dub'); moveTo(91, 2.7); }],
+    [12.0, () => { click(91, 2.7); on('pill'); }],
+    [12.6, () => on('dub')],
+    [14.2, () => { moveTo(55, 115); caption(3, 'Every character speaks English, in their own voice'); }],
+    [15.2, () => say(0)], [17.6, () => on('sub', false)],
+    [18.0, () => say(1)], [20.4, () => on('sub', false)],
+    [20.8, () => say(2)], [23.0, () => on('sub', false)],
+    [23.4, () => say(3)], [25.6, () => on('sub', false)],
+    [26.4, () => { caption(4, 'Hoshi watches with you, and never spoils a thing'); ['show', 'dub', 'pill'].forEach((id) => on(id, false)); on('shot-hoshi'); }],
+    [27.8, () => on('chat')],
+    ...[0, 1, 2, 3].map((i) => [28.2 + i * 1.6, () => $('chat').children[i].classList.add('on')]),
+    [34.6, () => { caption(5, 'The glass follows your show, dark or bright'); on('chat', false); on('shot-dark'); }],
+    [37.2, () => on('shot-light')],
+    [40.2, () => { on('cap', false); on('win', false); on('cursor', false); }],
+    [40.9, () => on('end')],
+    [44.5, () => { window.__reelDone = true; }],
+  ];
+
+  window.startReel = () => { window.__reelStart = performance.now(); T.forEach(([t, f]) => setTimeout(f, t * 1000)); };
+  if (location.hash === '#play') addEventListener('load', () => window.startReel());
+</script>
+</body>
+</html>
