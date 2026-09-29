@@ -24,8 +24,10 @@ kbd {
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
 /* ---------------------------------------------------------------- ambient light behind the glass */
-.ambient { position: fixed; inset: 0; z-index: -1; overflow: hidden; background: color-mix(in srgb, var(--base) 55%, transparent); }
-.ambient i { position: absolute; width: 60vmax; height: 60vmax; border-radius: 50%; filter: blur(90px); opacity: 0.55; }
+.ambient { position: fixed; inset: 0; z-index: -1; overflow: hidden;
+  /* Mount Fuji at dawn, under a theme tint; the glass panels blur and bend it */
+  background: linear-gradient(var(--scrim), var(--scrim)), url("../img/fuji.webp") center 38% / cover no-repeat, var(--base); }
+.ambient i { position: absolute; width: 60vmax; height: 60vmax; border-radius: 50%; filter: blur(90px); opacity: 0.4; mix-blend-mode: soft-light; }
 .ambient i:nth-child(1) { background: var(--ambient-1); top: -25vmax; left: -15vmax; }
 .ambient i:nth-child(2) { background: var(--ambient-2); bottom: -30vmax; right: -10vmax; }
 .ambient i:nth-child(3) { background: var(--ambient-3); top: 30%; left: 45%; width: 35vmax; height: 35vmax; opacity: 0.35; }

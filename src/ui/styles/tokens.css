@@ -14,6 +14,7 @@
   --ambient-2: #0f4c5c;
   --ambient-3: #6b2144;
   --base: #0c0c12;
+  --scrim: rgba(12, 10, 22, 0.52);          /* keeps text readable over the background photo */
   --glass-tint: rgba(34, 34, 44, 0.46);
   --glass-tint-strong: rgba(28, 28, 36, 0.72);
   --glass-inset: rgba(0, 0, 0, 0.22);
@@ -55,6 +56,7 @@
     --ambient-2: #9fe3e0;
     --ambient-3: #ffc2d6;
     --base: #eef0f6;
+    --scrim: rgba(250, 247, 255, 0.42);
     --glass-tint: rgba(255, 255, 255, 0.5);
     --glass-tint-strong: rgba(255, 255, 255, 0.78);
     --glass-inset: rgba(0, 0, 0, 0.06);
