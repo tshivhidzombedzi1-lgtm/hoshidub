@@ -1,0 +1,26 @@
+<!doctype html>
+<meta charset="utf-8">
+<p>monitor</p>
+<script>
+  window.startCapture = async () => {
+    try {
+      const s = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true });
+      s.getVideoTracks().forEach(t => t.stop());
+      const a = s.getAudioTracks();
+      console.log('capture ok, audio tracks: ' + a.length);
+      const ctx = new AudioContext();
+      const an = ctx.createAnalyser();
+      an.fftSize = 2048;
+      ctx.createMediaStreamSource(new MediaStream(a)).connect(an);
+      const buf = new Float32Array(an.fftSize);
+      setInterval(() => {
+        an.getFloatTimeDomainData(buf);
+        let r = 0;
+        for (const v of buf) r += v * v;
+        console.log('player audio rms ' + Math.sqrt(r / buf.length).toFixed(4));
+      }, 3000);
+    } catch (e) {
+      console.log('capture failed: ' + e.name + ' ' + e.message);
+    }
+  };
+</script>

@@ -1,0 +1,77 @@
+@font-face {
+  font-family: "Inter";
+  src: url("../fonts/Inter.woff2") format("woff2");
+  font-weight: 100 900;
+  font-display: block;
+}
+
+:root {
+  color-scheme: dark;
+  --font: "Inter", "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
+
+  /* surfaces */
+  --ambient-1: #3a2a6e;
+  --ambient-2: #0f4c5c;
+  --ambient-3: #6b2144;
+  --base: #0c0c12;
+  --glass-tint: rgba(34, 34, 44, 0.46);
+  --glass-tint-strong: rgba(28, 28, 36, 0.72);
+  --glass-inset: rgba(0, 0, 0, 0.22);
+  --glass-edge: rgba(255, 255, 255, 0.16);
+  --glass-specular: rgba(255, 255, 255, 0.55);
+  --glass-shadow: 0 10px 40px rgba(0, 0, 0, 0.38), 0 2px 8px rgba(0, 0, 0, 0.22);
+  --hover: rgba(255, 255, 255, 0.08);
+  --press: rgba(255, 255, 255, 0.14);
+
+  /* text: all pairs ≥ 4.5:1 on --glass-tint-strong */
+  --text: #f5f5f7;
+  --text-2: rgba(235, 235, 245, 0.72);
+  --text-3: rgba(235, 235, 245, 0.52);
+
+  /* accents */
+  --accent: #0a84ff;
+  --accent-text: #ffffff;
+  --success: #30d158;
+  --warning: #ffd60a;
+  --danger: #ff453a;
+  --dub-glow: conic-gradient(from var(--glow-angle, 0deg), #ff6b9d, #ffb86b, #7cf0c5, #6ba8ff, #c38bff, #ff6b9d);
+
+  /* shape & motion */
+  --r-panel: 26px;
+  --r-card: 20px;
+  --r-control: 12px;
+  --r-pill: 999px;
+  --gap: 10px;
+  --ease: cubic-bezier(0.32, 0.72, 0, 1);       /* iOS sheet-like spring feel */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --t-fast: 160ms;
+  --t-med: 320ms;
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    color-scheme: light;
+    --ambient-1: #c9b8ff;
+    --ambient-2: #9fe3e0;
+    --ambient-3: #ffc2d6;
+    --base: #eef0f6;
+    --glass-tint: rgba(255, 255, 255, 0.5);
+    --glass-tint-strong: rgba(255, 255, 255, 0.78);
+    --glass-inset: rgba(0, 0, 0, 0.06);
+    --glass-edge: rgba(255, 255, 255, 0.7);
+    --glass-specular: rgba(255, 255, 255, 0.95);
+    --glass-shadow: 0 10px 40px rgba(40, 40, 80, 0.16), 0 2px 8px rgba(40, 40, 80, 0.08);
+    --hover: rgba(0, 0, 0, 0.05);
+    --press: rgba(0, 0, 0, 0.09);
+    --text: #1d1d1f;
+    --text-2: rgba(29, 29, 31, 0.74);
+    --text-3: rgba(29, 29, 31, 0.56);
+    --accent: #0071e3;
+  }
+}
+
+@property --glow-angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}

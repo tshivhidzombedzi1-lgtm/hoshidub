@@ -1,0 +1,11 @@
+node_modules/
+test-results/
+playwright-report/
+tests/e2e/shots/
+tests/live/out/
+spike/*.log
+koe-run.log
+*.part
+__pycache__/
+.pytest_cache/
+dist/

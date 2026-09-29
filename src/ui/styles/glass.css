@@ -1,0 +1,67 @@
+/* Liquid Glass material.
+   Layers, back to front: refracted + blurred backdrop (backdrop-filter, SVG displacement set by glass.js)
+   → translucent tint → specular rim (::before, lit from the top-left) → inner glow (::after). */
+
+.glass {
+  position: relative;
+  isolation: isolate;
+  background: var(--glass-tint);
+  border-radius: var(--r-panel);
+  box-shadow: var(--glass-shadow);
+  -webkit-backdrop-filter: blur(22px) saturate(175%);
+  backdrop-filter: var(--glass-filter, blur(22px) saturate(175%));
+}
+
+.glass::before {
+  /* 1px rim that catches light: bright at the top-left, fading around the shape */
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, var(--glass-specular) 0%, var(--glass-edge) 22%,
+              transparent 48%, var(--glass-edge) 78%, rgba(255, 255, 255, 0.28) 100%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.glass::after {
+  /* soft inner light, like the thickness of the glass */
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.18), inset 0 -8px 24px rgba(255, 255, 255, 0.03);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.glass > * { position: relative; z-index: 2; }
+
+.glass-strong { background: var(--glass-tint-strong); }
+
+.glass-inset {
+  background: var(--glass-inset);
+  border-radius: var(--r-pill);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.25), inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+/* Reduced transparency: opaque, still layered, no refraction */
+:root.reduce-transparency .glass,
+:root.reduce-transparency .glass-strong {
+  background: var(--base);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+@media (prefers-reduced-transparency: reduce) {
+  .glass, .glass-strong { background: var(--base); backdrop-filter: none; -webkit-backdrop-filter: none; }
+}
+
+/* High contrast (Windows contrast themes) */
+@media (forced-colors: active) {
+  .glass { border: 1px solid CanvasText; background: Canvas; backdrop-filter: none; }
+  .glass::before, .glass::after { display: none; }
+}

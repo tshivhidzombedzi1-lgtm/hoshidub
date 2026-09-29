@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src ws://127.0.0.1:*; media-src 'self' blob:; worker-src 'self' blob:">
+  <title>Dub It</title>
+  <link rel="stylesheet" href="styles/tokens.css">
+  <link rel="stylesheet" href="styles/glass.css">
+  <link rel="stylesheet" href="styles/app.css">
+</head>
+<body>
+  <!-- SF-Symbols-style icons, 1.75 stroke -->
+  <svg class="sprite" width="0" height="0" aria-hidden="true">
+    <defs>
+      <symbol id="i-home" viewBox="0 0 24 24"><path d="M3.5 10.5 12 3.5l8.5 7v9a1 1 0 0 1-1 1h-5v-6h-5v6h-5a1 1 0 0 1-1-1z"/></symbol>
+      <symbol id="i-play" viewBox="0 0 24 24"><rect x="2.5" y="4.5" width="19" height="13" rx="2.5"/><path d="M8 21h8M10.2 8.3v5.4l4.6-2.7z"/></symbol>
+      <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z"/></symbol>
+      <symbol id="i-gear" viewBox="0 0 24 24"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></symbol>
+      <symbol id="i-back" viewBox="0 0 24 24"><path d="M15 4.5 7.5 12l7.5 7.5"/></symbol>
+      <symbol id="i-fwd" viewBox="0 0 24 24"><path d="M9 4.5 16.5 12 9 19.5"/></symbol>
+      <symbol id="i-reload" viewBox="0 0 24 24"><path d="M19.5 12a7.5 7.5 0 1 1-2.2-5.3M19.5 4v4.5H15"/></symbol>
+      <symbol id="i-stop" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+      <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="10" rx="2.5"/><path d="M8.5 10.5V7.8a3.5 3.5 0 0 1 7 0v2.7"/></symbol>
+      <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/></symbol>
+      <symbol id="i-wave" viewBox="0 0 24 24"><path d="M3 12h1.5M7 8v8M11 4.5v15M15 7.5v9M19 10v4M21.5 12H21"/></symbol>
+      <symbol id="i-logo" viewBox="0 0 512 512"><g fill="#fff" stroke="none"><rect x="118" y="214" width="40" height="84" rx="20"/><rect x="186" y="150" width="40" height="212" rx="20"/><rect x="254" y="110" width="40" height="292" rx="20"/><rect x="322" y="170" width="40" height="172" rx="20"/><rect x="390" y="224" width="40" height="64" rx="20" opacity="0.85"/></g></symbol>
+      <symbol id="i-sidebar" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M15 4v16"/></symbol>
+      <symbol id="i-captions" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M7 11h4M13 11h4M7 15h7"/></symbol>
+      <symbol id="i-speaker" viewBox="0 0 24 24"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4.2 4.2 0 0 1 0 6M18 6.5a7.8 7.8 0 0 1 0 11"/></symbol>
+      <symbol id="i-sparkle" viewBox="0 0 24 24"><path d="M12 3.5 13.8 10.2 20.5 12l-6.7 1.8L12 20.5l-1.8-6.7L3.5 12l6.7-1.8z"/></symbol>
+      <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3 19.5 6v5.5c0 4.5-3.2 8.2-7.5 9.5-4.3-1.3-7.5-5-7.5-9.5V6z"/><path d="m8.8 12 2.3 2.3 4.2-4.3"/></symbol>
+      <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 4 21 19.5H3z"/><path d="M12 10v4.5M12 17.2v.3"/></symbol>
+    </defs>
+  </svg>
+
+  <div class="ambient" aria-hidden="true"><i></i><i></i><i></i></div>
+
+  <div class="app" id="app" data-panel="open">
+    <!-- sidebar rail -->
+    <nav class="rail glass" aria-label="Main">
+      <div class="brand" aria-hidden="true"><span class="brand-mark"><svg><use href="#i-logo"/></svg></span></div>
+      <button class="rail-btn" id="nav-home" aria-label="Home" data-tip="Home"><svg><use href="#i-home"/></svg></button>
+      <button class="rail-btn" id="nav-crunchyroll" aria-label="Crunchyroll" data-tip="Crunchyroll"><svg><use href="#i-play"/></svg></button>
+      <button class="rail-btn" id="nav-youtube" aria-label="YouTube" data-tip="YouTube"><svg><use href="#i-globe"/></svg></button>
+      <div class="rail-spacer"></div>
+      <button class="rail-btn" id="nav-settings" aria-label="Settings" data-tip="Settings  Ctrl+,"><svg><use href="#i-gear"/></svg></button>
+    </nav>
+
+    <!-- toolbar (also the window's drag region) -->
+    <header class="toolbar glass" id="toolbar">
+      <div class="nav-group">
+        <button class="icon-btn" id="btn-back" aria-label="Back" data-tip="Back  Alt+←" disabled><svg><use href="#i-back"/></svg></button>
+        <button class="icon-btn" id="btn-fwd" aria-label="Forward" data-tip="Forward  Alt+→" disabled><svg><use href="#i-fwd"/></svg></button>
+        <button class="icon-btn" id="btn-reload" aria-label="Reload" data-tip="Reload  Ctrl+R"><svg><use href="#i-reload"/></svg></button>
+      </div>
+      <form class="address glass-inset" id="address-form" role="search">
+        <svg class="address-icon" id="address-icon"><use href="#i-search"/></svg>
+        <input id="address" type="text" spellcheck="false" autocomplete="off"
+               placeholder="Search or enter a website" aria-label="Address">
+        <div class="load-bar" id="load-bar"></div>
+      </form>
+      <button class="dub-btn" id="dub-btn" aria-pressed="false" aria-label="Live dub" data-tip="Live dub  Ctrl+D">
+        <span class="dub-glow" aria-hidden="true"></span>
+        <span class="dub-bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+        <span class="dub-label" id="dub-label">Dub</span>
+        <span class="status-dot" id="dub-dot" aria-hidden="true"></span>
+      </button>
+      <button class="icon-btn" id="btn-panel" aria-label="Show dub panel" aria-expanded="true" data-tip="Dub panel  Ctrl+J"><svg><use href="#i-sidebar"/></svg></button>
+      <div class="toast-host" id="toasts" role="status" aria-live="polite"></div>
+    </header>
+
+    <!-- content: the browser view is laid over #viewport by the main process -->
+    <main class="content" id="content">
+      <div class="viewport" id="viewport"></div>
+
+      <section class="page home" id="page-home" aria-labelledby="home-title">
+        <div class="home-inner">
+          <p class="eyebrow"><svg><use href="#i-sparkle"/></svg> Live English dub</p>
+          <h1 id="home-title">Watch in Japanese.<br>Hear it in English.</h1>
+          <p class="lede">Open a streaming site, play an episode, and press <kbd>Dub</kbd>. Dub It gives every character their own English voice as they speak.</p>
+          <div class="tiles">
+            <button class="tile glass" id="tile-crunchyroll">
+              <span class="tile-mark brand-cr" aria-hidden="true">C</span>
+              <span class="tile-name">Crunchyroll</span>
+              <span class="tile-sub">Sign in with your own account</span>
+            </button>
+            <button class="tile glass" id="tile-youtube">
+              <span class="tile-mark brand-yt" aria-hidden="true">Y</span>
+              <span class="tile-name">YouTube</span>
+              <span class="tile-sub">Trailers, clips and more</span>
+            </button>
+            <button class="tile glass" id="tile-continue" hidden>
+              <span class="tile-mark brand-go" aria-hidden="true">▶</span>
+              <span class="tile-name">Continue</span>
+              <span class="tile-sub" id="continue-sub"></span>
+            </button>
+          </div>
+          <p class="fineprint"><svg><use href="#i-shield"/></svg> Dub It listens to what's playing, like a friend in the room. It never records or saves video.</p>
+        </div>
+      </section>
+
+      <section class="page settings" id="page-settings" aria-labelledby="settings-title" hidden>
+        <div class="settings-inner">
+          <h1 id="settings-title">Settings</h1>
+
+          <div class="group glass glass-strong">
+            <h2>Dubbing</h2>
+            <label class="row"><span><b>English voice volume</b></span>
+              <input type="range" id="set-volume" min="0" max="150" step="5"><output id="set-volume-out"></output></label>
+            <label class="row"><span><b>Japanese voices while English speaks</b><small>Only the voices are lowered; music and effects stay at full volume</small></span>
+              <input type="range" id="set-duck" min="0" max="100" step="5"><output id="set-duck-out"></output></label>
+            <label class="row"><span><b>Use the site's English subtitles</b><small>Speaks the official translation when a show has one — most accurate</small></span>
+              <input type="checkbox" class="switch" id="set-subs"></label>
+            <label class="row"><span><b>Captions</b><small>Show the English line on the video</small></span>
+              <input type="checkbox" class="switch" id="set-captions"></label>
+            <div class="row"><span><b>Caption size</b></span>
+              <div class="segmented" id="set-caption-size" role="radiogroup" aria-label="Caption size">
+                <button role="radio" data-v="small">S</button><button role="radio" data-v="medium">M</button><button role="radio" data-v="large">L</button>
+              </div></div>
+          </div>
+
+          <div class="group glass glass-strong">
+            <h2>Plan</h2>
+            <div class="row"><span><b id="plan-name">Free</b><small id="plan-detail">30 minutes of dubbing a day</small></span>
+              <button class="btn primary" id="plan-upgrade">Get Pro</button>
+              <button class="btn" id="plan-deactivate" hidden>Remove from this PC</button></div>
+          </div>
+
+          <div class="group glass glass-strong">
+            <h2>Downloads</h2>
+            <div class="row"><span><b>English voices</b><small id="dl-voices">Installed</small></span></div>
+            <div class="row"><span><b>Translate-by-ear</b><small id="dl-ear-detail">For shows without subtitles · 3.1 GB</small></span>
+              <button class="btn" id="dl-ear">Download</button></div>
+          </div>
+
+          <div class="group glass glass-strong">
+            <h2>Appearance</h2>
+            <label class="row"><span><b>Reduce transparency</b><small>Solid surfaces instead of glass</small></span>
+              <input type="checkbox" class="switch" id="set-reduce"></label>
+          </div>
+
+          <div class="group glass glass-strong">
+            <h2>Privacy</h2>
+            <div class="row"><span><b>Sign out of all sites</b><small>Clears logins, cookies and history in Dub It's browser</small></span>
+              <button class="btn danger" id="set-clear">Sign out…</button></div>
+            <p class="note"><svg><use href="#i-shield"/></svg> Everything runs on this PC. Dub It has no account, sends no analytics, and never records video.</p>
+          </div>
+
+          <div class="group glass glass-strong">
+            <h2>About</h2>
+            <div class="row"><span><b>Dubbing engine</b><small id="about-engine">—</small></span>
+              <button class="btn" id="set-logs">Open logs</button></div>
+            <div class="row"><span><b>Dub It</b><small id="about-version">—</small></span></div>
+            <p class="note">Speech recognition by OpenAI Whisper (MIT). Voices by Kokoro (Apache 2.0). Some icons adapted from Lucide (ISC). Streaming sites are accessed with your own accounts under their terms.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="page error" id="page-error" hidden role="alert">
+        <div class="error-card glass glass-strong">
+          <svg class="error-icon"><use href="#i-alert"/></svg>
+          <h2 id="error-title">This page didn't load</h2>
+          <p id="error-desc"></p>
+          <button class="btn primary" id="error-retry">Try again</button>
+        </div>
+      </section>
+    </main>
+
+    <!-- dub panel -->
+    <aside class="panel glass" id="panel" aria-label="Live dub">
+      <div class="panel-head">
+        <h2>Live Dub</h2>
+        <input type="checkbox" class="switch big" id="dub-switch" aria-label="Live dub on or off">
+      </div>
+      <div class="engine-card glass-inset" id="engine-card">
+        <span class="status-dot" id="engine-dot"></span>
+        <div><b id="engine-state">Starting…</b><small id="engine-detail">Loading voices</small></div>
+      </div>
+
+      <div class="plan-meter" id="plan-meter" hidden>
+        <div class="meter-track"><div class="meter-fill" id="meter-fill"></div></div>
+        <div class="meter-row"><span id="meter-text">30 min of free dubbing left today</span>
+          <button class="link-btn" id="meter-upgrade">Get Pro</button></div>
+      </div>
+
+      <div class="source" id="source" data-mode="listen">
+        <svg><use href="#i-captions"/></svg>
+        <div><b id="source-title">Translating by ear</b><small id="source-detail">No subtitles found on this page</small></div>
+      </div>
+
+      <div class="control">
+        <div class="control-label"><svg><use href="#i-speaker"/></svg><span>English</span><output id="vol-out"></output></div>
+        <input type="range" id="vol" min="0" max="150" step="5" aria-label="English voice volume">
+      </div>
+      <div class="control">
+        <div class="control-label"><svg><use href="#i-wave"/></svg><span>Japanese voices under dub</span><output id="duck-out"></output></div>
+        <input type="range" id="duck" min="0" max="100" step="5" aria-label="Japanese voice volume while English speaks">
+      </div>
+      <label class="control-row"><svg><use href="#i-captions"/></svg><span>Captions</span>
+        <input type="checkbox" class="switch" id="cap-switch"></label>
+
+      <div class="transcript-head"><h3>Transcript</h3><span id="latency" class="latency" title="Time from the end of a Japanese line to the start of the English"></span></div>
+      <ol class="transcript" id="transcript" aria-live="polite">
+        <li class="transcript-empty" id="transcript-empty">English lines will appear here as characters speak.</li>
+      </ol>
+    </aside>
+  </div>
+
+  <!-- first run -->
+  <div class="onboarding" id="onboarding" hidden role="dialog" aria-modal="true" aria-labelledby="ob-title">
+    <div class="ob-card glass glass-strong">
+      <div class="ob-steps" id="ob-steps">
+        <div class="ob-step" data-step="0">
+          <div class="ob-art"><span class="brand-mark big"><svg><use href="#i-logo"/></svg></span></div>
+          <h2 id="ob-title">Welcome to Dub It</h2>
+          <p>Watch anime in Japanese and hear every line in English, live, with a different voice for each character.</p>
+        </div>
+        <div class="ob-step" data-step="1" hidden>
+          <div class="ob-art"><svg><use href="#i-play"/></svg></div>
+          <h2>Use your own account</h2>
+          <p>Open Crunchyroll from the sidebar and sign in like you would in any browser. Dub It remembers you.</p>
+        </div>
+        <div class="ob-step" data-step="2" hidden>
+          <div class="ob-art"><svg><use href="#i-wave"/></svg></div>
+          <h2>Press Dub</h2>
+          <p>Start an episode and press <kbd>Dub</kbd> or <kbd>Ctrl</kbd> <kbd>D</kbd>. The Japanese softens while the English speaks.</p>
+        </div>
+      </div>
+      <div class="ob-foot">
+        <div class="ob-dots" id="ob-dots" aria-hidden="true"><i class="on"></i><i></i><i></i></div>
+        <button class="btn primary" id="ob-next">Continue</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- first-run setup -->
+  <div class="onboarding" id="setup" hidden role="dialog" aria-modal="true" aria-labelledby="setup-title">
+    <div class="ob-card glass glass-strong setup-card">
+      <div class="ob-art"><span class="brand-mark big"><svg><use href="#i-logo"/></svg></span></div>
+      <h2 id="setup-title">Getting Dub It ready</h2>
+      <p class="up-sub">Dub It runs on your PC, so it needs to download its voices once.</p>
+      <div class="gpu-line" id="gpu-line"></div>
+      <label class="ear-opt" id="ear-opt"><input type="checkbox" id="setup-ear">
+        <span><b>Also get translate-by-ear</b><small>For shows without subtitles · 3.1 GB</small></span></label>
+      <div class="setup-progress" id="setup-progress" hidden>
+        <div class="meter-track"><div class="meter-fill" id="setup-fill"></div></div>
+        <p class="meter-row" id="setup-text">Starting…</p>
+      </div>
+      <p class="up-error" id="setup-error" role="alert" hidden></p>
+      <button class="btn primary up-buy" id="setup-go">Download voices</button>
+    </div>
+  </div>
+
+  <!-- upgrade -->
+  <div class="onboarding" id="upgrade" hidden role="dialog" aria-modal="true" aria-labelledby="up-title">
+    <div class="ob-card glass glass-strong up-card">
+      <button class="icon-btn up-close" id="up-close" aria-label="Close"><svg><use href="#i-stop"/></svg></button>
+      <div class="ob-art"><span class="brand-mark big"><svg><use href="#i-logo"/></svg></span></div>
+      <h2 id="up-title">Keep dubbing with Pro</h2>
+      <p class="up-sub" id="up-sub">Unlimited live dubbing, official subtitles on cue, and a voice for every character.</p>
+      <ul class="up-list">
+        <li>Unlimited hours, every episode</li>
+        <li>Zero-delay dubbing from official subtitles</li>
+        <li>A different voice for each character</li>
+      </ul>
+      <div class="up-price"><b>$6.99</b> a month <span>or $49 a year</span></div>
+      <button class="btn primary up-buy" id="up-buy">Get Pro</button>
+      <form class="up-key" id="up-key-form">
+        <label for="up-key">Already have a licence key?</label>
+        <div class="up-key-row">
+          <input id="up-key" type="text" spellcheck="false" autocomplete="off" placeholder="Paste your key">
+          <button class="btn" id="up-activate" type="submit">Activate</button>
+        </div>
+        <p class="up-error" id="up-error" role="alert" hidden></p>
+      </form>
+    </div>
+  </div>
+
+  <div class="tooltip" id="tooltip" role="tooltip" hidden></div>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
