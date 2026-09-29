@@ -218,7 +218,7 @@ function createWindow() {
   watchPlayerData(browser.webContents);
   adblock = new AdBlock({ session: browser.webContents.session, store, dir: app.getPath('userData') });
   adblock.on('count', (id) => { if (id === browser.webContents.id) pushAdblock(); });
-  adblock.start().then(pushAdblock);
+  adblock.start().then(() => { adblock.applyFor(browser.webContents.getURL()); pushAdblock(); });
   wireUiSession();
 
   win.webContents.on('before-input-event', (e, input) => { if (handleShortcut(input)) e.preventDefault(); });
@@ -263,7 +263,11 @@ function wireBrowser(wc) {
   }
   wc.on('did-stop-loading', () => { lastTint = ''; setTimeout(sampleTint, 150); });   // react right away on a new page
   let lastPath = '';
-  wc.on('did-start-navigation', (d) => { if (d.isMainFrame && !d.isSameDocument) adblock?.resetCount(wc.id); });
+  wc.on('did-start-navigation', (d) => {
+    if (!d.isMainFrame || d.isSameDocument) return;
+    adblock?.resetCount(wc.id);
+    adblock?.applyFor(d.url);        // allowed sites (Crunchyroll) get no blocker at all: it broke the player
+  });
   wc.on('did-navigate', (_e, url) => {
     pageInfo = null;
     try { lastPath = new URL(url).pathname; } catch { lastPath = ''; }

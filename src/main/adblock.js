@@ -54,13 +54,30 @@ class AdBlock extends EventEmitter {
 
   resetCount(webContentsId) { this.blocked.set(webContentsId, 0); }
 
+  isAllowed(url) {
+    const site = siteOf(url);
+    return !!site && this.allowList().some((s) => site === s || site.endsWith(`.${s}`));
+  }
+
+  // The @@$document exception alone isn't enough: the blocker still injects its scriptlets into every frame
+  // (Crunchyroll's player then threw "Maximum call stack size exceeded" and never started) and blocked some
+  // of the player's requests. So on an allowed site the blocker is switched off for the whole session, and
+  // switched back on when the browser leaves it. Called when a main-frame navigation starts.
+  applyFor(url) {
+    if (!this.blocker || !this.enabled()) return;
+    const active = this.blocker.isBlockingEnabled(this.session);
+    const want = !this.isAllowed(url);
+    if (want && !active) this.blocker.enableBlockingInSession(this.session);
+    if (!want && active) this.blocker.disableBlockingInSession(this.session);
+  }
+
   state(url, webContentsId) {
     const site = siteOf(url);
     return {
       available: !!this.blocker,
       enabled: this.enabled(),
       site,
-      allowed: !!site && this.allowList().some((s) => site === s || site.endsWith(`.${s}`)),
+      allowed: this.isAllowed(url),
       blocked: this.blocked.get(webContentsId) || 0,
     };
   }
@@ -83,6 +100,7 @@ class AdBlock extends EventEmitter {
     if (this.blocker) {
       this.blocker.updateFromDiff(allowed ? { removed: [exception(site)] } : { added: [exception(site)] });
     }
+    this.applyFor(url);
   }
 }
 
