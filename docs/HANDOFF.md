@@ -2,6 +2,28 @@
 
 Read this first if you are a new session (human or AI) picking up the project. It records what exists, what works, what is left, and the rules the owner has set. Last updated 2026-09-29.
 
+## 0. Next agent: start here
+
+The owner is moving the project onto his Hostinger hosting and continuing with a new agent there. You have no memory of earlier sessions, and this file is the memory. Everything below is committed in git (latest commits: the Hoshidub rename in the app, release settings in `package.json`, the "My account" link).
+
+**What's live right now:** the website at https://grey-woodpecker-803820.hostingersite.com (Hostinger Business plan, static files in `public_html`, built from `website/` with `npm run package` → `website/release/hoshidub-website-static.zip`).
+
+**Your job, in this order** (tick each off with the owner; one step per message, short and plain):
+
+1. **Domain.** Help him buy `hoshidub.com` (and `hoshidub.app` if he wants) in hPanel → Domains, then connect it to the existing website and make sure SSL is on. He buys it himself. Afterwards `site.url` in `website/src/config.js` and `site` in `website/astro.config.mjs` are already `https://hoshidub.com`, so no code change is needed.
+2. **Lemon Squeezy store.** Guide him through sign-up and creating the store "Hoshidub": product **Hoshidub Pro** with two variants, **$6.99/month** and **$49/year**, with **licence keys enabled** (activation limit: ask him, 2 PCs is a sensible default). Optional: a "pay what you want" tip product. He must give you:
+   - the **checkout links** (monthly, yearly, and tip) → `website/src/config.js` (`proMonthly`, `proYearly`, `tipCheckout`);
+   - the **product ID** and a checkout link → `package.json` `dubit.productId` and `dubit.checkoutUrl` (the app reads them through `src/main/paths.js`).
+   Then run `npm run package` in `website/`, and he uploads the new static zip (extract into `public_html`, overwrite). Verify the live site with `node tools/shots.mjs <live url> <dir>`.
+3. **Tip links.** If he makes Ko-fi or PayPal.me pages, put them in `config.js` (`kofi`, `paypal`), plus a business email (`email`) if he sets one up in hPanel → Emails.
+4. **App download** (needs his **Windows PC**, not the server; see §7):
+   - `dist/Hoshidub-Setup-0.1.0.exe` (115 MB) was built on 2026-09-29 and is VMP-signed (`python -m castlabs_evs.vmp verify-pkg dist/win-unpacked` → "Signature is valid: streaming, 1387 days left"). It is **not ready for the public yet**: `dubit.runtimeBase`, `productId` and `checkoutUrl` are still empty, so on another PC it would stall at first-run setup. It's fine for testing on the owner's PC, which already has the runtime.
+   - The runtime pack (`dist/runtime/*`, 2.88 GB in two parts) and the installer must be hosted publicly. Recommended: a GitHub repo he creates, with a Release. Set `package.json` `dubit.runtimeBase` to the release download URL, add the Lemon Squeezy settings, rebuild with `npm run dist`, upload.
+   - Then set `links.download` in `website/src/config.js`, run `npm run package`, and he re-uploads the website.
+5. Then continue with §5 "Not done yet", items 4 onwards.
+
+**Don't:** put the project source in `public_html` (it would be public); build accounts or a database (licensing is Lemon Squeezy, customer self-service is its "My Orders" page, linked as "My account"); start GPU work on his PC without asking.
+
 ## 1. Who and what
 
 - **Owner:** Tshivhidzo "Moss" Mbedzi, founder and director of **MCP Labs**, Pretoria, South Africa. Public links only: LinkedIn `https://www.linkedin.com/in/tshivhidzo-mbedzi-a74040233/`, YouTube `https://www.youtube.com/@FTMORangeBreakoutProea`, Discord `https://discord.gg/5SBWbgG7Xp`. Never publish his phone, personal email or home address.
@@ -23,7 +45,7 @@ Read this first if you are a new session (human or AI) picking up the project. I
 |---|---|
 | Project (git repo, all committed) | `C:\Users\mbedz\anime-dub\koe` (internal code name "koe"; env vars are `KOE_*`) |
 | Python venv (CUDA PyTorch cu128 for the RTX 5070 Ti) | `C:\Users\mbedz\anime-dub\.venv` |
-| Installed-app data and models | `%LOCALAPPDATA%\DubIt\` (old name kept on purpose, so existing downloads stay valid) |
+| Installed-app data and models | `%LOCALAPPDATA%\Hoshidub\` (builds before the rename used `DubIt`; `src/main/paths.js` moves it over once) |
 | Live website (Hostinger Business plan, static) | https://grey-woodpecker-803820.hostingersite.com |
 | Website source | `website/` (Astro) |
 | Website build brief (brand, design, copy, pricing) | `docs/WEBSITE_BRIEF.md` |
@@ -64,9 +86,9 @@ Electron (castLabs ECS v44.1.0+wvcus, Widevine, VMP-signed)
 1. **Domain:** `hoshidub.com` and `hoshidub.app` were unregistered on 2026-09-29. The owner buys them, then connects the domain to the Hostinger site in hPanel.
 2. **Lemon Squeezy store (owner):** Pro product with monthly $6.99 and yearly $49 variants, licence keys turned on. Then:
    - put the checkout links in `website/src/config.js` (`proMonthly`, `proYearly`), plus the tip links (`kofi`, `paypal`, `tipCheckout`) and a business email if he has them;
-   - **build the product ID and checkout URL into the app.** They are currently read only from env vars (`KOE_PRODUCT_ID` in `license.js`, `KOE_CHECKOUT_URL` in `main.js`), which an installed copy won't have. Move them into `package.json` (next to `dubit.runtimeBase`) or a config file read at runtime.
+   - put the product ID and checkout link into the app: `package.json` → `dubit.productId` and `dubit.checkoutUrl` (read by `src/main/paths.js`; env vars `KOE_PRODUCT_ID` / `KOE_CHECKOUT_URL` override them for tests), then rebuild the installer.
 3. **App download:**
-   - The installer on disk is stale: `dist/Dub-It-Setup-0.1.0.exe` (old name). Rebuild with `npm run dist` → `dist/Hoshidub-Setup-0.1.0.exe`. This needs **Windows**, the castLabs Electron in `node_modules`, and the owner's EVS login for VMP signing (`tools/after-pack.js` runs `python -m castlabs_evs.vmp -n sign-pkg`). An unsigned build fails on Crunchyroll with error KAT-6005.
+   - Build with `npm run dist` → `dist/Hoshidub-Setup-0.1.0.exe` (about 110 MB). Users download only this; on first run the app fetches the runtime pack (from `dubit.runtimeBase`) and the models (straight from Hugging Face) itself. Building needs **Windows**, the castLabs Electron in `node_modules`, and the owner's EVS login for VMP signing (`tools/after-pack.js` runs `python -m castlabs_evs.vmp -n sign-pkg`). An unsigned build fails on Crunchyroll with error KAT-6005.
    - Host the runtime pack (`dist/runtime/*`, 2.88 GB in two parts) and the installer publicly; **GitHub Releases** is recommended (2 GB per file limit; shared hosting isn't meant for multi-gigabyte downloads). Set `dubit.runtimeBase`, rebuild, then set `links.download` in `website/src/config.js` and re-upload the website.
    - The owner's internet is slow (about 87 KB/s measured for downloads), so a 3 GB upload can take many hours. Plan it overnight.
 4. **Code-signing certificate** (owner's choice), so Windows SmartScreen stops warning.

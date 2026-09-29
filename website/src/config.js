@@ -13,6 +13,8 @@ export const links = {
   // Lemon Squeezy checkout links for Pro
   proMonthly: '',
   proYearly: '',
+  // customer self-service (Lemon Squeezy "My Orders": log in by email link, see licence keys, update card, cancel)
+  account: 'https://app.lemonsqueezy.com/my-orders',
   // tip jar
   kofi: '',             // e.g. https://ko-fi.com/hoshidub
   paypal: '',           // e.g. https://paypal.me/yourname
