@@ -18,7 +18,8 @@ fs.rmSync(release, { recursive: true, force: true });
 
 // Windows tar (bsdtar) writes zip files; GNU tar from Git can't
 function zipDir(dir, zip) {
-  if (process.platform === 'win32') execFileSync(path.join(process.env.SystemRoot || 'C:\\Windows', 'System32', 'tar.exe'), ['-a', '-cf', zip, '-C', dir, '.'], { stdio: 'inherit' });
+  // list the top-level entries by name so paths inside the zip don't start with "./" (some hosting importers choke on it)
+  if (process.platform === 'win32') execFileSync(path.join(process.env.SystemRoot || 'C:\\Windows', 'System32', 'tar.exe'), ['-a', '-cf', zip, '-C', dir, ...fs.readdirSync(dir)], { stdio: 'inherit' });
   else execFileSync('zip', ['-qr', zip, '.'], { cwd: dir, stdio: 'inherit' });
   console.log(`${path.basename(zip)}  ${(fs.statSync(zip).size / 1e6).toFixed(1)} MB`);
 }
