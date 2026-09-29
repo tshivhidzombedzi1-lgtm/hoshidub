@@ -8,7 +8,12 @@ test('Hoshi greets, answers out loud, and lives on the dashboard and in the pane
   const { app, ui } = await launch({ engine: 'on', env: { KOE_BUDDY_FAKE: '1', KOE_TEST_MUTE: '1', KOE_ADBLOCK: 'off' } });
   await ui.keyboard.press('Escape');
   await expect(ui.locator('#home-hoshi')).toBeVisible();
-  await expect(ui.locator('#hoshi-home-avatar svg')).toBeVisible();
+  const errors = [];
+  ui.on('pageerror', (e) => errors.push(e.message));
+  ui.on('console', (m) => m.type() === 'error' && errors.push(m.text()));
+  await expect(ui.locator('#hoshi-home-avatar canvas, #hoshi-home-avatar svg').first()).toBeVisible();
+  await ui.waitForTimeout(2500);                                   // let the 3D model load and settle
+  expect(errors).toEqual([]);
 
   await expect(ui.locator('#engine-state')).toHaveText('Ready', { timeout: 200_000 });
   await ui.click('#tab-hoshi');
@@ -20,9 +25,9 @@ test('Hoshi greets, answers out loud, and lives on the dashboard and in the pane
   await ui.press('#hoshi-text', 'Enter');
   await expect(ui.locator('#hoshi-chat li.me')).toHaveText('Who made you?');
   await expect(ui.locator('#hoshi-chat li.them').nth(1)).toContainText('Who made you?', { timeout: 30_000 });   // stand-in echoes
-  await expect(ui.locator('#hoshi-bubble')).toBeVisible();
-  // she spoke: the lip-sync ran (mouth path changes while her audio plays)
-  await expect.poll(() => ui.evaluate(() => window.__hoshiSpoke === true || !!document.querySelector('#hoshi-panel-avatar .h-mouth')), { timeout: 10_000 }).toBe(true);
+  await expect(ui.locator('#home-bubble')).toContainText('Who made you?');         // the dashboard Hoshi says it too
+  // she spoke out loud: her voice played and the avatar animated to it
+  await expect.poll(() => ui.evaluate(() => window.__hoshiSpoke === true), { timeout: 10_000 }).toBe(true);
 
   await ui.click('#tab-dub');
   await ui.click('#nav-home');

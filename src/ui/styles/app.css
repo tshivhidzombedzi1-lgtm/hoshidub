@@ -474,3 +474,10 @@ input[type="range"]:active::-webkit-slider-thumb { transform: scale(1.15); }
 @media (max-width: 1180px) { .home-hoshi { display: none; } }
 .links a { color: var(--accent); text-decoration: none; }
 .links a:hover { text-decoration: underline; }
+
+/* ---------------------------------------------------------------- 3D Hoshi */
+.hoshi-canvas { display: block; width: 100%; height: 100%; }
+.hoshi-3d .hoshi-stage { min-height: 230px; }
+.hoshi-3d #hoshi-panel-avatar { width: 100%; height: 230px; transform: none; transition: none; margin: 0; }
+.hoshi-3d .home-hoshi { right: 1%; bottom: 0; }
+.hoshi-3d #hoshi-home-avatar { width: 340px; height: 400px; transform: none; transition: none; }

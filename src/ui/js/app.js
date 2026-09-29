@@ -2,6 +2,7 @@ import { enableRefraction, refreshRefraction } from './glass.js';
 import { Dubber } from './dub.js';
 import { SubtitleSync } from './subsync.js';
 import { HoshiAvatar, HoshiClient } from './hoshi.js';
+import { Hoshi3D, webglAvailable } from './hoshi3d.js';
 
 const $ = (id) => document.getElementById(id);
 const koe = window.koe;
@@ -639,8 +640,11 @@ function lipSync(analyser) {
 }
 
 function bindHoshi() {
-  avatars.panel = new HoshiAvatar($('hoshi-panel-avatar'));
-  avatars.home = new HoshiAvatar($('hoshi-home-avatar'));
+  // 3D Hoshi where the PC supports it; the drawn Hoshi otherwise (and always for the tiny pop-up)
+  const three = webglAvailable();
+  document.body.classList.toggle('hoshi-3d', three);
+  avatars.panel = three ? new Hoshi3D($('hoshi-panel-avatar')) : new HoshiAvatar($('hoshi-panel-avatar'));
+  avatars.home = three ? new Hoshi3D($('hoshi-home-avatar')) : new HoshiAvatar($('hoshi-home-avatar'));
   avatars.peek = new HoshiAvatar($('hoshi-peek-avatar'), { wander: false });
   $('tab-dub').addEventListener('click', () => setTab('dub'));
   $('tab-hoshi').addEventListener('click', () => setTab('hoshi'));
@@ -682,7 +686,7 @@ function bindHoshi() {
     chat(m.text, 'them');
     bubble(m.text, m.mood);
   });
-  hoshi.addEventListener('speaking', ({ detail }) => { hoshi.speakingNow = true; lipSync(detail.analyser); });
+  hoshi.addEventListener('speaking', ({ detail }) => { hoshi.speakingNow = true; window.__hoshiSpoke = true; lipSync(detail.analyser); });
   hoshi.addEventListener('quiet', () => { hoshi.speakingNow = false; });
 
   // settings

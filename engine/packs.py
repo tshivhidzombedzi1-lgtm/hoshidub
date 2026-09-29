@@ -151,9 +151,11 @@ def _fetch(repo, filename, dest, on_bytes, size, sha256):
                 out.write(chunk)
                 on_bytes(len(chunk))
     got = part.stat().st_size
-    if (size and got != size) or (sha256 and sha256_of(part) != sha256):
-        part.unlink()
-        raise IOError(f"{filename} arrived damaged (size or checksum mismatch); it will be downloaded again")
+    if size and got < size:                    # connection dropped: keep what arrived and resume next attempt
+        raise IOError(f"{filename} was interrupted at {got} of {size} bytes; resuming")
+    if (size and got > size) or (sha256 and sha256_of(part) != sha256):
+        part.unlink()                          # genuinely damaged: start this file again
+        raise IOError(f"{filename} arrived damaged (size or checksum mismatch); downloading it again")
     part.replace(dest)
 
 
@@ -188,21 +190,29 @@ def setup(packs):
     done = 0
     last = 0.0
     for p, r, f in todo:
-        def on_bytes(n, p=p):
-            nonlocal done, last
-            done += n
-            if time.time() - last > 0.25:
-                last = time.time()
-                emit(type="progress", pack=p, done=done, total=total)
-        for attempt in range(5):
+        before = done                          # bytes of earlier files; this file is counted afresh each attempt
+        for attempt in range(25):              # resumable, so retries only fetch what's missing
+            got = 0
+
+            def on_bytes(n, p=p):
+                nonlocal done, last, got
+                got += n
+                done = before + got
+                if time.time() - last > 0.25:
+                    last = time.time()
+                    emit(type="progress", pack=p, done=done, total=total)
             try:
                 fetch(r, f, local_path(r, f), on_bytes, *meta[(r, f)])
+                done = before + (meta[(r, f)][0] or got)
                 break
+            except Busy as e:
+                emit(type="setup-error", pack=p, error=str(e))
+                return False
             except Exception as e:
-                if attempt == 4:
+                if attempt == 24:
                     emit(type="setup-error", pack=p, error=str(e))
                     return False
-                time.sleep(2 * (attempt + 1))
+                time.sleep(min(10, 2 * (attempt + 1)))
     emit(type="progress", pack=packs[-1] if packs else "", done=total, total=total)
     emit(type="setup-done", packs=packs)
     return True

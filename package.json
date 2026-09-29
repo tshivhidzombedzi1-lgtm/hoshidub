@@ -13,19 +13,27 @@
     "test:engine": "cd engine && ..\\..\\.venv\\Scripts\\python.exe -m pytest tests -q -p no:cacheprovider",
     "test:e2e": "playwright test",
     "icon": "electron tools/make-icon.js",
-    "dist": "electron-builder --win nsis"
+    "dist": "electron-builder --win nsis",
+    "build:hoshi": "esbuild src/ui/js/hoshi3d.src.js --bundle --format=esm --minify --target=chrome130 --outfile=src/ui/js/hoshi3d.js"
   },
   "devDependencies": {
     "@fontsource-variable/inter": "^5.3.0",
+    "@gltf-transform/core": "^4.5.1",
+    "@gltf-transform/extensions": "^4.5.1",
+    "@gltf-transform/functions": "^4.5.1",
     "@playwright/test": "^1.63.0",
     "electron": "github:castlabs/electron-releases#v44.1.0+wvcus",
-    "electron-builder": "^26.15.3"
+    "electron-builder": "^26.15.3",
+    "esbuild": "^0.28.2",
+    "meshoptimizer": "^1.3.0",
+    "sharp": "^0.35.5",
+    "three": "^0.186.1"
   },
   "author": "MCP Labs",
   "build": {
     "appId": "app.dubit.desktop",
     "productName": "Hoshidub",
-    "copyright": "Copyright © 2026 MCP Labs",
+    "copyright": "Copyright \u00a9 2026 MCP Labs",
     "electronDist": "node_modules/electron/dist",
     "electronVersion": "44.1.0",
     "directories": {
@@ -35,7 +43,8 @@
     "files": [
       "src/**/*",
       "package.json",
-      "!src/**/*.map"
+      "!src/**/*.map",
+      "!src/ui/js/hoshi3d.src.js"
     ],
     "extraResources": [
       {
