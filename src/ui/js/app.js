@@ -53,6 +53,8 @@ function showPage(page) {
   $('page-settings').hidden = page !== 'settings';
   $('page-error').hidden = page !== 'error';
   document.getElementById('app').classList.toggle('browsing', page === 'browser');
+  document.body.classList.toggle('browsing', page === 'browser');
+  if (page !== 'browser') clearTint();
   for (const [id, p] of [['nav-home', 'home'], ['nav-settings', 'settings']]) {
     $(id).toggleAttribute('aria-current', page === p);
     if (page === p) $(id).setAttribute('aria-current', 'page');
@@ -217,6 +219,30 @@ dubber.addEventListener('state', () => {
   }, 10000);
 });
 
+// ---------------------------------------------------------------- adaptive glass: follow the open page
+let glowFront = 'a';
+function applyTint(t) {
+  const browsing = state.page === 'browser';
+  if (!browsing) return;
+  // glass goes dark on dark pages and light on bright ones (hysteresis stops it flickering around the middle)
+  const cur = root.dataset.theme;
+  const theme = t.lum < 0.42 ? 'dark' : t.lum > 0.55 ? 'light' : cur || (t.lum < 0.5 ? 'dark' : 'light');
+  root.dataset.theme = theme;
+  const back = glowFront === 'a' ? 'b' : 'a';
+  const img = $(`glow-${back}`);
+  img.style.backgroundImage = `url("${t.image}")`;
+  img.classList.add('on');
+  $(`glow-${glowFront}`).classList.remove('on');
+  glowFront = back;
+  const [r, g, b] = t.top;
+  document.body.style.setProperty('--edge-glow', `rgba(${r}, ${g}, ${b}, 0.55)`);
+}
+
+function clearTint() {
+  delete root.dataset.theme;                       // back to the system theme over the photo
+  document.body.classList.remove('browsing');
+}
+
 // ---------------------------------------------------------------- ad blocker
 function renderAdblock(s) {
   state.adblock = s;
@@ -243,6 +269,10 @@ function bindAdblock() {
   });
   $('set-adblock').addEventListener('change', (e) => koe.adblock.setEnabled(e.target.checked));
   koe.adblock.onState(renderAdblock);
+}
+
+function bindTint() {
+  koe.page.onTint((t) => { state.lastTint = t; if (state.page === 'browser') applyTint(t); });
 }
 
 // ---------------------------------------------------------------- first-run setup: download the voices
@@ -585,6 +615,7 @@ async function init() {
   bindPlan();
   bindSetup();
   bindAdblock();
+  bindTint();
   renderAdblock(await koe.adblock.state());
   state.license = await koe.license.get();
   renderPlan();

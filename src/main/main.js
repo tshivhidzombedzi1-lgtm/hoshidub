@@ -105,6 +105,55 @@ function showBrowser(url) {
   pushNav();
 }
 
+// ---------------------------------------------------------------- adaptive glass
+// The page is drawn in its own layer, so the glass can't see it. About once a second take a tiny snapshot
+// (48 px wide, kept in memory only, never saved), measure its brightness, and hand the UI a blurred copy to
+// paint behind the glass. Protected video captures as black, so the glass goes dark while you watch.
+let tintTimer = null;
+let lastTint = '';
+
+function edgeColor(bmp, w, h, x0, y0, x1, y1) {
+  let r = 0, g = 0, b = 0, n = 0;
+  for (let y = y0; y < y1; y++) {
+    for (let x = x0; x < x1; x++) {
+      const i = (y * w + x) * 4;              // BGRA
+      b += bmp[i]; g += bmp[i + 1]; r += bmp[i + 2]; n++;
+    }
+  }
+  return n ? [Math.round(r / n), Math.round(g / n), Math.round(b / n)] : [0, 0, 0];
+}
+
+async function sampleTint() {
+  if (!win || win.isDestroyed() || !win.isVisible() || win.isMinimized() || !showingBrowser) return;
+  try {
+    const shot = await browser.webContents.capturePage();
+    if (shot.isEmpty()) return;
+    const small = shot.resize({ width: 48, quality: 'good' });
+    const { width: w, height: h } = small.getSize();
+    const bmp = small.toBitmap();
+    let lum = 0;
+    for (let i = 0; i < bmp.length; i += 4) lum += 0.0722 * bmp[i] + 0.7152 * bmp[i + 1] + 0.2126 * bmp[i + 2];
+    lum /= (bmp.length / 4) * 255;
+    const band = Math.max(1, Math.round(h / 6));
+    const tint = {
+      image: small.toDataURL(),
+      lum: Math.round(lum * 100) / 100,
+      top: edgeColor(bmp, w, h, 0, 0, w, band),
+      left: edgeColor(bmp, w, h, 0, 0, Math.max(1, Math.round(w / 8)), h),
+      right: edgeColor(bmp, w, h, w - Math.max(1, Math.round(w / 8)), 0, w, h),
+    };
+    const key = `${tint.lum}|${tint.top}|${tint.left}|${tint.right}`;
+    if (key === lastTint) return;             // nothing changed: don't repaint the glass
+    lastTint = key;
+    sendUi('page:tint', tint);
+  } catch { /* page navigating */ }
+}
+
+function startTint() {
+  clearInterval(tintTimer);
+  tintTimer = setInterval(sampleTint, 1000);
+}
+
 // ---------------------------------------------------------------- shortcuts (work while the video has focus too)
 function handleShortcut(input) {
   if (input.type !== 'keyDown') return false;
@@ -208,6 +257,7 @@ function wireBrowser(wc) {
   for (const ev of ['did-navigate', 'did-navigate-in-page', 'page-title-updated', 'did-start-loading', 'did-stop-loading']) {
     wc.on(ev, pushNav);
   }
+  wc.on('did-stop-loading', () => { lastTint = ''; setTimeout(sampleTint, 150); });   // react right away on a new page
   let lastPath = '';
   wc.on('did-start-navigation', (d) => { if (d.isMainFrame && !d.isSameDocument) adblock?.resetCount(wc.id); });
   wc.on('did-navigate', (_e, url) => {
@@ -468,6 +518,7 @@ app.whenReady().then(async () => {
   });
   wireIpc();
   createWindow();
+  startTint();
   setup.check().then((s) => {                              // the engine starts once its voices are on disk
     if (s.ready) engine.start();
     else engine.setStatus('setup', 'Voices need to be downloaded');

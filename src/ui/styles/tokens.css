@@ -72,6 +72,29 @@
   }
 }
 
+/* forced light: the glass follows a bright page even when Windows is in dark mode */
+:root[data-theme="light"] {
+  color-scheme: light;
+  --ambient-1: #c9b8ff;
+  --ambient-2: #9fe3e0;
+  --ambient-3: #ffc2d6;
+  --base: #eef0f6;
+  --scrim: rgba(250, 247, 255, 0.42);
+  --glass-tint: rgba(255, 255, 255, 0.5);
+  --glass-tint-strong: rgba(255, 255, 255, 0.78);
+  --glass-inset: rgba(0, 0, 0, 0.06);
+  --glass-edge: rgba(255, 255, 255, 0.7);
+  --glass-specular: rgba(255, 255, 255, 0.95);
+  --glass-shadow: 0 10px 40px rgba(40, 40, 80, 0.16), 0 2px 8px rgba(40, 40, 80, 0.08);
+  --hover: rgba(0, 0, 0, 0.05);
+  --press: rgba(0, 0, 0, 0.09);
+  --text: #1d1d1f;
+  --text-2: rgba(29, 29, 31, 0.74);
+  --text-3: rgba(29, 29, 31, 0.56);
+  --accent: #0071e3;
+}
+
+
 @property --glow-angle {
   syntax: "<angle>";
   inherits: false;

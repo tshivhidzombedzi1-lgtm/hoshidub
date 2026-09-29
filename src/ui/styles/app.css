@@ -373,3 +373,28 @@ input[type="range"]:active::-webkit-slider-thumb { transform: scale(1.15); }
 .shield-btn svg { width: 18px; height: 18px; stroke-width: 2; }
 .shield-btn.off { color: var(--text-3); }
 .shield-btn.off .shield-count { display: none; }
+
+/* ---------------------------------------------------------------- adaptive glass */
+/* The open page's colours, blurred and spread wide, sit behind the glass so the toolbar, sidebar and panel pick
+   them up. Two layers crossfade so a new page's colours glide in instead of popping. */
+.page-glow { position: fixed; inset: 0; z-index: -1; opacity: 0; transition: opacity 600ms var(--ease); pointer-events: none; }
+.app.browsing ~ .page-glow, body.browsing .page-glow { opacity: 1; }
+.page-glow i { position: absolute; inset: -12%; background: center / cover no-repeat; filter: blur(60px) saturate(1.5);
+  opacity: 0; transition: opacity 900ms var(--ease); }
+.page-glow i.on { opacity: 1; }
+.page-glow::after { content: ""; position: absolute; inset: 0;
+  background: radial-gradient(120% 90% at 50% 50%, transparent 40%, var(--edge-glow, transparent) 100%); }
+
+/* home, settings and error pages: the content area is frosted glass too, so the photo is only ever seen through glass */
+.content { transition: background var(--t-med); }
+.app:not(.browsing) .content {
+  background: color-mix(in srgb, var(--glass-tint) 55%, transparent);
+  backdrop-filter: blur(14px) saturate(150%);
+  box-shadow: var(--glass-shadow), inset 0 1px 0 color-mix(in srgb, var(--glass-specular) 60%, transparent);
+}
+:root.reduce-transparency .app:not(.browsing) .content { backdrop-filter: none; background: var(--base); }
+
+/* everything that takes its colour from the theme fades when the glass switches light/dark */
+.glass, .toolbar, .rail, .panel, .rail-btn, .icon-btn, .dub-btn, .address, .engine-card, .source, .transcript li {
+  transition: background-color 500ms var(--ease), color 500ms var(--ease), box-shadow 500ms var(--ease);
+}
