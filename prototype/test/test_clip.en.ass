@@ -1,0 +1,17 @@
+[Script Info]
+ScriptType: v4.00+
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:01.10,0:00:02.20,Default,Keita,0,0,0,,Who goes there?
+Dialogue: 0,0:00:02.90,0:00:04.20,Default,Keita,0,0,0,,What business do you have here?
+Dialogue: 0,0:00:05.80,0:00:08.60,Default,Nanami,0,0,0,,We came to protect the village.
+Dialogue: 0,0:00:09.40,0:00:10.70,Default,Nanami,0,0,0,,Please, trust us.
+Dialogue: 0,0:00:12.20,0:00:13.00,Default,Keita,0,0,0,,The village?
+Dialogue: 0,0:00:13.60,0:00:15.60,Default,Keita,0,0,0,,That village already burned down.
+Dialogue: 0,0:00:17.30,0:00:18.70,Default,Nanami,0,0,0,,No... You're lying, right?
+Dialogue: 0,0:00:19.40,0:00:21.00,Default,Nanami,0,0,0,,Where did everyone go?
+Dialogue: 0,0:00:22.50,0:00:25.10,Default,Keita,0,0,0,,The survivors fled beyond the mountains.
+Dialogue: 0,0:00:25.80,0:00:27.70,Default,Keita,0,0,0,,Hurry, before nightfall.
+Dialogue: 0,0:00:29.30,0:00:30.40,Default,Nanami,0,0,0,,Understood.
+Dialogue: 0,0:00:31.10,0:00:32.50,Default,Nanami,0,0,0,,Let's go together!
