@@ -1,6 +1,7 @@
 import { enableRefraction, refreshRefraction } from './glass.js';
 import { Dubber } from './dub.js';
 import { SubtitleSync } from './subsync.js';
+import { HoshiAvatar, HoshiClient } from './hoshi.js';
 
 const $ = (id) => document.getElementById(id);
 const koe = window.koe;
@@ -55,6 +56,7 @@ function showPage(page) {
   document.getElementById('app').classList.toggle('browsing', page === 'browser');
   document.body.classList.toggle('browsing', page === 'browser');
   if (page !== 'browser') clearTint();
+  if (page === 'home' && typeof avatars !== 'undefined' && avatars.home) { avatars.home.jump(); greetOnce(); }
   for (const [id, p] of [['nav-home', 'home'], ['nav-settings', 'settings']]) {
     $(id).toggleAttribute('aria-current', page === p);
     if (page === p) $(id).setAttribute('aria-current', 'page');
@@ -132,6 +134,7 @@ function open(site) {
 // ---------------------------------------------------------------- engine + dub
 function renderEngine(info) {
   state.engine = info;
+  if (info.port && info.state !== 'setup') hoshi.connect(info);            // Hoshi talks to the same engine
   const labels = { loading: 'Warming up', ready: 'Ready', error: 'Unavailable', off: 'Off', setup: 'Needs voices' };
   $('engine-state').textContent = labels[info.state] || info.state;
   $('engine-detail').textContent = friendlyDetail(info);
@@ -474,6 +477,244 @@ async function applyMode() {
   }
 }
 
+
+// ---------------------------------------------------------------- Hoshi, the watch buddy
+const hoshi = new HoshiClient();
+const avatars = {};
+let hoshiState = 'offline';
+let hoshiGreeted = false;
+let hoshiDownloading = false;
+
+function setTab(tab) {
+  const hoshiTab = tab === 'hoshi';
+  $('tab-dub').setAttribute('aria-selected', String(!hoshiTab));
+  $('tab-hoshi').setAttribute('aria-selected', String(hoshiTab));
+  $('pane-dub').hidden = hoshiTab;
+  $('pane-hoshi').hidden = !hoshiTab;
+  if (state.settings.panelTab !== tab) koe.settings.set('panelTab', tab);
+  state.settings.panelTab = tab;
+  if (hoshiTab) { $('hoshi-peek').hidden = true; greetOnce(); }
+}
+
+function renderHoshi() {
+  const on = state.settings.hoshi;
+  $('tab-hoshi').hidden = !on;
+  $('home-hoshi').hidden = !on;
+  if (!on && state.settings.panelTab === 'hoshi') setTab('dub');
+  const missing = hoshiState === 'missing' || hoshiDownloading;
+  $('hoshi-get').hidden = !missing;
+  $('hoshi-form').hidden = missing;
+  $('hoshi-chat').hidden = missing;
+  $('home-bubble').textContent = hoshiState === 'ready' ? $('home-bubble').textContent
+    : missing ? "Hi! I'm Hoshi. Download me in the panel and we'll watch together!"
+      : hoshiState === 'loading' ? "Waking up… one sec!" : "Hi! I'm Hoshi. Let's watch something together!";
+}
+
+function bubble(text, mood) {
+  for (const [key, el] of [['panel', $('hoshi-bubble')], ['home', $('home-bubble')]]) {
+    el.textContent = text;
+    el.hidden = false;
+    avatars[key]?.mood(mood || 'calm');
+  }
+  if (state.settings.panelTab !== 'hoshi' && state.settings.hoshi) {      // on the Dub tab she pops up
+    $('hoshi-peek-text').textContent = text;
+    $('hoshi-peek').hidden = false;
+    avatars.peek?.mood(mood || 'calm');
+    clearTimeout(bubble.peekTimer);
+    bubble.peekTimer = setTimeout(() => { $('hoshi-peek').hidden = true; }, 9000);
+  }
+}
+
+function chat(text, who) {
+  const li = document.createElement('li');
+  li.className = who;
+  li.textContent = text;
+  $('hoshi-chat').append(li);
+  while ($('hoshi-chat').children.length > 60) $('hoshi-chat').firstElementChild.remove();
+  li.scrollIntoView({ block: 'end' });
+  return li;
+}
+
+function greetOnce() {
+  if (hoshiGreeted || hoshiState !== 'ready') return;
+  hoshiGreeted = true;
+  hoshi.hello();
+  Object.values(avatars).forEach((a) => a.wave());
+}
+
+// what Hoshi may know: the episode up to now (never later), the show, and how loud the scene is
+async function hoshiContext() {
+  const ps = state.nav.showingBrowser ? await koe.player.state() : null;
+  const t = ps ? ps.t : Infinity;
+  let past = [], future = [];
+  if (state.track && ps) {
+    past = state.track.lines.filter((l) => l.start <= t).slice(-30).map((l) => ({ speaker: l.speaker, text: l.text }));
+    future = state.track.lines.filter((l) => l.start > t).slice(0, 150).map((l) => l.text);
+  } else {
+    past = [...$('transcript').querySelectorAll('li:not(.transcript-empty)')].slice(-30)
+      .map((li) => ({ speaker: li.querySelector('b')?.textContent || '', text: li.lastChild.textContent }));
+  }
+  const gap = { quiet: 1e9, normal: 150, chatty: 60 }[state.settings.hoshiChat] || 150;
+  return {
+    title: state.pageInfo?.title || (state.nav.showingBrowser ? state.nav.title : ''),
+    about: state.pageInfo?.about || '',
+    past, future, energy: dubber.active ? dubber.energy() : 0, min_gap: gap,
+    paused: ps ? ps.paused : true, t: ps ? ps.t : null,
+  };
+}
+
+async function askHoshi(text) {
+  if (!text.trim() || hoshiState !== 'ready') return;
+  chat(text, 'me');
+  const typing = chat('Hoshi is thinking…', 'them typing');
+  avatars.panel?.set('thinking');
+  hoshi.pendingTyping = typing;
+  hoshi.ask(text, await hoshiContext());
+}
+
+// hold-to-talk: record the mic at 16 kHz with the same audio tap the dub uses
+let rec = null;
+async function startListening() {
+  if (rec || hoshiState !== 'ready') return;
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } });
+    const ctx = new AudioContext();
+    await ctx.audioWorklet.addModule('js/worklet.js');
+    const tap = new AudioWorkletNode(ctx, 'pcm-tap');
+    const chunks = [];
+    tap.port.onmessage = (e) => { if (chunks.length < 150) chunks.push(new Float32Array(e.data)); };   // ≤15 s
+    const src = ctx.createMediaStreamSource(stream);
+    const sink = ctx.createGain(); sink.gain.value = 0;
+    src.connect(tap).connect(sink).connect(ctx.destination);
+    rec = { stream, ctx, chunks };
+    $('hoshi-mic').classList.add('listening');
+    avatars.panel?.set('surprised');
+  } catch {
+    toast('Dub It needs your microphone to hear you. Allow it in Windows privacy settings.', 'error', 6000);
+  }
+}
+
+async function stopListening() {
+  if (!rec) return;
+  const { stream, ctx, chunks } = rec;
+  rec = null;
+  $('hoshi-mic').classList.remove('listening');
+  stream.getTracks().forEach((t) => t.stop());
+  await ctx.close();
+  const len = chunks.reduce((n, c) => n + c.length, 0);
+  if (len < 16000 * 0.4) { avatars.panel?.set('neutral'); return; }       // a tap, not speech
+  const pcm = new Float32Array(len);
+  let o = 0;
+  for (const c of chunks) { pcm.set(c, o); o += c.length; }
+  hoshi.pendingTyping = chat('Hoshi is listening…', 'them typing');
+  avatars.panel?.set('thinking');
+  hoshi.voice(pcm, await hoshiContext());
+}
+
+// in quiet moments of the episode, give her a chance to react
+async function maybeReact() {
+  if (!state.settings.hoshi || hoshiState !== 'ready' || state.settings.hoshiChat === 'quiet') return;
+  if (!state.nav.showingBrowser || (dubber.active && dubber.isSpeaking())) return;
+  const ctx = await hoshiContext();
+  if (ctx.paused || ctx.past.length < 3) return;
+  if (state.track && ctx.t !== null) {
+    const next = state.track.lines.find((l) => l.start > ctx.t);
+    if (next && next.start - ctx.t < 4) return;                             // someone is about to speak
+  }
+  hoshi.react(ctx);
+}
+
+function lipSync(analyser) {
+  const buf = new Float32Array(analyser.fftSize);
+  const tick = () => {
+    if (!hoshi.speakingNow) { Object.values(avatars).forEach((a) => a.speak(null)); return; }
+    analyser.getFloatTimeDomainData(buf);
+    let s = 0;
+    for (const v of buf) s += v * v;
+    const level = Math.sqrt(s / buf.length) * 3;
+    Object.values(avatars).forEach((a) => a.speak(level));
+    requestAnimationFrame(tick);
+  };
+  tick();
+}
+
+function bindHoshi() {
+  avatars.panel = new HoshiAvatar($('hoshi-panel-avatar'));
+  avatars.home = new HoshiAvatar($('hoshi-home-avatar'));
+  avatars.peek = new HoshiAvatar($('hoshi-peek-avatar'), { wander: false });
+  $('tab-dub').addEventListener('click', () => setTab('dub'));
+  $('tab-hoshi').addEventListener('click', () => setTab('hoshi'));
+  $('hoshi-peek').addEventListener('click', () => setTab('hoshi'));
+  $('home-hoshi').addEventListener('click', () => { setPanel(true); setTab('hoshi'); avatars.home.jump(); $('hoshi-text').focus(); });
+  $('hoshi-form').addEventListener('submit', (e) => { e.preventDefault(); const v = $('hoshi-text').value; $('hoshi-text').value = ''; askHoshi(v); });
+  $('hoshi-text').addEventListener('input', (e) => avatars.panel.lookAt(0.6, 0.8 * Math.min(1, e.target.value.length / 20)));
+  $('hoshi-text').addEventListener('blur', () => avatars.panel.lookAt(0, 0));
+  const mic = $('hoshi-mic');
+  mic.addEventListener('pointerdown', (e) => { e.preventDefault(); startListening(); });
+  mic.addEventListener('pointerup', stopListening);
+  mic.addEventListener('pointerleave', stopListening);
+  $('hoshi-download').addEventListener('click', () => {
+    hoshiDownloading = true;
+    $('hoshi-download').disabled = true;
+    $('hoshi-progress').hidden = false;
+    renderHoshi();
+    koe.setup.start(['hoshi']);
+  });
+  koe.setup.onProgress(({ done, total }) => {
+    if (!hoshiDownloading) return;
+    $('hoshi-fill').style.width = `${total ? (done / total) * 100 : 0}%`;
+    $('hoshi-progress-text').textContent = `${Math.round(done / 1e6)} of ${Math.round(total / 1e6)} MB`;
+  });
+  koe.setup.onDone(() => { if (hoshiDownloading) { hoshiDownloading = false; toast('Hoshi is downloaded and waking up'); renderHoshi(); } });
+  koe.setup.onError(() => { if (hoshiDownloading) { $('hoshi-download').disabled = false; $('hoshi-download').textContent = 'Retry download'; } });
+
+  hoshi.addEventListener('status', ({ detail }) => {
+    hoshiState = detail;
+    renderHoshi();
+    if (detail === 'ready' && (state.settings.panelTab === 'hoshi' || state.page === 'home')) greetOnce();
+  });
+  hoshi.addEventListener('say', ({ detail: m }) => {
+    hoshi.pendingTyping?.remove();
+    hoshi.pendingTyping = null;
+    if (m.heard) chat(m.heard, 'me');
+    if (m.error === 'unheard') { chat("I didn't catch that. Hold the mic a bit longer?", 'them'); return; }
+    if (!m.text) { avatars.panel?.set('neutral'); return; }
+    chat(m.text, 'them');
+    bubble(m.text, m.mood);
+  });
+  hoshi.addEventListener('speaking', ({ detail }) => { hoshi.speakingNow = true; lipSync(detail.analyser); });
+  hoshi.addEventListener('quiet', () => { hoshi.speakingNow = false; });
+
+  // settings
+  bindSwitch('set-hoshi', 'hoshi', () => renderHoshi());
+  bindRange('set-hoshi-vol', 'set-hoshi-vol-out', 'hoshiVolume', 100, (v) => { hoshi.volume = v; });
+  hoshi.volume = state.settings.hoshiVolume;
+  const seg = $('set-hoshi-chat');
+  const renderSeg = () => seg.querySelectorAll('button').forEach((b) => b.setAttribute('aria-checked', String(b.dataset.v === state.settings.hoshiChat)));
+  renderSeg();
+  seg.addEventListener('click', (e) => {
+    const v = e.target.closest('button')?.dataset.v;
+    if (!v) return;
+    state.settings.hoshiChat = v;
+    koe.settings.set('hoshiChat', v);
+    renderSeg();
+  });
+  let armed = false;
+  $('set-hoshi-forget').addEventListener('click', (e) => {
+    if (!armed) { armed = true; e.currentTarget.textContent = 'Click again to forget'; setTimeout(() => { armed = false; $('set-hoshi-forget').textContent = 'Forget me…'; }, 4000); return; }
+    armed = false;
+    $('set-hoshi-forget').textContent = 'Forget me…';
+    hoshi.forget();
+    $('hoshi-chat').replaceChildren();
+    toast('Hoshi forgot everything about you');
+  });
+
+  koe.page.onInfo((i) => { state.pageInfo = i; });
+  setInterval(maybeReact, 15000);
+  setTab(state.settings.panelTab === 'hoshi' && state.settings.hoshi ? 'hoshi' : 'dub');
+  renderHoshi();
+}
+
 // ---------------------------------------------------------------- settings
 function bindRange(id, outId, key, scale, apply) {
   const el = $(id);
@@ -616,6 +857,8 @@ async function init() {
   bindSetup();
   bindAdblock();
   bindTint();
+  bindHoshi();
+  state.pageInfo = await koe.page.info();
   renderAdblock(await koe.adblock.state());
   state.license = await koe.license.get();
   renderPlan();
@@ -659,9 +902,10 @@ async function init() {
   });
   koe.engine.onStatus(renderEngine);
   koe.app.onDubReset(() => { dubber.reset(); stopSync(); });
-  koe.subs.onState((info) => {
+  koe.subs.onState(async (info) => {
     const had = usingSubs();
     state.subs = info;
+    state.track = info ? await koe.subs.get() : null;
     if (usingSubs() && !had && dubber.active) toast('Found English subtitles — switching to the official translation');
     applyMode();
   });

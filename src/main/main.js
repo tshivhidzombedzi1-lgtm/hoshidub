@@ -222,6 +222,10 @@ function createWindow() {
   wireUiSession();
 
   win.webContents.on('before-input-event', (e, input) => { if (handleShortcut(input)) e.preventDefault(); });
+  win.webContents.setWindowOpenHandler(({ url }) => {       // About links open in the user's own browser
+    if (/^https:\/\//.test(url)) shell.openExternal(url);
+    return { action: 'deny' };
+  });
   win.on('resize', () => htmlFullscreen && layout());
   win.on('enter-full-screen', () => sendUi('app:fullscreen', true));
   win.on('leave-full-screen', () => {
@@ -261,6 +265,7 @@ function wireBrowser(wc) {
   let lastPath = '';
   wc.on('did-start-navigation', (d) => { if (d.isMainFrame && !d.isSameDocument) adblock?.resetCount(wc.id); });
   wc.on('did-navigate', (_e, url) => {
+    pageInfo = null;
     try { lastPath = new URL(url).pathname; } catch { lastPath = ''; }
     setSubs(null);
     sendUi('dub:reset');
@@ -336,6 +341,7 @@ function watchPlayerData(wc) {
       }
       if (!res || res.body.length > 3e6) return;
       const body = res.base64Encoded ? Buffer.from(res.body, 'base64').toString('utf8') : res.body;
+      if (/"episode_metadata"/.test(body)) pageInfoFrom(body);      // show + episode description for Hoshi
       if (!/\.(ass|ssa|vtt|srt)|subtitle|caption/i.test(body)) return;
       const found = subtitles.findSubtitleUrls(body);
       if (!found.length) return;
@@ -345,6 +351,20 @@ function watchPlayerData(wc) {
     }
   });
   dbg.on('detach', (_e, reason) => log.info('player data watch detached', { reason }));
+}
+
+let pageInfo = null;
+function pageInfoFrom(body) {
+  try {
+    const item = (JSON.parse(body).data || [])[0];
+    const m = item && item.episode_metadata;
+    if (!m || !item.title) return;
+    pageInfo = {
+      title: `${m.series_title}${m.episode ? `, episode ${m.episode}` : ''}: ${item.title}`,
+      about: String(item.description || '').slice(0, 600),
+    };
+    sendUi('page:info', pageInfo);
+  } catch { /* not the episode object */ }
 }
 
 function setSubs(next) {
@@ -417,6 +437,10 @@ const SETTING_CHECKS = {
   dubPanelOpen: (v) => typeof v === 'boolean',
   reduceTransparency: (v) => typeof v === 'boolean',
   preferSubtitles: (v) => typeof v === 'boolean',
+  hoshi: (v) => typeof v === 'boolean',
+  hoshiChat: (v) => ['quiet', 'normal', 'chatty'].includes(v),
+  hoshiVolume: (v) => typeof v === 'number' && v >= 0 && v <= 1.5,
+  panelTab: (v) => ['dub', 'hoshi'].includes(v),
 };
 
 function wireIpc() {
@@ -473,6 +497,7 @@ function wireIpc() {
   handle('app:checkout', () => { if (CHECKOUT_URL) shell.openExternal(CHECKOUT_URL); return !!CHECKOUT_URL; });
   handle('subs:get', () => (subs ? { lines: subs.lines, format: subs.format } : null));
   handle('player:state', () => playerState());
+  handle('page:info', () => pageInfo);
   handle('app:open-logs', () => shell.openPath(path.join(app.getPath('userData'), 'logs')));
   handle('app:info', () => ({ version: app.getVersion(), electron: process.versions.electron, chrome: process.versions.chrome,
     testMute: !!process.env.KOE_TEST_MUTE, canCheckout: !!CHECKOUT_URL }));

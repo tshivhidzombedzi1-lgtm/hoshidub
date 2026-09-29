@@ -434,7 +434,11 @@ class Engine:
         self.embed = None
         self.voice = None
         self.pool = ThreadPoolExecutor(max_workers=1)   # GPU work is serialised
+        self.brain_pool = ThreadPoolExecutor(max_workers=1)   # Hoshi thinks without holding up the dub
         self.clients = set()
+        self.buddy = None
+        self.buddy_state = "missing"
+        self.ears = None
 
     def load(self):
         try:
@@ -456,6 +460,42 @@ class Engine:
             self.set_status("ready", f"{ear}, {self.voice.desc}")
         except Exception as e:
             self.set_status("error", str(e))
+        self.load_buddy()
+
+    def load_buddy(self):
+        """Hoshi loads after the dub is ready, so she never delays it."""
+        if not (os.environ.get("KOE_BUDDY_FAKE") or packs.installed("hoshi")):
+            self.set_buddy("missing")
+            return
+        self.set_buddy("loading")
+        try:
+            import buddy as bd
+            memory = os.environ.get("KOE_BUDDY_DIR") or str(packs.MODELS.parent / "hoshi")
+            self.buddy = bd.load_buddy(memory)
+            if not os.environ.get("KOE_BUDDY_FAKE"):
+                from faster_whisper import WhisperModel
+                gpu = load_gpu_libs()
+                self.ears = WhisperModel(str(packs.ears_dir()), device="cuda" if gpu else "cpu",
+                                         compute_type="float16" if gpu else "int8")
+            self.set_buddy("ready")
+        except Exception as e:
+            emit(type="log", msg=f"Hoshi unavailable: {e}")
+            self.set_buddy("error")
+
+    def set_buddy(self, state):
+        self.buddy_state = state
+        emit(type="buddy", state=state)
+        loop = getattr(self, "loop", None)
+        if loop:
+            for ws in list(self.clients):
+                asyncio.run_coroutine_threadsafe(self.send(ws, type="buddy-status", state=state), loop)
+
+    def hear(self, pcm):
+        """What the viewer said to Hoshi (16 kHz float32)."""
+        if self.ears is None:
+            return "Hi Hoshi"                          # test stand-in
+        segs, _ = self.ears.transcribe(pcm, task="transcribe", beam_size=3, vad_filter=True)
+        return " ".join(s.text.strip() for s in segs).strip()
 
     def set_status(self, state, detail):
         self.state, self.detail = state, detail
@@ -479,6 +519,7 @@ class Engine:
             return
         self.clients.add(ws)
         await self.send(ws, type="status", state=self.state, detail=self.detail)
+        await self.send(ws, type="buddy-status", state=self.buddy_state)
         session = Session(self, ws)
         try:
             async for msg in ws:
@@ -562,6 +603,8 @@ class Session:
             self.epoch += 1
             self.segmenter.reset()
             self.new_speakers()
+        elif kind.startswith("buddy-"):
+            asyncio.create_task(self.buddy(msg))
         elif kind == "prepare" and self.mode == "subs" and self.engine.state == "ready":
             self.prepare(int(msg.get("id", 0)), clean_text(str(msg.get("text", ""))), float(msg.get("dur", 2)),
                          str(msg.get("speaker", "")))
@@ -573,6 +616,51 @@ class Session:
                                                                  str(msg.get("speaker", ""))))
                 self.delivered = asyncio.create_task(
                     self.deliver_subtitle(self.delivered, speech, line_id, text, self.epoch))
+
+    async def buddy(self, msg):
+        """Hoshi: greet, answer (typed or spoken), react to the scene, or forget the viewer."""
+        eng, kind, mid = self.engine, msg["type"], msg.get("id", 0)
+        b = eng.buddy
+        if b is None:
+            await eng.send(self.ws, type="buddy-say", id=mid, text="", error=eng.buddy_state)
+            return
+        loop = asyncio.get_running_loop()
+        ctx = msg.get("ctx") or {}
+        heard = None
+        try:
+            if kind == "buddy-forget":
+                b.memory.forget()
+                return
+            if kind == "buddy-hello":
+                text, mood = b.greet()
+            elif kind == "buddy-react":
+                text, mood = await loop.run_in_executor(eng.brain_pool, b.react, ctx, float(ctx.get("min_gap", 120)))
+            else:
+                question = msg.get("text", "")
+                if kind == "buddy-voice":
+                    import base64
+                    pcm = np.frombuffer(base64.b64decode(msg.get("pcm", "")), dtype=np.float32)
+                    heard = question = await loop.run_in_executor(eng.brain_pool, eng.hear, pcm)
+                    if not question:
+                        await eng.send(self.ws, type="buddy-say", id=mid, text="", heard="", error="unheard")
+                        return
+                text, mood = await loop.run_in_executor(eng.brain_pool, b.ask, question, ctx)
+        except Exception as e:
+            emit(type="log", msg=f"Hoshi error: {e}")
+            text, mood = "Sorry, I zoned out for a second. Say that again?", "calm"
+        if not text:
+            await eng.send(self.ws, type="buddy-say", id=mid, text="", mood=mood)
+            return
+        await eng.send(self.ws, type="buddy-say", id=mid, text=text, mood=mood, heard=heard)
+        try:
+            voice = b.char.get("voice", "af_sky")
+            if isinstance(eng.voice, LocalVoice) and not packs.voice_path(voice).exists():
+                voice = eng.voice.female[0]
+            pcm = await eng.voice.speak(text, voice, "+5%")
+            await eng.send(self.ws, type="buddy-audio", id=mid, sr=TTS_SR, samples=len(pcm))
+            await self.ws.send(pcm.tobytes())
+        except Exception as e:
+            emit(type="log", msg=f"Hoshi voice error: {e}")
 
     def identify(self, audio):
         if len(audio) < ASR_SR * 0.25 or np.sqrt(np.mean(audio ** 2)) < 0.005:

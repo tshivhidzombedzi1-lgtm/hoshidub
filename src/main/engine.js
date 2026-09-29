@@ -61,7 +61,8 @@ class Engine extends EventEmitter {
     const proc = spawn(this.python, [SCRIPT, '--port', String(this.port), '--token', this.token], {
       cwd: path.dirname(SCRIPT),
       windowsHide: true,
-      env: { ...process.env, PYTHONUNBUFFERED: '1', PYTHONIOENCODING: 'utf-8', HF_HUB_DISABLE_XET: '1' },
+      env: { ...process.env, PYTHONUNBUFFERED: '1', PYTHONIOENCODING: 'utf-8', HF_HUB_DISABLE_XET: '1',
+        KOE_BUDDY_DIR: require('path').join(require('electron').app.getPath('userData'), 'hoshi') },
     });
     this.proc = proc;
     // every handler checks it still belongs to the current process, so a stopped engine can't talk over a new one

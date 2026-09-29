@@ -398,3 +398,79 @@ input[type="range"]:active::-webkit-slider-thumb { transform: scale(1.15); }
 .glass, .toolbar, .rail, .panel, .rail-btn, .icon-btn, .dub-btn, .address, .engine-card, .source, .transcript li {
   transition: background-color 500ms var(--ease), color 500ms var(--ease), box-shadow 500ms var(--ease);
 }
+
+/* ---------------------------------------------------------------- panel tabs */
+.panel-tabs { display: flex; padding: 3px; border-radius: 12px; background: var(--hover); flex: none; }
+.panel-tabs button { flex: 1; height: 32px; border: 0; border-radius: 9px; background: transparent; font-weight: 600; color: var(--text-2);
+  display: flex; align-items: center; justify-content: center; gap: 6px; transition: background var(--t-fast), color var(--t-fast); }
+.panel-tabs button[aria-selected="true"] { background: var(--glass-tint-strong); color: var(--text); box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2); }
+.tab-dot { width: 7px; height: 7px; border-radius: 50%; background: linear-gradient(135deg, #ff8fc0, #8f7bff); }
+.pane { display: flex; flex-direction: column; gap: 14px; min-height: 0; flex: 1; }
+
+/* ---------------------------------------------------------------- Hoshi avatar */
+.hoshi-avatar { display: block; width: 132px; height: 158px; position: relative;
+  transform: translateX(var(--x, 0%)); transition: transform 2.6s cubic-bezier(0.45, 0, 0.25, 1); }
+.hoshi-avatar.big { width: 190px; height: 228px; }
+.hoshi-avatar.peek { width: 36px; height: 43px; transform: none; transition: none; flex: none; }
+.hoshi-svg { width: 100%; height: 100%; overflow: visible; transform: scaleX(var(--face, 1)); transition: transform 0.35s var(--ease);
+  filter: drop-shadow(0 8px 14px rgba(60, 20, 90, 0.28)); }
+.hoshi-svg .h-body { animation: h-float 3.4s ease-in-out infinite; transform-origin: 100px 230px; }
+.hoshi-svg .h-tail-l { animation: h-sway 3.4s ease-in-out infinite; transform-origin: 56px 104px; }
+.hoshi-svg .h-tail-r { animation: h-sway 3.4s ease-in-out infinite reverse; transform-origin: 144px 104px; }
+.hoshi-svg .h-eye { transform-box: fill-box; transform-origin: center; transition: transform 90ms; }
+.hoshi-svg .h-iris { transition: transform 0.4s var(--ease); }
+.hoshi-svg .h-brow, .hoshi-svg .h-hand { transform-box: fill-box; transform-origin: center; transition: transform 0.3s var(--ease); }
+.hoshi-svg .h-happy, .hoshi-svg .h-tear, .hoshi-svg .h-spark { display: none; }
+.blink .h-eye { transform: scaleY(0.08); }
+[data-expr="happy"] .h-eye, [data-expr="hype"] .h-eye { display: none; }
+[data-expr="happy"] .h-happy, [data-expr="hype"] .h-happy { display: block; }
+[data-expr="hype"] .h-spark { display: block; animation: h-twinkle 0.9s ease-in-out infinite alternate; }
+[data-expr="surprised"] .h-brow { transform: translateY(-5px); }
+[data-expr="surprised"] .h-eye { transform: scale(1.12); }
+[data-expr="sad"] .h-brow-l { transform: rotate(-14deg) translateY(2px); }
+[data-expr="sad"] .h-brow-r { transform: rotate(14deg) translateY(2px); }
+[data-expr="sad"] .h-tear { display: block; animation: h-tear 2s ease-in infinite; }
+[data-expr="thinking"] .h-iris { transform: translate(-2px, -3px) !important; }
+[data-expr="thinking"] .h-brow-r { transform: translateY(-3px); }
+.jump .h-body { animation: h-jump 0.7s cubic-bezier(0.3, 0, 0.3, 1), h-float 3.4s ease-in-out 0.7s infinite; }
+.wave .h-hand-r { animation: h-wave 0.45s ease-in-out 4 alternate; transform-origin: 30% 80%; }
+@keyframes h-float { 50% { transform: translateY(-6px); } }
+@keyframes h-sway { 50% { transform: rotate(4deg); } }
+@keyframes h-jump { 30% { transform: translateY(-34px) scaleY(1.04); } 55% { transform: translateY(0) scaleY(0.94) scaleX(1.05); } 75% { transform: translateY(-8px); } }
+@keyframes h-wave { from { transform: translate(0, 0) rotate(0); } to { transform: translate(8px, -34px) rotate(-20deg); } }
+@keyframes h-twinkle { from { opacity: 0.3; transform: scale(0.85); } to { opacity: 1; transform: scale(1.1); } }
+@keyframes h-tear { 0% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(14px); opacity: 0; } }
+
+.hoshi-bubble { position: relative; margin: 0; padding: 10px 14px; border-radius: 16px; font-size: 13.5px; line-height: 1.4;
+  background: var(--glass-tint-strong); box-shadow: var(--glass-shadow); animation: line-in var(--t-med) var(--ease-out); }
+
+/* panel: stage on top, chat below */
+.hoshi-stage { position: relative; display: grid; place-items: center; min-height: 176px; padding-top: 8px; flex: none;
+  border-radius: 18px; background: radial-gradient(80% 70% at 50% 85%, color-mix(in srgb, #c38bff 22%, transparent), transparent 70%); }
+/* in the panel her words go in the chat below, so the stage shows only her */
+.hoshi-stage .hoshi-bubble { display: none; }
+.hoshi-stage .hoshi-avatar { margin-top: 4px; }
+.hoshi-get { display: grid; gap: 8px; padding: 14px; border-radius: 16px; }
+.hoshi-get small { color: var(--text-2); font-size: 12.5px; }
+.hoshi-chat { list-style: none; margin: 0 -6px; padding: 0 6px; overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 8px; }
+.hoshi-chat li { max-width: 86%; padding: 9px 12px; border-radius: 16px; font-size: 13.5px; user-select: text; animation: line-in var(--t-med) var(--ease-out); }
+.hoshi-chat li.them { align-self: flex-start; background: color-mix(in srgb, #c38bff 18%, var(--hover)); border-bottom-left-radius: 6px; }
+.hoshi-chat li.me { align-self: flex-end; background: var(--accent); color: var(--accent-text); border-bottom-right-radius: 6px; }
+.hoshi-chat li.typing { color: var(--text-2); font-style: italic; }
+.hoshi-input { display: flex; align-items: center; gap: 4px; padding: 4px; border-radius: 18px; flex: none; }
+.hoshi-input input { flex: 1; min-width: 0; height: 34px; border: 0; outline: 0; background: transparent; user-select: text; font-size: 13.5px; }
+.hoshi-input .mic.listening { background: var(--danger); color: #fff; animation: pulse 1s ease-in-out infinite; }
+
+/* Dub tab: Hoshi pops up with her reactions */
+.hoshi-peek { display: flex; align-items: center; gap: 10px; width: 100%; padding: 8px 12px 8px 8px; border: 0; border-radius: 16px; text-align: left;
+  background: color-mix(in srgb, #c38bff 16%, var(--hover)); animation: peek-in 0.5s var(--ease-out); flex: none; }
+.peek-text { font-size: 13px; line-height: 1.35; }
+@keyframes peek-in { from { opacity: 0; transform: translateY(-10px) scale(0.96); } }
+
+/* home dashboard: big Hoshi, bouncing about */
+.home { position: relative; }
+.home-hoshi { position: absolute; right: 3%; bottom: 4%; display: grid; justify-items: center; gap: 6px; border: 0; background: none; padding: 0; }
+.home-hoshi .hoshi-bubble.home { max-width: 240px; text-align: center; }
+@media (max-width: 1180px) { .home-hoshi { display: none; } }
+.links a { color: var(--accent); text-decoration: none; }
+.links a:hover { text-decoration: underline; }

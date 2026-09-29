@@ -21,7 +21,7 @@ contextBridge.exposeInMainWorld('koe', {
   subs: { get: call('subs:get'), onState: on('subs:state') },
   player: { state: call('player:state') },
   dubLog: call('dub:log'),
-  page: { onTint: on('page:tint') },
+  page: { onTint: on('page:tint'), info: call('page:info'), onInfo: on('page:info') },
   adblock: {
     state: call('adblock:state'), toggleSite: call('adblock:toggle-site'),
     setEnabled: call('adblock:set-enabled'), onState: on('adblock:state'),

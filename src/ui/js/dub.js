@@ -40,6 +40,9 @@ export class Dubber extends EventTarget {
       this.master.connect(this.ctx.destination);
       this.ducker = new DialogueDucker(this.ctx);       // lowers Japanese voices only, never the soundtrack
       src.connect(this.jp).connect(this.ducker.input);
+      this.meter = this.ctx.createAnalyser();
+      this.meter.fftSize = 2048;
+      src.connect(this.meter);
       this.ducker.output.connect(this.master);
       this.en.connect(this.master);
 
@@ -129,6 +132,18 @@ export class Dubber extends EventTarget {
   reset() {
     this.send({ type: 'reset' });
   }
+
+  // how loud the show is right now, 0..1 (Hoshi reads it as scene energy)
+  energy() {
+    if (!this.meter) return 0;
+    const buf = new Float32Array(this.meter.fftSize);
+    this.meter.getFloatTimeDomainData(buf);
+    let s = 0;
+    for (const v of buf) s += v * v;
+    return Math.min(1, Math.sqrt(s / buf.length) * 5);
+  }
+
+  isSpeaking() { return this.active && this.spans.some(([, e]) => e > this.ctx.currentTime - 3); }
 
   send(msg) {
     if (this.ws?.readyState === 1) this.ws.send(JSON.stringify(msg));

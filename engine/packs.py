@@ -22,6 +22,10 @@ MODELS = Path(os.environ.get("KOE_MODELS")
 BASE = os.environ.get("KOE_PACK_BASE", "https://huggingface.co")   # tests point this at a local server
 KOKORO = "hexgrad/Kokoro-82M"
 WHISPER = "Systran/faster-whisper-large-v2"
+EARS = "Systran/faster-whisper-small"                 # Hoshi hears the viewer (multilingual, accent-friendly)
+BRAIN = "unsloth/Qwen3-4B-Instruct-2507-bnb-4bit"     # Hoshi's brain: Apache-2.0, 4-bit, ~2.7 GB
+BRAIN_FILES = ("config.json", "generation_config.json", "model.safetensors", "tokenizer.json", "tokenizer_config.json",
+               "vocab.json", "merges.txt", "added_tokens.json", "special_tokens_map.json", "chat_template.jinja")
 
 # voice ids per dub language (Kokoro names; the first letter pair encodes accent and gender)
 VOICES = {
@@ -33,8 +37,18 @@ PACKS = {
     "core": [(KOKORO, "config.json"), (KOKORO, "kokoro-v1_0.pth"), ("ResembleAI/chatterbox", "ve.safetensors")],
     "voices-en": [(KOKORO, f"voices/{v}.pt") for g in VOICES["en"].values() for v in g],
     "ear": [(WHISPER, f) for f in ("config.json", "model.bin", "tokenizer.json", "vocabulary.txt")],
+    "hoshi": [(BRAIN, f) for f in BRAIN_FILES] + [(KOKORO, "voices/af_sky.pt")]
+             + [(EARS, f) for f in ("config.json", "model.bin", "tokenizer.json", "vocabulary.txt")],
 }
-APPROX_MB = {"core": 330, "voices-en": 6, "ear": 3090}
+APPROX_MB = {"core": 330, "voices-en": 6, "ear": 3090, "hoshi": 3170}
+
+
+def ears_dir():
+    return MODELS / EARS.replace("/", "__")
+
+
+def brain_dir():
+    return MODELS / BRAIN.replace("/", "__")
 
 
 def local_path(repo, filename):

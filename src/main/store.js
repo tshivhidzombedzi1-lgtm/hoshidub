@@ -12,7 +12,11 @@ const DEFAULTS = {
   dubPanelOpen: true,
   reduceTransparency: false,
   preferSubtitles: true,
-  adblock: true,           // block ads and trackers in the built-in browser
+  adblock: true,
+  hoshi: true,             // Hoshi, the watch buddy
+  hoshiChat: 'normal',     // quiet | normal | chatty
+  hoshiVolume: 1.0,
+  panelTab: 'dub',           // block ads and trackers in the built-in browser
   adblockAllow: null,      // sites where blocking is off (null = the default list)   // speak the site's own English subtitles when it has them
   lastUrl: '',
 };
