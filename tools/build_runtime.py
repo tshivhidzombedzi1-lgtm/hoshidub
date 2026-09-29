@@ -21,8 +21,8 @@ KOE = Path(__file__).resolve().parents[1]
 VENV_SITE = KOE.parent / ".venv" / "Lib" / "site-packages"
 OUT = KOE / "dist" / "runtime"
 STAGE = KOE / "build" / "runtime-stage"
-PART_SIZE = 1_900_000_000          # under GitHub's 2 GB release-asset limit
-RUNTIME_VERSION = "1"
+PART_SIZE = 400_000_000            # small parts: easy to upload to shared hosting and to resume
+RUNTIME_VERSION = "2"                # 2: adds accelerate, bitsandbytes, psutil (Hoshi)
 
 # not needed by the engine: UI toolkits, dev tools, the old file dubber, build leftovers
 SKIP_PACKAGES = ["gradio*", "gradio_client*", "pip", "pip-*", "setuptools*", "_distutils_hack", "pytest*", "_pytest",
