@@ -31,7 +31,7 @@ The owner has handed the rest of the launch to you. You have no memory of earlie
    - Tax: Stripe is not a merchant of record. Tell the owner he is responsible for VAT/sales tax, and suggest Stripe Tax.
    - An admin view is optional: the Stripe dashboard shows payments, and a small password-protected `admin.php` (list and search keys, disable, reset activations, resend) would cover licences.
 5. **Domain:** the owner buys `hoshidub.com` and connects it. Then change `dubit.runtimeBase` to `https://hoshidub.com/downloads/runtime` and rebuild, but keep the files reachable on the old address too, because installers already downloaded point there.
-6. Then §5 "Not done yet", items 4 onwards.
+7. Then §5 "Not done yet", items 4 onwards.
 
 **Don't:** put the project source in `public_html`; enter the owner's passwords, card details or API secrets anywhere; start GPU work on his PC without asking; publish a build that says "Dub It".
 
