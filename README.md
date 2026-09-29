@@ -2,6 +2,7 @@
 
 Watch anime in Japanese, hear it in English, live, with a voice for every character and **Hoshi**, a 3D anime companion who watches along. A Windows desktop app by **MCP Labs** (created by Tshivhidzo (Moss) Mbedzi).
 
+- **New to the project?** Start with [`docs/HANDOFF.md`](docs/HANDOFF.md): status, rules, architecture and what's left.
 - **Building the website?** Read [`docs/WEBSITE_BRIEF.md`](docs/WEBSITE_BRIEF.md). It's the complete brief: brand, design system, pages, copy, pricing and the quality bar. Brand assets are in [`brand/`](brand/).
 - **Working on the app?** Read on.
 
