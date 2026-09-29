@@ -60,7 +60,7 @@ kbd {
   padding: 12px 0;
   border-radius: var(--r-panel);
 }
-.brand { height: 44px; display: grid; place-items: center; margin-bottom: 8px; }
+.brand { height: 44px; align-self: stretch; display: grid; place-items: center; margin-bottom: 8px; -webkit-app-region: drag; }
 .brand-mark {
   display: grid; place-items: center; width: 36px; height: 36px; border-radius: 11px;
   font: 700 19px/1 "Yu Gothic UI", "Meiryo", var(--font);
@@ -89,9 +89,12 @@ kbd {
   /* end the glass before the window's own minimise/maximise/close buttons so they never sit on top of it */
   margin-right: calc(100vw - env(titlebar-area-x, 0px) - env(titlebar-area-width, calc(100vw - 150px)) - var(--gap));
   border-radius: var(--r-pill);
-  -webkit-app-region: drag;
 }
-.toolbar > *:not(.toast-host) { -webkit-app-region: no-drag; }
+/* Window dragging lives only on empty elements. Marking a parent draggable and its buttons "no-drag" does not
+   work on Windows (the buttons still report as title bar and swallow clicks), so no control ever sits inside a
+   drag region. */
+.drag-space { flex: 1 1 24px; align-self: stretch; min-width: 24px; -webkit-app-region: drag; }
+.drag-strip { position: fixed; top: 0; left: 0; right: 0; height: var(--gap); -webkit-app-region: drag; z-index: 30; }
 .nav-group { display: flex; gap: 2px; }
 .icon-btn {
   width: 36px; height: 36px; border: 0; border-radius: 50%; background: transparent;
@@ -103,7 +106,7 @@ kbd {
 .icon-btn:disabled { opacity: 0.32; }
 .icon-btn svg { width: 18px; height: 18px; stroke-width: 2; }
 
-.address { flex: 1; min-width: 160px; height: 36px; display: flex; align-items: center; gap: 8px; padding: 0 14px; position: relative; overflow: hidden; }
+.address { flex: 1 1 560px; max-width: 720px; min-width: 160px; height: 36px; display: flex; align-items: center; gap: 8px; padding: 0 14px; position: relative; overflow: hidden; }
 .address-icon { width: 15px; height: 15px; color: var(--text-3); stroke-width: 2.2; }
 .address input { flex: 1; min-width: 0; height: 100%; border: 0; outline: 0; background: transparent; font-size: 13.5px; user-select: text; }
 .address input::placeholder { color: var(--text-3); }
@@ -356,3 +359,5 @@ input[type="range"]:active::-webkit-slider-thumb { transform: scale(1.15); }
 .ear-opt small { color: var(--text-2); font-size: 12.5px; }
 .setup-progress { display: grid; gap: 8px; text-align: left; }
 .setup-progress .meter-row { margin: 0; font-variant-numeric: tabular-nums; }
+
+.ob-maker { margin: 18px 0 0; font-size: 12px; color: var(--text-3); letter-spacing: 0.02em; }

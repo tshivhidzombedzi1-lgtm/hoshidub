@@ -21,11 +21,11 @@
     "electron-builder": "^26.15.3",
     "@fontsource-variable/inter": "^5.3.0"
   },
-  "author": "Dub It",
+  "author": "MCP Labs",
   "build": {
     "appId": "app.dubit.desktop",
     "productName": "Dub It",
-    "copyright": "Copyright \u00a9 2026 Dub It",
+    "copyright": "Copyright \u00a9 2026 MCP Labs",
     "electronDist": "node_modules/electron/dist",
     "electronVersion": "44.1.0",
     "directories": {
@@ -57,7 +57,8 @@
         }
       ],
       "icon": "build/icon.ico",
-      "artifactName": "Dub-It-Setup-${version}.${ext}"
+      "artifactName": "Dub-It-Setup-${version}.${ext}",
+      "legalTrademarks": "Dub It is a product of MCP Labs"
     },
     "nsis": {
       "oneClick": true,
