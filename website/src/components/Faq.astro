@@ -1,0 +1,35 @@
+---
+export const faqs = [
+  ['Does it work with Crunchyroll?', 'Yes. Open it inside Hoshidub and sign in with your own account. Hoshidub uses the show’s official English subtitles when they’re available.'],
+  ['Is it legal?', 'Hoshidub plays the service you already pay for, in its normal player, and listens to the sound like a person in the room. It never records, saves or decrypts video.'],
+  ['How is it zero delay?', 'When a show has official subtitles, Hoshidub reads them ahead of time and prepares each line before it’s spoken.'],
+  ['Do I need a powerful PC?', 'An NVIDIA RTX graphics card with 6 GB or more is recommended. A cloud version for any laptop is planned for 2027.'],
+  ['Does Hoshi spoil episodes?', 'Never. She only knows what has already happened in the episode, and every reply is checked against what’s coming.'],
+  ['Is my data sent anywhere?', 'No. Dubbing, Hoshi and her memory all run on your PC. There’s no account and no tracking in the app.'],
+  ['Which languages?', 'English now. Spanish, Portuguese, Hindi and French are next.'],
+  ['Can I cancel Pro?', 'Any time, from the link in your receipt email. No questions, no tricks.'],
+];
+const { items = faqs } = Astro.props;
+---
+<div class="faq">
+  {items.map(([q, a]) => (
+    <details class="glass">
+      <summary><span>{q}</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg></summary>
+      <p class="muted">{a}</p>
+    </details>
+  ))}
+</div>
+<script type="application/ld+json" set:html={JSON.stringify({
+  '@context': 'https://schema.org', '@type': 'FAQPage',
+  mainEntity: items.map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })),
+})} />
+
+<style>
+  .faq { display: grid; gap: 10px; max-width: 820px; margin-inline: auto; }
+  details { border-radius: 18px; }
+  summary { list-style: none; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 18px 22px; cursor: pointer; font-weight: 650; }
+  summary::-webkit-details-marker { display: none; }
+  summary svg { width: 20px; height: 20px; flex: none; transition: transform 320ms var(--ease); }
+  details[open] summary svg { transform: rotate(180deg); }
+  details p { padding: 0 22px 20px; }
+</style>

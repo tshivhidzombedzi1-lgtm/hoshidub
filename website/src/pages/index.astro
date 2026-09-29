@@ -1,0 +1,265 @@
+---
+import Base from '../layouts/Base.astro';
+import HoshiStage from '../components/HoshiStage.astro';
+import DownloadButton from '../components/DownloadButton.astro';
+import Pricing from '../components/Pricing.astro';
+import TipJar from '../components/TipJar.astro';
+import Faq from '../components/Faq.astro';
+import AppWindow from '../components/AppWindow.astro';
+import DubDemo from '../components/DubDemo.astro';
+import MixDemo from '../components/MixDemo.astro';
+import GlassCompare from '../components/GlassCompare.astro';
+import { site } from '../config.js';
+
+const app = {
+  '@context': 'https://schema.org', '@type': 'SoftwareApplication', name: 'Hoshidub', operatingSystem: 'Windows 10, Windows 11',
+  applicationCategory: 'MultimediaApplication', description: site.description, publisher: { '@type': 'Organization', name: 'MCP Labs' },
+  offers: [
+    { '@type': 'Offer', name: 'Free', price: '0', priceCurrency: 'USD' },
+    { '@type': 'Offer', name: 'Pro monthly', price: '6.99', priceCurrency: 'USD' },
+    { '@type': 'Offer', name: 'Pro yearly', price: '49', priceCurrency: 'USD' },
+  ],
+};
+---
+<Base jsonld={app}>
+  <!-- hero -->
+  <section class="hero wrap">
+    <div class="hero-copy">
+      <p class="eyebrow">Live English dub for anime</p>
+      <h1>Watch in Japanese.<br /><span class="grad">Hear it in English.</span></h1>
+      <p class="lede">Hoshidub gives every character their own English voice, the moment they speak. And Hoshi watches along with you.</p>
+      <div class="hero-cta">
+        <DownloadButton />
+        <a class="btn" href="#tour">See it in action</a>
+      </div>
+      <ul class="hero-points small">
+        <li>Works with the streaming you already pay for</li>
+        <li>No account needed</li>
+        <li>Never records video</li>
+      </ul>
+    </div>
+    <div class="hero-hoshi"><HoshiStage /></div>
+  </section>
+
+  <!-- product shot -->
+  <section class="wrap shot" id="tour" aria-label="The Hoshidub app">
+    <div class="shot-stage">
+      <AppWindow class="shot-win" src="/img/screens/02-home.webp" eager alt="The Hoshidub app: a browser with a streaming home screen, Hoshi standing beside it, and the Dub panel on the right" />
+      <ul class="callouts">
+        <li class="co glass strong c1"><span class="ico" style="--c: var(--success)">0.0s</span><span><b>On cue</b>Official subtitles, voiced instantly</span></li>
+        <li class="co glass strong c2"><span class="ico" style="--c: var(--pink)">3</span><span><b>A voice each</b>Every character sounds like themselves</span></li>
+        <li class="co glass strong c3"><span class="ico" style="--c: var(--blue)">♪</span><span><b>Soundtrack stays</b>Only Japanese voices step back</span></li>
+        <li class="co glass strong c4"><span class="ico" style="--c: var(--violet)">★</span><span><b>Hoshi</b>Watches with you, never spoils</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- how it works -->
+  <section class="section wrap" aria-labelledby="how-title">
+    <div class="head center"><p class="eyebrow">How it works</p><h2 id="how-title">Three steps. That’s it.</h2></div>
+    <ol class="steps">
+      <li class="glass reveal"><span class="n">1</span><h3>Open your show</h3><p class="muted">Use the streaming service you already pay for, inside Hoshidub, signed in with your own account.</p></li>
+      <li class="glass reveal"><span class="n">2</span><h3>Press Dub</h3><p class="muted">One button. Hoshidub finds the official English subtitles, or listens and translates if there are none.</p></li>
+      <li class="glass reveal"><span class="n">3</span><h3>Just listen</h3><p class="muted">Every character speaks English in their own voice, and the soundtrack stays at full volume.</p></li>
+    </ol>
+  </section>
+
+  <!-- feature story -->
+  <div id="features">
+    <section class="section wrap story" aria-labelledby="f1">
+      <div class="story-copy reveal">
+        <p class="eyebrow">Zero delay</p>
+        <h2 id="f1">On cue, not a second behind.</h2>
+        <p class="lede">When a show has official subtitles, Hoshidub reads them ahead of time and prepares each line before it’s spoken. Every character keeps the same voice all episode.</p>
+        <p class="stat"><strong>0.0 s</strong><span>from subtitle to voice</span></p>
+      </div>
+      <div class="story-art reveal"><DubDemo /></div>
+    </section>
+
+    <section class="section wrap story flip" aria-labelledby="f2">
+      <div class="story-copy reveal">
+        <p class="eyebrow">Soundtrack-safe</p>
+        <h2 id="f2">The music keeps its punch.</h2>
+        <p class="lede">Most dubbing tools turn the whole show down. Hoshidub only steps back the Japanese voices, so the openings, the fights and the quiet moments still hit.</p>
+        <ul class="ticks"><li>Music and effects stay within 2 dB</li><li>Japanese dialogue drops by 15 dB</li><li>Your English volume, your call</li></ul>
+      </div>
+      <div class="story-art reveal"><MixDemo /></div>
+    </section>
+
+    <section class="section wrap story wide-art" id="hoshi" aria-labelledby="f3">
+      <div class="story-copy reveal">
+        <p class="eyebrow">Meet Hoshi</p>
+        <h2 id="f3">Your anime friend, right in the side panel.</h2>
+        <p class="lede">Hoshi (星, “star”) reacts to every twist, answers questions about the episode out loud, and remembers what you love. She only knows what’s already happened, so she can’t spoil a thing.</p>
+        <div class="chat" aria-label="Example chat with Hoshi">
+          <p class="me">Wait, who is she to him?</p>
+          <p class="her">His childhood friend! Did you see how fast she jumped in? Total devotion.</p>
+          <p class="me">What happens at the end?</p>
+          <p class="her">No idea yet, and I’m dying to find out too. No spoilers from me, ever.</p>
+        </div>
+        <p class="small">Runs privately on your PC. Hold the mic and talk, or type.</p>
+      </div>
+      <div class="story-art reveal">
+        <AppWindow src="/img/screens/14-hoshi-panel.webp" alt="Hoshi in Hoshidub's side panel, ready to chat, with her 3D avatar and a message box" />
+      </div>
+    </section>
+
+    <section class="section wrap story flip wide-art" aria-labelledby="f4">
+      <div class="story-copy reveal">
+        <p class="eyebrow">Liquid glass</p>
+        <h2 id="f4">An app that follows your show.</h2>
+        <p class="lede">The glass turns dark in night scenes and light in bright ones, picking up the colours of what you’re watching. Drag across the picture to see it change.</p>
+      </div>
+      <div class="story-art reveal"><GlassCompare /></div>
+    </section>
+
+    <section class="section wrap" aria-labelledby="f5">
+      <div class="head center reveal"><p class="eyebrow">The little things</p><h2 id="f5">Clean, private, yours.</h2></div>
+      <div class="minis">
+        <article class="mini glass reveal">
+          <div class="mini-art"><img src="/img/screens/11-toolbar-shield.webp" width="1360" height="80" loading="lazy" alt="Hoshidub's toolbar showing the ad blocker shield with 2 blocked" /></div>
+          <h3>Ads and trackers blocked</h3>
+          <p class="muted">A built-in blocker keeps pages fast and clean. One click on the shield turns it off for a site.</p>
+        </article>
+        <article class="mini glass reveal">
+          <div class="mini-art icon-art" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 11V8a5 5 0 0 1 10 0v3M6 11h12v9H6z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" /></svg></div>
+          <h3>Private by design</h3>
+          <p class="muted">Dubbing, Hoshi and her memory all run on your PC. No account, no tracking, never records video.</p>
+        </article>
+        <article class="mini glass reveal">
+          <div class="mini-art icon-art" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 4v11m0 0-4.5-4.5M12 15l4.5-4.5M5 19h14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" /></svg></div>
+          <h3>One-click setup</h3>
+          <p class="muted">One button downloads the voices. It resumes if your connection drops, then everything runs on your PC.</p>
+        </article>
+      </div>
+    </section>
+  </div>
+
+  <!-- languages -->
+  <section class="section wrap" aria-labelledby="lang-title">
+    <div class="langs glass">
+      <div>
+        <p class="eyebrow">Languages</p>
+        <h2 id="lang-title">English today. Your language next.</h2>
+        <p class="muted">Spanish, Portuguese, Hindi and French are on the way, using the official subtitles in your language.</p>
+      </div>
+      <div class="lang-list">
+        <span class="chip on">English</span><span class="chip">Español · soon</span><span class="chip">Português · soon</span>
+        <span class="chip">हिन्दी · soon</span><span class="chip">Français · soon</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- pricing -->
+  <section class="section wrap" id="pricing" aria-labelledby="price-title">
+    <div class="head"><p class="eyebrow">Pricing</p><h2 id="price-title">Free to start. Pro when you’re hooked.</h2></div>
+    <Pricing />
+  </section>
+
+  <!-- tip jar -->
+  <section class="section wrap" id="tip"><TipJar /></section>
+
+  <!-- FAQ -->
+  <section class="section wrap" id="faq" aria-labelledby="faq-title">
+    <div class="head"><p class="eyebrow">FAQ</p><h2 id="faq-title">Questions, answered</h2></div>
+    <Faq />
+  </section>
+
+  <!-- final CTA -->
+  <section class="section wrap">
+    <div class="final glass strong">
+      <h2>{site.slogan}</h2>
+      <p class="lede">Every character. Every episode. In English, instantly.</p>
+      <DownloadButton />
+    </div>
+  </section>
+</Base>
+
+
+<style>
+  .hero { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr); gap: 24px; align-items: center; padding-block: clamp(40px, 7vw, 90px) 20px; }
+  .hero-copy { display: grid; gap: 22px; }
+  .grad { background: var(--brand-gradient); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .hero-cta { display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-start; }
+  .hero-points { display: flex; flex-wrap: wrap; gap: 8px 20px; list-style: none; margin: 0; padding: 0; }
+  .hero-points li::before { content: "✓ "; color: var(--success); font-weight: 700; }
+  .hero-hoshi { min-width: 0; }
+  @media (max-width: 900px) { .hero { grid-template-columns: 1fr; } .hero-hoshi { width: 100%; max-width: 360px; margin-inline: auto; } }
+
+  .head { display: grid; gap: 12px; margin-bottom: 32px; max-width: 720px; }
+  .head.center { margin-inline: auto; text-align: center; justify-items: center; }
+
+  /* product shot: tilted in 3D, flattens as it scrolls into view */
+  .shot { padding-block: 20px 0; }
+  .shot-stage { position: relative; perspective: 1600px; padding-block: 30px; }
+  .shot-stage :global(.shot-win) { max-width: 960px; margin-inline: auto; transform: rotateX(14deg) scale(0.94); transform-origin: 50% 0; }
+  .callouts { list-style: none; margin: 0; padding: 0; }
+  .co { position: absolute; display: flex; gap: 12px; align-items: center; padding: 12px 16px 12px 12px; border-radius: 18px; max-width: 250px; font-size: 13px; color: var(--text-2);
+    animation: float 6s ease-in-out infinite; }
+  .co b { display: block; color: var(--text); font-size: 15px; }
+  .ico { flex: none; width: 42px; height: 42px; border-radius: 13px; display: grid; place-items: center; font-weight: 800; font-size: 14px; color: #fff; background: var(--c); }
+  .c1 { left: 0; top: 30%; } .c2 { right: 0; top: 14%; animation-delay: -1.5s; }
+  .c3 { left: 2%; bottom: 10%; animation-delay: -3s; } .c4 { right: 1%; bottom: 22%; animation-delay: -4.5s; }
+  @keyframes float { 50% { translate: 0 -8px; } }
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .shot-stage :global(.shot-win) { animation: flatten linear both; animation-timeline: view(); animation-range: entry 10% cover 45%; }
+      .reveal { animation: rise linear both; animation-timeline: view(); animation-range: entry 0% cover 28%; }
+    }
+  }
+  @supports not (animation-timeline: view()) { .shot-stage :global(.shot-win) { transform: none; } }
+  @keyframes flatten { to { transform: none; } }
+  @keyframes rise { from { opacity: 0.2; translate: 0 40px; } to { opacity: 1; translate: 0 0; } }
+  @media (prefers-reduced-motion: reduce) { .shot-stage :global(.shot-win) { transform: none; } .co { animation: none; } }
+  @media (max-width: 900px) {
+    .shot-stage { perspective: none; }
+    .shot-stage :global(.shot-win) { transform: none !important; animation: none !important; }
+    .callouts { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 10px; margin-top: 16px; }
+    .co { position: static; max-width: none; animation: none; }
+  }
+
+  .steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+  .steps li { padding: 26px; border-radius: 22px; display: grid; gap: 10px; align-content: start; }
+  .n { width: 38px; height: 38px; border-radius: 12px; display: grid; place-items: center; font-weight: 750; color: #fff; background: var(--brand-gradient); }
+  @media (max-width: 820px) { .steps { grid-template-columns: 1fr; } }
+
+  /* feature story: copy beside the screen that shows it, alternating sides */
+  .story.section { padding-block: clamp(48px, 7vw, 96px); }
+  .story { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(28px, 5vw, 72px); align-items: center; }
+  .story.wide-art { grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr); }
+  .story.flip .story-copy { order: 2; }
+  .story.flip.wide-art { grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr); }
+  .story-copy { display: grid; gap: 18px; }
+  .story-copy h2 { font-size: clamp(30px, 4vw, 46px); letter-spacing: -0.03em; line-height: 1.08; text-wrap: balance; }
+  .story-art { display: grid; justify-items: center; min-width: 0; }
+  .story-art > :global(.appwin), .story-art > :global(.compare) { width: 100%; }
+  .stat { display: grid; }
+  .stat strong { font-size: clamp(48px, 6vw, 80px); font-weight: 780; letter-spacing: -0.04em; line-height: 1; background: var(--brand-gradient); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .stat span { color: var(--text-2); }
+  .ticks { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; color: var(--text-2); }
+  .ticks li::before { content: "✓  "; color: var(--success); font-weight: 800; }
+  .chat { display: grid; gap: 8px; }
+  .chat p { max-width: 85%; padding: 10px 14px; border-radius: 18px; font-size: 15px; }
+  .chat .me { justify-self: end; background: var(--accent); color: #fff; border-bottom-right-radius: 6px; }
+  .chat .her { justify-self: start; background: color-mix(in srgb, var(--violet) 22%, var(--glass-tint-strong)); border-bottom-left-radius: 6px; }
+  @media (max-width: 900px) {
+    .story, .story.wide-art, .story.flip.wide-art { grid-template-columns: 1fr; }
+    .story.flip .story-copy { order: 0; }
+  }
+
+  .minis { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+  .mini { padding: 22px; border-radius: 22px; display: grid; gap: 10px; align-content: start; }
+  .mini-art { height: 96px; border-radius: 14px; overflow: hidden; background: var(--hover); display: grid; place-items: center; margin-bottom: 6px; }
+  .mini-art img { width: 240%; max-width: none; height: auto; justify-self: start; translate: -48% 0; }
+  .icon-art svg { width: 42px; height: 42px; color: var(--text); }
+  @media (max-width: 820px) { .minis { grid-template-columns: 1fr; } }
+
+  .langs { display: grid; grid-template-columns: 1.2fr 1fr; gap: 24px; align-items: center; padding: clamp(24px, 4vw, 44px); border-radius: 28px; }
+  .langs > div:first-child { display: grid; gap: 12px; }
+  .lang-list { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip.on { background: var(--brand-gradient); color: #fff; }
+  @media (max-width: 820px) { .langs { grid-template-columns: 1fr; } }
+
+  .final { display: grid; justify-items: center; text-align: center; gap: 16px; padding: clamp(36px, 6vw, 72px) 24px; border-radius: 32px; }
+  .final :global(.dl) { justify-items: center; }
+</style>

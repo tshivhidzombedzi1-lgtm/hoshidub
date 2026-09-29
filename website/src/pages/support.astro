@@ -1,0 +1,32 @@
+---
+import Base from '../layouts/Base.astro';
+import Faq from '../components/Faq.astro';
+import { links } from '../config.js';
+
+const help = [
+  ['The video won’t play (error KAT-6005 or similar)', 'Update Hoshidub to the latest version. Streaming services need the protected-video module that ships with the official installer, so builds from other places won’t play.'],
+  ['I pressed Dub but hear nothing', 'Make sure the episode is playing and the voices finished downloading (Settings shows the status). If the show has no speech for a while, Hoshidub waits quietly.'],
+  ['The dub is late', 'Turn on the show’s English subtitles in the player. Hoshidub then reads them ahead of time and speaks with no delay. Without subtitles, it translates by ear, about a second behind.'],
+  ['Hoshi doesn’t answer', 'Hoshi needs her download (about 3.2 GB) and works best on an NVIDIA RTX card. The Hoshi panel shows what she’s waiting for.'],
+  ['A site looks broken', 'Click the shield in the toolbar to turn off the ad blocker for that site.'],
+  ['How do I move Pro to a new PC?', 'In the old PC, open Settings, Upgrade, and choose Deactivate. Then paste your key on the new PC.'],
+];
+---
+<Base title="Help" description="Help and answers for Hoshidub.">
+  <header class="page-head wrap">
+    <p class="eyebrow">Help</p>
+    <h1>How can we help?</h1>
+    <p class="lede">Quick fixes below. For anything else, the fastest answer is on Discord.</p>
+    <a class="btn primary" href={links.discord} target="_blank" rel="noopener">Ask on Discord</a>
+    {links.email && <p class="small">or email <a href={`mailto:${links.email}`}>{links.email}</a></p>}
+  </header>
+  <section class="wrap"><Faq items={help} /></section>
+  <section class="section wrap">
+    <h2 class="sec-title">General questions</h2>
+    <Faq />
+  </section>
+</Base>
+
+<style>
+  .sec-title { text-align: center; font-size: clamp(26px, 3.4vw, 38px); letter-spacing: -0.025em; margin-bottom: 24px; }
+</style>

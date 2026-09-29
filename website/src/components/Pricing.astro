@@ -1,0 +1,69 @@
+---
+import { links } from '../config.js';
+import DownloadButton from './DownloadButton.astro';
+const pro = links.proMonthly || links.proYearly;
+---
+<div class="plans">
+  <article class="plan glass">
+    <h3>Free</h3>
+    <p class="price">$0</p>
+    <p class="small">Enough to fall in love with one episode.</p>
+    <ul>
+      <li>30 minutes of dubbing a day</li>
+      <li>Translate-by-ear for any show</li>
+      <li>Two voices</li>
+      <li>Ad and tracker blocker</li>
+    </ul>
+    <DownloadButton label="Download free" variant="" note={false} />
+  </article>
+
+  <article class="plan glass strong featured">
+    <span class="chip badge">Most popular</span>
+    <h3>Pro</h3>
+    <p class="price">$6.99<span>/month</span></p>
+    <p class="small">or <strong>$49 a year</strong>, two months free and then some.</p>
+    <ul>
+      <li>Unlimited dubbing, every episode</li>
+      <li>Official subtitles voiced with zero delay</li>
+      <li>A different voice for every character</li>
+      <li>The soundtrack stays at full volume</li>
+      <li>Hoshi, your watch buddy</li>
+    </ul>
+    <div class="plan-cta">
+      {pro
+        ? <><a class="btn primary glow" href={links.proMonthly || links.proYearly}>Get Pro</a>
+            {links.proYearly && <a class="btn" href={links.proYearly}>Yearly: $49</a>}</>
+        : <span class="btn primary" aria-disabled="true">Pro launches with the public release</span>}
+    </div>
+  </article>
+
+  <article class="plan glass">
+    <h3>Cloud <span class="chip">Coming 2027</span></h3>
+    <p class="price">$11.99<span>/month</span></p>
+    <p class="small">For laptops without a gaming graphics card.</p>
+    <ul>
+      <li>Everything in Pro</li>
+      <li>Runs on any laptop</li>
+      <li>Premium voices</li>
+      <li>More languages</li>
+    </ul>
+    <a class="btn" href={links.discord} target="_blank" rel="noopener">Get notified</a>
+  </article>
+</div>
+<p class="small center">Prices in US dollars. Cancel any time from your receipt email. Payments and tax handled by Lemon Squeezy.</p>
+
+<style>
+  .plans { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; align-items: stretch; }
+  .plan { padding: 28px; display: flex; flex-direction: column; gap: 12px; border-radius: 24px; }
+  .featured { transform: translateY(-10px); box-shadow: 0 24px 60px color-mix(in srgb, var(--violet) 30%, transparent), var(--glass-shadow); }
+  .badge { position: absolute !important; top: 18px; right: 18px; background: var(--brand-gradient); color: #fff; }
+  .price { font-size: 44px; font-weight: 750; letter-spacing: -0.03em; }
+  .price span { font-size: 16px; font-weight: 500; color: var(--text-2); letter-spacing: 0; }
+  ul { list-style: none; margin: 6px 0 12px; padding: 0; display: grid; gap: 8px; flex: 1; align-content: start; }
+  li { display: flex; gap: 10px; align-items: flex-start; color: var(--text-2); }
+  li::before { content: ""; flex: none; width: 18px; height: 18px; margin-top: 3px; border-radius: 50%;
+    background: var(--success) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4.5 8.2l2.2 2.2 4.8-4.8' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/contain no-repeat; }
+  .plan-cta { display: flex; flex-wrap: wrap; gap: 10px; }
+  .center { text-align: center; margin-top: 22px; }
+  @media (max-width: 900px) { .plans { grid-template-columns: 1fr; } .featured { transform: none; } }
+</style>

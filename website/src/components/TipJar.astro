@@ -1,0 +1,33 @@
+---
+import { links } from '../config.js';
+const { compact = false } = Astro.props;
+const ways = [
+  { name: 'Ko-fi', href: links.kofi, note: 'Buy Moss a coffee. Card or PayPal, one-off or monthly.' },
+  { name: 'PayPal', href: links.paypal, note: 'Send any amount straight to MCP Labs.' },
+  { name: 'Pay what you want', href: links.tipCheckout, note: 'Any amount by card, receipt included.' },
+];
+---
+<section class={`tip glass ${compact ? 'compact' : ''}`} aria-labelledby="tip-title">
+  <div class="tip-copy">
+    <p class="eyebrow">Tip jar</p>
+    <h2 id="tip-title">Love Hoshidub? Tip the team.</h2>
+    <p class="muted">Hoshidub is made by a tiny independent lab in South Africa. Every tip goes straight into new voices, new languages and more Hoshi. Thank you for keeping it going.</p>
+  </div>
+  <div class="tip-ways">
+    {ways.map((w) => w.href
+      ? <a class="way" href={w.href} target="_blank" rel="noopener"><strong>{w.name}</strong><span>{w.note}</span></a>
+      : <div class="way soon"><strong>{w.name}</strong><span>Opening soon</span></div>)}
+  </div>
+</section>
+
+<style>
+  .tip { display: grid; grid-template-columns: 1.1fr 1fr; gap: 28px; padding: clamp(24px, 4vw, 44px); border-radius: 28px; align-items: center; }
+  .tip-copy { display: grid; gap: 14px; }
+  .tip-ways { display: grid; gap: 10px; }
+  .way { display: grid; gap: 2px; padding: 16px 18px; border-radius: 16px; background: var(--hover); color: var(--text); text-decoration: none !important;
+    transition: transform 160ms var(--ease-out), background 160ms; }
+  a.way:hover { background: var(--press); transform: translateX(4px); }
+  .way span { color: var(--text-2); font-size: 14px; }
+  .way.soon { opacity: 0.7; }
+  @media (max-width: 820px) { .tip { grid-template-columns: 1fr; } }
+</style>

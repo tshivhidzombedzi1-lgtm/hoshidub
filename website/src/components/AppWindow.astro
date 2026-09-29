@@ -1,0 +1,31 @@
+---
+// A Windows 11 style app window around a real Hoshidub screenshot (or any slotted content).
+const { src, alt = '', width = 1360, height = 860, eager = false, title = 'Hoshidub', class: cls = '' } = Astro.props;
+---
+<figure class={`appwin ${cls}`}>
+  <div class="bar" aria-hidden="true">
+    <span class="t"><img src="/favicon.svg" width="14" height="14" alt="" />{title}</span>
+    <span class="ctl"><i class="min"></i><i class="max"></i><i class="x"></i></span>
+  </div>
+  <div class="view">
+    {src ? <img src={src} alt={alt} width={width} height={height} loading={eager ? 'eager' : 'lazy'} fetchpriority={eager ? 'high' : 'auto'} decoding="async" /> : <slot />}
+  </div>
+</figure>
+
+<style>
+  .appwin { margin: 0; border-radius: 14px; overflow: hidden; background: var(--base-2); border: 1px solid var(--glass-edge);
+    box-shadow: 0 1px 0 var(--glass-specular) inset, 0 40px 90px -20px rgba(8, 6, 30, 0.55), 0 12px 30px -10px rgba(8, 6, 30, 0.35); }
+  .bar { height: 32px; display: flex; align-items: center; justify-content: space-between; padding-left: 12px; font-size: 12px; color: var(--text-2);
+    background: color-mix(in srgb, var(--base) 85%, transparent); border-bottom: 1px solid var(--line); }
+  .t { display: inline-flex; align-items: center; gap: 8px; font-weight: 550; }
+  .ctl { display: flex; height: 100%; }
+  .ctl i { width: 44px; height: 100%; position: relative; }
+  .ctl i::before { content: ""; position: absolute; left: 50%; top: 50%; translate: -50% -50%; }
+  .min::before { width: 10px; height: 1px; background: var(--text-2); }
+  .max::before { width: 9px; height: 9px; border: 1px solid var(--text-2); border-radius: 2px; }
+  .x::before, .x::after { content: ""; position: absolute; left: 50%; top: 50%; width: 12px; height: 1px; background: var(--text-2); translate: -50% -50%; rotate: 45deg; }
+  .x::after { rotate: -45deg; }
+  .view { position: relative; line-height: 0; }
+  .view > img { width: 100%; height: auto; display: block; }
+  @media (max-width: 560px) { .bar { height: 24px; font-size: 10px; } .ctl i { width: 30px; } }
+</style>

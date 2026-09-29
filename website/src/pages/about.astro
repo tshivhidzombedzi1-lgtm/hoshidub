@@ -1,0 +1,64 @@
+---
+import Base from '../layouts/Base.astro';
+import HoshiStage from '../components/HoshiStage.astro';
+import { site, links, founder } from '../config.js';
+
+const person = {
+  '@context': 'https://schema.org', '@type': 'Person', name: 'Tshivhidzo Mbedzi', alternateName: 'Moss',
+  jobTitle: 'Founder & Director', worksFor: { '@type': 'Organization', name: 'MCP Labs', url: site.url },
+  address: { '@type': 'PostalAddress', addressLocality: 'Pretoria', addressCountry: 'ZA' },
+  sameAs: [links.linkedin, links.youtube],
+};
+---
+<Base title="About" description="Hoshidub is made by Tshivhidzo (Moss) Mbedzi, founder of MCP Labs in Pretoria, South Africa." jsonld={person}>
+  <header class="page-head wrap">
+    <p class="eyebrow">About</p>
+    <h1>Anime deserves to be watched, not read.</h1>
+    <p class="lede">Hoshidub is made by a tiny independent lab in Pretoria, South Africa.</p>
+  </header>
+
+  <section class="wrap founder">
+    <div class="founder-hoshi"><HoshiStage size="small" line="That's Moss. He made me. And the app, I guess." /></div>
+    <article class="bio glass">
+      <p class="eyebrow">The founder</p>
+      <h2>{founder.name}</h2>
+      <p class="role">{founder.title} · {founder.place}</p>
+      <p>Tshivhidzo "Moss" Mbedzi is a South African technology entrepreneur and the founder and director of MCP Labs, an independent AI lab in Pretoria focused on automation, AI agents and consumer AI products. He built Hoshidub because anime deserves to be watched, not read: a live dub that gives every character a voice, and a companion, Hoshi, so nobody has to watch alone.</p>
+      <p>Before Hoshidub, Moss founded TSHIVHIDZO Trading Solutions and published more than 14 algorithmic trading systems on the MQL5 marketplace, used by traders across 20+ countries. He also runs The IT Guy E-Waste Solutions, providing IT support and responsible e-waste recycling in Limpopo. He holds a Higher Certificate in Information Technology from IIE Rosebank College and completed the Introduction to Information Security course at UNISA's Centre for Software Engineering. That security-first training shows in Hoshidub's design: it runs on your own PC, never records video, and keeps your data private.</p>
+      <p>His mission is simple: make sophisticated technology accessible to everyone.</p>
+      <div class="bio-links">
+        <a class="btn" href={links.linkedin} target="_blank" rel="noopener">LinkedIn</a>
+        <a class="btn" href={links.youtube} target="_blank" rel="noopener">YouTube</a>
+        <a class="btn" href={links.discord} target="_blank" rel="noopener">Discord</a>
+      </div>
+    </article>
+  </section>
+
+  <section class="section wrap">
+    <div class="cards">
+      <div class="card glass">
+        <h3>MCP Labs</h3>
+        <p class="muted">An independent AI lab in Pretoria, South Africa, building automation systems and consumer AI products. Hoshidub is its first consumer app.</p>
+      </div>
+      <div class="card glass">
+        <h3>Private by design</h3>
+        <p class="muted">Dubbing, Hoshi and her memory all run on your PC. No account, no tracking in the app, and it never records video.</p>
+      </div>
+      <div class="card glass">
+        <h3>Built with the community</h3>
+        <p class="muted">Every voice, language and Hoshi feature comes from what watchers ask for on Discord. <a href={links.discord} target="_blank" rel="noopener">Come say hi.</a></p>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .founder { display: grid; grid-template-columns: minmax(0, 0.7fr) minmax(0, 1.3fr); gap: 32px; align-items: center; }
+  .bio { padding: clamp(24px, 4vw, 44px); border-radius: 28px; display: grid; gap: 14px; }
+  .bio h2 { font-size: clamp(26px, 3.4vw, 36px); letter-spacing: -0.025em; }
+  .bio p:not(.eyebrow):not(.role) { color: var(--text-2); line-height: 1.65; }
+  .role { font-weight: 600; color: var(--text-2); }
+  .bio-links { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 6px; }
+  .founder-hoshi { width: 100%; max-width: 340px; margin-inline: auto; }
+  @media (max-width: 860px) { .founder { grid-template-columns: 1fr; } }
+</style>

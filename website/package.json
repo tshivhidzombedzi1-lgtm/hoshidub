@@ -1,0 +1,22 @@
+{
+  "name": "hoshidub-website",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "hoshidub.com: the Hoshidub website (a product of MCP Labs)",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "astro": "^7.3.5",
+    "compression": "^1.8.2",
+    "express": "^5.2.1",
+    "three": "^0.186.1"
+  }
+}

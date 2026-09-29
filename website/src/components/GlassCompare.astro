@@ -1,0 +1,40 @@
+---
+// Drag to compare the app's glass on a dark page and a light page (real screenshots).
+import AppWindow from './AppWindow.astro';
+---
+<div class="compare" style="--pos: 50%">
+  <AppWindow>
+    <img src="/img/screens/13-glass-light-page.webp" width="1360" height="860" loading="lazy" alt="Hoshidub's glass turning light on a bright page" />
+    <img class="dark" src="/img/screens/12-glass-dark-page.webp" width="1360" height="860" loading="lazy" alt="Hoshidub's glass turning dark on a dark page" />
+    <span class="handle" aria-hidden="true"><i></i></span>
+    <span class="tag l">Dark scene</span><span class="tag r">Bright scene</span>
+  </AppWindow>
+  <label class="visually-hidden" for="glass-range">Compare dark and light glass</label>
+  <input id="glass-range" class="range" type="range" min="0" max="100" value="50" />
+</div>
+
+<script>
+  document.querySelectorAll('.compare').forEach((box) => {
+    const range = box.querySelector('input');
+    const set = () => box.style.setProperty('--pos', `${range.value}%`);
+    range.addEventListener('input', set);
+    set();
+  });
+</script>
+
+<style>
+  .compare { position: relative; }
+  .compare :global(.view) { overflow: hidden; }
+  .compare :global(.view img) { width: 100%; height: auto; display: block; }
+  .dark { position: absolute; inset: 0; clip-path: inset(0 calc(100% - var(--pos)) 0 0); }
+  .handle { position: absolute; top: 0; bottom: 0; left: var(--pos); width: 2px; translate: -1px 0; background: #fff; box-shadow: 0 0 12px rgba(0,0,0,.4); pointer-events: none; }
+  .handle i { position: absolute; top: 50%; left: 50%; translate: -50% -50%; width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,.9);
+    box-shadow: 0 4px 14px rgba(0,0,0,.3); }
+  .handle i::before { content: "‹ ›"; position: absolute; inset: 0; display: grid; place-items: center; color: #222; font: 700 16px/1 var(--font); letter-spacing: 2px; }
+  .tag { position: absolute; top: 12px; padding: 4px 10px; border-radius: 99px; font: 600 12px/1.4 var(--font); color: #fff; background: rgba(0,0,0,.45); backdrop-filter: blur(8px); pointer-events: none; }
+  .tag.l { left: 12px; } .tag.r { right: 12px; }
+  /* the whole picture is the drag target; the real range input sits on top, invisible, so keyboard and touch work */
+  .range { position: absolute; left: 0; right: 0; bottom: 0; top: 32px; width: 100%; height: calc(100% - 32px); margin: 0; opacity: 0; cursor: ew-resize; }
+  .compare:has(.range:focus-visible) .handle i { outline: 3px solid var(--accent); outline-offset: 2px; }
+  @media (max-width: 560px) { .range { top: 24px; height: calc(100% - 24px); } }
+</style>

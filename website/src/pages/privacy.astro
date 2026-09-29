@@ -1,0 +1,40 @@
+---
+import Base from '../layouts/Base.astro';
+import { links } from '../config.js';
+---
+<Base title="Privacy" description="Hoshidub runs on your PC. No account, no tracking in the app, and your data stays with you.">
+  <header class="page-head wrap">
+    <p class="eyebrow">Privacy</p>
+    <h1>Your shows stay yours.</h1>
+    <p class="lede">The short version: Hoshidub runs on your PC and doesn’t track you.</p>
+  </header>
+  <section class="wrap">
+    <article class="prose glass">
+      <p class="updated">Last updated 29 September 2026</p>
+      <h2>Who we are</h2>
+      <p>Hoshidub is made by MCP Labs, Pretoria, South Africa. This policy covers the Hoshidub app and this website.</p>
+      <h2>What the app does on your PC</h2>
+      <ul>
+        <li>Dubbing, captions, Hoshi and her memory all run locally on your computer.</li>
+        <li>Hoshidub listens to the sound of the player to dub it. It never records, saves or uploads video or audio.</li>
+        <li>You sign in to streaming services yourself, inside their own pages. Hoshidub never sees or stores your passwords.</li>
+        <li>Hoshi’s memory of your chats is a file on your PC. You can clear it any time from the Hoshi panel.</li>
+        <li>There is no account and no analytics or tracking in the app.</li>
+      </ul>
+      <h2>When the app goes online</h2>
+      <ul>
+        <li><strong>First-run download:</strong> the voices, engine and Hoshi are downloaded from public file hosts. Those hosts see your IP address, like any download.</li>
+        <li><strong>Pro licence check:</strong> if you activate Pro, the app sends your licence key and a random install ID to Lemon Squeezy to confirm it’s valid. Nothing else.</li>
+        <li><strong>Ad blocker updates:</strong> the built-in blocker downloads public filter lists.</li>
+      </ul>
+      <h2>Payments</h2>
+      <p>Purchases and tips are handled by Lemon Squeezy, Ko-fi or PayPal as merchant or payment provider. They process your payment details under their own privacy policies. We receive your email address, name and country for receipts and support, never your card number.</p>
+      <h2>This website</h2>
+      <p>This site uses no cookies, no advertising and no third-party trackers. Our web host keeps standard server logs (such as IP address and pages requested) for security, for a limited time.</p>
+      <h2>Your rights</h2>
+      <p>You can ask what we hold about you, and ask us to correct or delete it, under POPIA, GDPR or your local law. Contact us on <a href={links.discord} target="_blank" rel="noopener">Discord</a>{links.email && <> or at <a href={`mailto:${links.email}`}>{links.email}</a></>}.</p>
+      <h2>Changes</h2>
+      <p>If this policy changes, we’ll update the date above and mention it in the app’s release notes.</p>
+    </article>
+  </section>
+</Base>

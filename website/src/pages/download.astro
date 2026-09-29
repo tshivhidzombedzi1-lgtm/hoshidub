@@ -1,0 +1,58 @@
+---
+import Base from '../layouts/Base.astro';
+import DownloadButton from '../components/DownloadButton.astro';
+import { links } from '../config.js';
+
+const reqs = [
+  ['System', 'Windows 10 or 11, 64-bit'],
+  ['Graphics', 'NVIDIA RTX card with 6 GB or more recommended, for fast dubbing and Hoshi'],
+  ['Memory', '8 GB RAM'],
+  ['Disk', 'About 4 GB for the voices and engine, plus 3 GB for translate-by-ear and 3.2 GB for Hoshi (both optional)'],
+  ['Internet', 'For the first-run download and your streaming service'],
+];
+const steps = [
+  ['Install', 'Run the installer. Hoshidub opens with a short welcome.'],
+  ['Download the voices', 'One button fetches the voices and engine. It resumes if your connection drops.'],
+  ['Press Dub', 'Open your streaming service, sign in with your own account, play an episode and press Dub.'],
+];
+---
+<Base title="Download" description="Download Hoshidub for Windows 10 and 11. Free for 30 minutes of dubbing a day.">
+  <header class="page-head wrap">
+    <p class="eyebrow">Download</p>
+    <h1>Hoshidub for Windows</h1>
+    <p class="lede">Free for 30 minutes a day. No account needed.</p>
+    <DownloadButton />
+  </header>
+
+  <section class="wrap">
+    <ol class="steps">
+      {steps.map(([t, d], i) => (
+        <li class="card glass"><span class="num">{i + 1}</span><h3>{t}</h3><p class="muted">{d}</p></li>
+      ))}
+    </ol>
+  </section>
+
+  <section class="section wrap" aria-labelledby="req-title">
+    <div class="prose glass">
+      <h2 id="req-title">System requirements</h2>
+      <dl class="reqs">
+        {reqs.map(([k, v]) => <div><dt>{k}</dt><dd>{v}</dd></div>)}
+      </dl>
+      <h2>Windows says “Windows protected your PC”?</h2>
+      <p>New apps show this SmartScreen message until enough people have installed them. Click <strong>More info</strong>, check the publisher, then <strong>Run anyway</strong>. If you’re unsure, ask us on <a href={links.discord} target="_blank" rel="noopener">Discord</a> first.</p>
+      <h2>No gaming graphics card?</h2>
+      <p>Hoshidub still runs, just slower. Hoshidub Cloud, for any laptop, is planned for 2027. <a href={links.discord} target="_blank" rel="noopener">Join the Discord</a> to hear when it opens.</p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+  .num { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; font-weight: 750; color: #fff; background: var(--brand-gradient); }
+  .reqs { margin: 0; display: grid; gap: 0; }
+  .reqs div { display: grid; grid-template-columns: 110px minmax(0, 1fr); gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--line); }
+  .reqs div:last-child { border-bottom: 0; }
+  dt { font-weight: 650; }
+  dd { margin: 0; color: var(--text-2); }
+  @media (max-width: 760px) { .steps { grid-template-columns: 1fr; } .reqs div { grid-template-columns: 1fr; gap: 2px; } }
+</style>

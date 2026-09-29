@@ -1,0 +1,67 @@
+---
+import Base from '../layouts/Base.astro';
+import Pricing from '../components/Pricing.astro';
+import Faq from '../components/Faq.astro';
+
+const rows = [
+  ['Dubbing time', '30 min a day', 'Unlimited', 'Unlimited'],
+  ['Translate-by-ear for any show', true, true, true],
+  ['Official subtitles voiced with zero delay', false, true, true],
+  ['Voices', 'Two', 'One per character', 'Premium voices'],
+  ['Soundtrack stays at full volume', false, true, true],
+  ['Live captions', false, true, true],
+  ['Hoshi, your watch buddy', false, true, true],
+  ['Ad and tracker blocker', true, true, true],
+  ['Runs without a gaming graphics card', false, false, true],
+];
+const billing = [
+  ['How do I pay?', 'By card, PayPal or Apple Pay through Lemon Squeezy, our payment partner. They handle tax for your country and email you a receipt and your licence key.'],
+  ['How do I activate Pro?', 'Paste the licence key from your receipt email into Hoshidub under Settings, then Upgrade. It works offline for 7 days at a time.'],
+  ['Can I cancel?', 'Any time, from the link in your receipt email. You keep Pro until the end of the period you paid for.'],
+  ['Is there a student or regional price?', 'Not yet. Join the Discord and tell us where you are. Local pricing is on the list.'],
+];
+---
+<Base title="Pricing" description="Hoshidub is free for 30 minutes a day. Pro is $6.99 a month or $49 a year for unlimited dubbing, a voice per character and Hoshi.">
+  <header class="page-head wrap">
+    <p class="eyebrow">Pricing</p>
+    <h1>Start free. Go Pro when you’re hooked.</h1>
+    <p class="lede">Free gives you half an hour of dubbing every day. Pro makes every episode sound like it was made in English.</p>
+  </header>
+
+  <section class="wrap"><Pricing /></section>
+
+  <section class="section wrap" aria-labelledby="compare-title">
+    <h2 id="compare-title" class="sec-title">Compare plans</h2>
+    <div class="table-scroll glass">
+      <table>
+        <thead><tr><th scope="col">Feature</th><th scope="col">Free</th><th scope="col">Pro</th><th scope="col">Cloud <span class="chip">2027</span></th></tr></thead>
+        <tbody>
+          {rows.map(([name, ...cells]) => (
+            <tr>
+              <th scope="row">{name}</th>
+              {cells.map((c) => <td>{c === true ? <span class="yes" aria-label="Included">✓</span> : c === false ? <span class="no" aria-label="Not included">–</span> : c}</td>)}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="wrap" aria-labelledby="billing-title">
+    <h2 id="billing-title" class="sec-title">Billing questions</h2>
+    <Faq items={billing} />
+  </section>
+</Base>
+
+<style>
+  .sec-title { text-align: center; font-size: clamp(26px, 3.4vw, 38px); letter-spacing: -0.025em; margin-bottom: 24px; }
+  .table-scroll { overflow-x: auto; border-radius: 22px; max-width: 900px; margin-inline: auto; }
+  table { width: 100%; min-width: 560px; border-collapse: collapse; }
+  th, td { padding: 14px 18px; text-align: center; border-bottom: 1px solid var(--line); }
+  tbody tr:last-child > * { border-bottom: 0; }
+  th[scope="row"], thead th:first-child { text-align: left; font-weight: 550; }
+  thead th { font-size: 15px; color: var(--text-2); }
+  td { color: var(--text-2); font-size: 15px; }
+  .yes { color: var(--success); font-weight: 800; }
+  .no { color: var(--text-3); }
+</style>

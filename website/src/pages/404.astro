@@ -1,0 +1,24 @@
+---
+import Base from '../layouts/Base.astro';
+import HoshiStage from '../components/HoshiStage.astro';
+---
+<Base title="Page not found" description="This page doesn't exist.">
+  <section class="wrap lost">
+    <div class="lost-hoshi"><HoshiStage size="small" line="Hmm, this page isn't in any episode I've seen." /></div>
+    <div class="lost-copy">
+      <p class="eyebrow">404</p>
+      <h1>Lost between episodes.</h1>
+      <p class="lede">The page you were looking for doesn’t exist, or it moved.</p>
+      <div class="row"><a class="btn primary" href="/">Go home</a><a class="btn" href="/support">Get help</a></div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .lost { display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr); gap: 32px; align-items: center; padding-block: clamp(40px, 8vw, 90px); }
+  .lost-hoshi { width: 100%; max-width: 320px; margin-inline: auto; }
+  .lost-copy { display: grid; gap: 16px; }
+  .lost-copy h1 { font-size: clamp(34px, 5vw, 56px); letter-spacing: -0.035em; }
+  .row { display: flex; flex-wrap: wrap; gap: 10px; }
+  @media (max-width: 760px) { .lost { grid-template-columns: 1fr; } }
+</style>

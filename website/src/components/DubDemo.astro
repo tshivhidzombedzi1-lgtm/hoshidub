@@ -1,0 +1,65 @@
+---
+// The app's Dub panel mid-episode, rebuilt in HTML: official subtitles voiced line by line, one voice per character.
+// Lines are original sample dialogue. Every line is readable at rest; the "speaking" highlight moves through them.
+const lines = [
+  { who: 'Aki', voice: 'Voice 1', jp: 'もう逃げないって決めたんだ。', en: 'I decided I’m done running.' },
+  { who: 'Ren', voice: 'Voice 2', jp: 'だったら、一緒に行こう。', en: 'Then let’s go together.' },
+  { who: 'Aki', voice: 'Voice 1', jp: '本気で言ってる？', en: 'You mean that?' },
+  { who: 'Mika', voice: 'Voice 3', jp: '二人とも、急いで！', en: 'You two, hurry up!' },
+];
+---
+<div class="dub glass strong" role="img" aria-label="Hoshidub's Dub panel voicing official subtitles with a different voice for each character, zero seconds behind.">
+  <div class="top">
+    <span class="title">Live Dub</span>
+    <span class="switch on" aria-hidden="true"><i></i></span>
+  </div>
+  <div class="status">
+    <span class="dot"></span>
+    <div><strong>On · official subtitles</strong><span>4 characters · 0.0 s behind</span></div>
+  </div>
+  <p class="label">Transcript</p>
+  <ol class="lines">
+    {lines.map((l, i) => (
+      <li style={`--i:${i}`} data-who={l.who}>
+        <span class="who"><b>{l.who}</b><em>{l.voice}</em><span class="wave" aria-hidden="true"><i></i><i></i><i></i><i></i></span></span>
+        <span class="jp" lang="ja">{l.jp}</span>
+        <span class="en">{l.en}</span>
+      </li>
+    ))}
+  </ol>
+</div>
+
+<style>
+  .dub { width: 100%; max-width: 420px; padding: 18px; border-radius: 24px; display: grid; gap: 12px; }
+  .top { display: flex; justify-content: space-between; align-items: center; }
+  .title { font-weight: 750; font-size: 18px; }
+  .switch { width: 42px; height: 26px; border-radius: 99px; background: var(--success); position: relative; }
+  .switch i { position: absolute; right: 3px; top: 3px; width: 20px; height: 20px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.3); }
+  .status { display: flex; gap: 10px; align-items: center; padding: 10px 12px; border-radius: 14px; background: var(--hover); }
+  .status div { display: grid; font-size: 13px; }
+  .status span:not(.dot) { color: var(--text-2); font-size: 12px; }
+  .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--success); box-shadow: 0 0 0 4px color-mix(in srgb, var(--success) 25%, transparent); }
+  .label { font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--text-3); }
+  .lines { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+  .lines li { display: grid; gap: 2px; padding: 10px 12px; border-radius: 14px; border: 1px solid transparent;
+    animation: speak 8s var(--ease) infinite; animation-delay: calc(var(--i) * 2s); }
+  .who { display: flex; align-items: center; gap: 8px; font-size: 12px; }
+  .who b { font-weight: 700; }
+  .who em { font-style: normal; padding: 1px 7px; border-radius: 99px; font-size: 11px; color: #fff; background: var(--c); }
+  li[data-who="Aki"] { --c: var(--blue); }
+  li[data-who="Ren"] { --c: var(--pink); }
+  li[data-who="Mika"] { --c: var(--violet); }
+  .jp { font-size: 12px; color: var(--text-3); }
+  .en { font-size: 15px; font-weight: 550; }
+  .wave { display: inline-flex; gap: 2px; align-items: center; height: 12px; margin-left: auto; opacity: 0; animation: show 8s infinite; animation-delay: calc(var(--i) * 2s); }
+  .wave i { width: 3px; height: 100%; border-radius: 2px; background: var(--c); animation: bar 0.5s ease-in-out infinite alternate; }
+  .wave i:nth-child(2) { animation-delay: -.2s; } .wave i:nth-child(3) { animation-delay: -.35s; } .wave i:nth-child(4) { animation-delay: -.1s; }
+  @keyframes speak { 0%, 22% { background: color-mix(in srgb, var(--c) 16%, transparent); border-color: color-mix(in srgb, var(--c) 45%, transparent); } 27%, 100% { background: transparent; border-color: transparent; } }
+  @keyframes show { 0%, 22% { opacity: 1; } 25%, 100% { opacity: 0; } }
+  @keyframes bar { from { transform: scaleY(.3); } to { transform: scaleY(1); } }
+  @media (prefers-reduced-motion: reduce) {
+    .lines li, .wave, .wave i { animation: none; }
+    .lines li:first-child { background: color-mix(in srgb, var(--c) 16%, transparent); border-color: color-mix(in srgb, var(--c) 45%, transparent); }
+    .lines li:first-child .wave { opacity: 1; }
+  }
+</style>

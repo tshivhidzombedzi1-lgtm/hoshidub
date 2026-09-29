@@ -1,0 +1,65 @@
+---
+import Base from '../layouts/Base.astro';
+import { links, founder } from '../config.js';
+
+const assets = [
+  ['Logo mark (SVG)', '/img/logo-mark.svg'],
+  ['App icon (PNG, 512 px)', '/img/icon-512.png'],
+  ['Hoshi render (WebP, transparent)', '/img/hoshi-poster.webp'],
+  ['Social card (PNG, 1200×630)', '/img/og.png'],
+];
+const shots = [
+  ['02-home', 'Home screen'],
+  ['14-hoshi-panel', 'Hoshi in the side panel'],
+  ['12-glass-dark-page', 'Glass on a dark page'],
+  ['13-glass-light-page', 'Glass on a light page'],
+];
+---
+<Base title="Press kit" description="Logos, screenshots, Hoshi renders and the founder bio for Hoshidub.">
+  <header class="page-head wrap">
+    <p class="eyebrow">Press kit</p>
+    <h1>Writing about Hoshidub?</h1>
+    <p class="lede">Everything you need is here. Use it freely in coverage of Hoshidub.</p>
+  </header>
+
+  <section class="wrap press">
+    <article class="prose glass">
+      <h2>About Hoshidub</h2>
+      <p>Hoshidub is a Windows app for watching anime in Japanese while hearing it in English, live. It gives each character their own voice, keeps the soundtrack at full volume, and uses a show’s official subtitles to speak with no delay. Hoshi, an animated anime companion, watches along, chats about the episode and never spoils what’s coming. Everything runs on the viewer’s own PC. Hoshidub is made by MCP Labs in Pretoria, South Africa.</p>
+      <h2>Founder</h2>
+      <p>Hoshidub is made by Tshivhidzo "Moss" Mbedzi, founder of MCP Labs in Pretoria, South Africa. Moss builds AI products that make advanced technology feel simple, from algorithmic trading systems used by traders in more than 20 countries to Hoshidub, the app that lets anyone watch anime in their own language.</p>
+      <p><a href="/about">Full bio</a> · <a href={links.linkedin} target="_blank" rel="noopener">LinkedIn</a></p>
+      <h2>Fast facts</h2>
+      <ul>
+        <li>Company: MCP Labs, Pretoria, South Africa</li>
+        <li>Founder: {founder.name}</li>
+        <li>Platform: Windows 10 and 11</li>
+        <li>Price: free for 30 minutes a day; Pro $6.99/month or $49/year</li>
+      </ul>
+      <h2>Downloads</h2>
+      <ul>{assets.map(([name, href]) => <li><a href={href} target="_blank">{name}</a></li>)}</ul>
+      <h2>Press contact</h2>
+      <p>{links.email ? <a href={`mailto:${links.email}`}>{links.email}</a> : <>Message us on <a href={links.discord} target="_blank" rel="noopener">Discord</a>.</>}</p>
+    </article>
+  </section>
+
+  <section class="section wrap" aria-labelledby="shots-title">
+    <h2 id="shots-title" class="sec-title">Screenshots</h2>
+    <div class="shots">
+      {shots.map(([img, cap]) => (
+        <figure class="glass">
+          <a href={`/img/screens/${img}.webp`} target="_blank"><img src={`/img/screens/${img}.webp`} alt={cap} loading="lazy" width="1360" height="860" /></a>
+          <figcaption class="small">{cap}</figcaption>
+        </figure>
+      ))}
+    </div>
+  </section>
+</Base>
+
+<style>
+  .sec-title { text-align: center; font-size: clamp(26px, 3.4vw, 38px); letter-spacing: -0.025em; margin-bottom: 24px; }
+  .shots { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); gap: 16px; }
+  figure { margin: 0; padding: 10px; border-radius: 20px; display: grid; gap: 8px; }
+  figure img { width: 100%; height: auto; border-radius: 12px; display: block; }
+  figcaption { padding: 0 6px 4px; }
+</style>

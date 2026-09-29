@@ -1,0 +1,36 @@
+---
+import Base from '../layouts/Base.astro';
+import TipJar from '../components/TipJar.astro';
+import { links } from '../config.js';
+---
+<Base title="Support us" description="Tip the team behind Hoshidub. Every tip goes into new voices, new languages and more Hoshi.">
+  <header class="page-head wrap">
+    <p class="eyebrow">Support us</p>
+    <h1>Help Hoshidub grow.</h1>
+    <p class="lede">Hoshidub is built by one small lab. Tips, Pro subscriptions and word of mouth are what keep it going.</p>
+  </header>
+
+  <section class="wrap"><TipJar /></section>
+
+  <section class="section wrap">
+    <div class="cards">
+      <div class="card glass">
+        <h3>Where tips go</h3>
+        <p class="muted">New English voices, the next languages (Spanish, Portuguese, Hindi, French), more of Hoshi’s moves, and the GPU time to test it all.</p>
+      </div>
+      <div class="card glass">
+        <h3>No money? No problem.</h3>
+        <p class="muted">Tell a friend, share a clip, or leave feedback on <a href={links.discord} target="_blank" rel="noopener">Discord</a>. That helps just as much.</p>
+      </div>
+      <div class="card glass">
+        <h3>Want more than a tip?</h3>
+        <p class="muted">Pro unlocks unlimited dubbing and Hoshi, and funds the work month after month. <a href="/pricing">See pricing</a>.</p>
+      </div>
+    </div>
+    <p class="small center">Tips are voluntary gifts to MCP Labs and don’t unlock features.</p>
+  </section>
+</Base>
+
+<style>
+  .center { text-align: center; margin-top: 24px; }
+</style>

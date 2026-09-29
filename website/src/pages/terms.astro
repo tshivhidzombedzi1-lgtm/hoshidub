@@ -1,0 +1,37 @@
+---
+import Base from '../layouts/Base.astro';
+import { links } from '../config.js';
+---
+<Base title="Terms" description="The terms for using Hoshidub.">
+  <header class="page-head wrap">
+    <p class="eyebrow">Terms</p>
+    <h1>Terms of use</h1>
+    <p class="lede">Plain rules for a fair deal.</p>
+  </header>
+  <section class="wrap">
+    <article class="prose glass">
+      <p class="updated">Last updated 29 September 2026</p>
+      <h2>1. The deal</h2>
+      <p>These terms are between you and MCP Labs (Pretoria, South Africa), the maker of Hoshidub. By installing or using Hoshidub you agree to them.</p>
+      <h2>2. Personal use with your own subscriptions</h2>
+      <ul>
+        <li>Hoshidub is for your personal, non-commercial viewing.</li>
+        <li>Use it only with streaming services you’re allowed to watch, signed in with your own account, and follow those services’ terms.</li>
+        <li>Hoshidub plays each service in its normal player. It doesn’t bypass copy protection, and you agree not to use it to try.</li>
+        <li>Don’t record, rebroadcast or share dubbed content. Hoshidub doesn’t save video, and you agree not to capture it with other tools for distribution.</li>
+      </ul>
+      <h2>3. Free and Pro</h2>
+      <p>The free plan includes 30 minutes of dubbing a day. Pro is a subscription billed monthly or yearly through Lemon Squeezy, our merchant of record. You can cancel any time from your receipt email, and Pro stays active until the end of the period you paid for. Prices may change for future billing periods; we’ll tell you before they do.</p>
+      <h2>4. Your licence</h2>
+      <p>We give you a personal, non-transferable licence to use Hoshidub. Please don’t resell it, share licence keys publicly, or reverse-engineer the app to remove limits.</p>
+      <h2>5. Translations and Hoshi</h2>
+      <p>Dubs and Hoshi’s replies are made by AI running on your PC. They can be wrong, odd or incomplete. Don’t rely on them for anything important.</p>
+      <h2>6. Third-party services</h2>
+      <p>Streaming services, payment providers and websites you open in Hoshidub are run by other companies. We’re not responsible for them, and Hoshidub isn’t affiliated with any of them.</p>
+      <h2>7. No warranty</h2>
+      <p>Hoshidub is provided “as is”. As far as the law allows, MCP Labs isn’t liable for indirect or consequential losses, and our total liability is limited to what you paid us in the last 12 months. Nothing here limits rights you have under consumer law that can’t be excluded.</p>
+      <h2>8. Changes and contact</h2>
+      <p>We may update these terms; the date above shows the latest version. South African law applies. Questions? Ask on <a href={links.discord} target="_blank" rel="noopener">Discord</a>{links.email && <> or email <a href={`mailto:${links.email}`}>{links.email}</a></>}.</p>
+    </article>
+  </section>
+</Base>
