@@ -531,6 +531,8 @@ app.whenReady().then(async () => {
     return net.fetch(pathToFileURL(file).toString());
   });
 
+  const adopted = require('./paths').ADOPTED;
+  if (adopted.length) log.info('moved existing downloads into place', { moved: adopted });
   engine = new Engine();
   engine.on('status', (info) => sendUi('engine:status', info));
   setup = new Setup(engine.python);
