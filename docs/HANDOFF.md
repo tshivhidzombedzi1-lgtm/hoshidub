@@ -4,25 +4,36 @@ Read this first if you are a new session (human or AI) picking up the project. I
 
 ## 0. Next agent: start here
 
-The owner is moving the project onto his Hostinger hosting and continuing with a new agent there. You have no memory of earlier sessions, and this file is the memory. Everything below is committed in git (latest commits: the Hoshidub rename in the app, release settings in `package.json`, the "My account" link).
+The owner has handed the rest of the launch to you. You have no memory of earlier sessions, and this file is the memory. Everything is committed in git. The owner's bundle (`hoshidub-bundle.zip`) has the source, the signed installer, the voice engine parts and the website.
 
-**What's live right now:** the website at https://grey-woodpecker-803820.hostingersite.com (Hostinger Business plan, static files in `public_html`, built from `website/` with `npm run package` → `website/release/hoshidub-website-static.zip`).
+### Decisions already made (don't reopen them)
+- **Payments: Stripe** (the owner has a verified Stripe account). **Not Lemon Squeezy.** Earlier docs and code mention Lemon Squeezy; see "Switch to Stripe" below.
+- **Licensing: our own small licence server in PHP on the Hostinger hosting** (`website/php/`), because Stripe doesn't issue licence keys. No customer accounts or passwords on the site: customers get their key by email and manage billing in Stripe's customer portal ("My account" link).
+- **Downloads are hosted on Hostinger**, next to the site: `public_html/downloads/Hoshidub-Setup-0.1.0.exe` and `public_html/downloads/runtime/` (manifest plus 8 parts of 400 MB, made by `tools/resplit_runtime.py`, byte-identical to `dist/runtime`).
 
-**Your job, in this order** (tick each off with the owner; one step per message, short and plain):
+### State on 2026-09-29
+| Piece | State |
+|---|---|
+| Website | Live at https://grey-woodpecker-803820.hostingersite.com (static files in `public_html`). Local changes not uploaded yet: Download button → `/downloads/Hoshidub-Setup-0.1.0.exe`, "My account" link, corrected disk requirements. |
+| Installer | `dist/Hoshidub-Setup-0.1.0.exe` (115 MB), VMP-signed ("Signature is valid: streaming, 1387 days left"). `dubit.runtimeBase` = `https://grey-woodpecker-803820.hostingersite.com/downloads/runtime`. It still uses the Lemon Squeezy licence URL. |
+| Voice engine parts | `dist/runtime-web/` (3.09 GB, 8 parts + manifest). **Not uploaded yet.** |
+| Licence server | `website/php/api/` written: `license.php` (activate / validate / deactivate, same JSON shape as Lemon Squeezy, so `src/main/license.js` works unchanged), `stripe-webhook.php` (signature check, creates and emails keys, switches keys off when a subscription ends), `resend.php` ("lost my key"), `lib.php`, `.htaccess`; `website/php/config.sample.php`. **Written but never run: this PC has no PHP.** Test it before going live (PHP 8.1+; `php -S` with a test config and hand-signed webhook payloads). |
 
-1. **Domain.** Help him buy `hoshidub.com` (and `hoshidub.app` if he wants) in hPanel → Domains, then connect it to the existing website and make sure SSL is on. He buys it himself. Afterwards `site.url` in `website/src/config.js` and `site` in `website/astro.config.mjs` are already `https://hoshidub.com`, so no code change is needed.
-2. **Lemon Squeezy store.** Guide him through sign-up and creating the store "Hoshidub": product **Hoshidub Pro** with two variants, **$6.99/month** and **$49/year**, with **licence keys enabled** (activation limit: ask him, 2 PCs is a sensible default). Optional: a "pay what you want" tip product. He must give you:
-   - the **checkout links** (monthly, yearly, and tip) → `website/src/config.js` (`proMonthly`, `proYearly`, `tipCheckout`);
-   - the **product ID** and a checkout link → `package.json` `dubit.productId` and `dubit.checkoutUrl` (the app reads them through `src/main/paths.js`).
-   Then run `npm run package` in `website/`, and he uploads the new static zip (extract into `public_html`, overwrite). Verify the live site with `node tools/shots.mjs <live url> <dir>`.
-3. **Tip links.** If he makes Ko-fi or PayPal.me pages, put them in `config.js` (`kofi`, `paypal`), plus a business email (`email`) if he sets one up in hPanel → Emails.
-4. **App download** (needs his **Windows PC**, not the server; see §7):
-   - `dist/Hoshidub-Setup-0.1.0.exe` (115 MB) was built on 2026-09-29 and is VMP-signed (`python -m castlabs_evs.vmp verify-pkg dist/win-unpacked` → "Signature is valid: streaming, 1387 days left"). It is **not ready for the public yet**: `dubit.runtimeBase`, `productId` and `checkoutUrl` are still empty, so on another PC it would stall at first-run setup. It's fine for testing on the owner's PC, which already has the runtime.
-   - The runtime pack (`dist/runtime/*`, 2.88 GB in two parts) and the installer must be hosted publicly. Recommended: a GitHub repo he creates, with a Release. Set `package.json` `dubit.runtimeBase` to the release download URL, add the Lemon Squeezy settings, rebuild with `npm run dist`, upload.
-   - Then set `links.download` in `website/src/config.js`, run `npm run package`, and he re-uploads the website.
-5. Then continue with §5 "Not done yet", items 4 onwards.
+### Your job, in this order (one step per message to the owner, short and plain)
+1. **Upload the downloads.** `public_html/downloads/` gets the installer, `runtime/` (manifest.json plus runtime.zip.001 to .008) and the `.htaccess` from `website/downloads-htaccess/`. 3.2 GB in total: use FTP (hPanel → Files → FTP accounts; FileZilla), not the browser file manager. Then check that `…/downloads/runtime/manifest.json` loads and a part supports resume: `curl -I -H "Range: bytes=0-99"` should return 206, with no gzip.
+2. **Upload the updated website:** `cd website && npm run package` → extract `release/hoshidub-website-static.zip` into `public_html`. Check it with `node tools/shots.mjs <url> <dir>`. Now "Download" works for Free users.
+3. **Test on a second Windows PC (the owner does this):** install, first-run download, press Dub. This is the real end-to-end test of the runtime download from Hostinger.
+4. **Switch to Stripe:**
+   - Test and finish `website/php/` (see above). Add `api/` to the static bundle in `website/tools/package.mjs` (copy `website/php/api` → `release/static/api`).
+   - The owner creates in Stripe: product "Hoshidub Pro", prices $6.99/month and $49/year, **Payment Links** for both, the **customer portal** (and its login link), and a **webhook** to `https://<domain>/api/stripe-webhook.php` (the 3 events in `config.sample.php`). He copies `config.sample.php` to `<home>/hoshidub-data/config.php` and pastes the signing secret himself. Never type his secrets.
+   - App: add `dubit.licenseApi` to `package.json` (read it in `src/main/paths.js` like the other settings) and use it in `src/main/license.js` instead of the Lemon Squeezy URL. Also fix `refresh()`: when `valid` is false, set the status to `invalid` even if `license_key.status` says `active` (a key deactivated on this PC must stop Pro). Set `dubit.checkoutUrl` to the monthly Payment Link. Rebuild with `npm run dist` (Windows PC, EVS login) and upload the new installer.
+   - Website: `website/src/config.js` → `proMonthly`, `proYearly` (Payment Links), `account` (portal login link; empty hides nothing yet, so make `Base.astro` hide "My account" when it's empty), `tipCheckout` (a one-time "pay what you want" Payment Link; the webhook ignores one-time payments). Change the Lemon Squeezy wording to Stripe in `Pricing.astro`, `pricing.astro` (billing FAQ), `privacy.astro`, `terms.astro` and `docs/WEBSITE_BRIEF.md`. Add a "Lost your key?" form (`id="lost-key"`, POST to `/api/resend.php`) on `/support`.
+   - Tax: Stripe is not a merchant of record. Tell the owner he is responsible for VAT/sales tax, and suggest Stripe Tax.
+   - An admin view is optional: the Stripe dashboard shows payments, and a small password-protected `admin.php` (list and search keys, disable, reset activations, resend) would cover licences.
+5. **Domain:** the owner buys `hoshidub.com` and connects it. Then change `dubit.runtimeBase` to `https://hoshidub.com/downloads/runtime` and rebuild, but keep the files reachable on the old address too, because installers already downloaded point there.
+6. Then §5 "Not done yet", items 4 onwards.
 
-**Don't:** put the project source in `public_html` (it would be public); build accounts or a database (licensing is Lemon Squeezy, customer self-service is its "My Orders" page, linked as "My account"); start GPU work on his PC without asking.
+**Don't:** put the project source in `public_html`; enter the owner's passwords, card details or API secrets anywhere; start GPU work on his PC without asking; publish a build that says "Dub It".
 
 ## 1. Who and what
 
@@ -70,7 +81,7 @@ Electron (castLabs ECS v44.1.0+wvcus, Widevine, VMP-signed)
 - **Voices:** Kokoro-82M, running locally.
 - **Hoshi:** `engine/buddy.py`. Brain Qwen3-4B-Instruct (4-bit, bitsandbytes), ears faster-whisper small, voice Kokoro `af_sky`. The spoiler shield blocks words that appear only in future subtitle lines. Her memory is a JSON file on the PC. Personality: `engine/character/hoshi.yaml`. Avatar: `src/ui/models/hoshi.glb` (Meshy model, merged and compressed to 5.2 MB) rendered with three.js (`src/ui/js/hoshi3d.src.js`, bundled with `npm run build:hoshi`).
 - **Downloads on first run** (`engine/packs.py`, size- and SHA-256-checked, resumable): `core` plus `voices-en` (~336 MB, required), `ear` (3.1 GB, optional), `hoshi` (~3.2 GB, optional). The Python runtime itself (2.88 GB in two parts) is downloaded by `src/main/runtime.js` from `package.json` → `dubit.runtimeBase`.
-- **Licence:** `src/main/license.js` uses the Lemon Squeezy public licence API (activate, validate, deactivate), with 7 days of offline grace. There is **no own account system or database**, by design: Lemon Squeezy stores the customers, emails the keys and runs subscription management.
+- **Licence:** `src/main/license.js` (activate, validate, deactivate; 7 days offline grace) speaks the Lemon Squeezy licence API shape. **Decision 2026-09-29: payments move to Stripe**, and keys come from our own PHP licence server (`website/php/api/`), which answers in the same shape. See §0.
 - **Ad blocker:** Ghostery (`src/main/adblock.js`), with a per-site toggle on the toolbar shield.
 - **Adaptive glass:** samples the page's colours every second and switches the UI between dark and light.
 
@@ -82,7 +93,7 @@ Electron (castLabs ECS v44.1.0+wvcus, Widevine, VMP-signed)
 - Tests: `npm test` runs unit, engine (pytest) and end-to-end (Playwright, off-screen) suites; they pass.
 - **Website live** on Hostinger: 10 pages, 3D Hoshi, a 44 s "How it works" video, strict security headers, HTTPS, clean URLs, a 404 page. Checked on the live server on desktop and phone.
 
-### Not done yet (in order)
+### Not done yet (in order; §0 replaces items 1 to 3: Stripe, Hostinger downloads)
 1. **Domain:** `hoshidub.com` and `hoshidub.app` were unregistered on 2026-09-29. The owner buys them, then connects the domain to the Hostinger site in hPanel.
 2. **Lemon Squeezy store (owner):** Pro product with monthly $6.99 and yearly $49 variants, licence keys turned on. Then:
    - put the checkout links in `website/src/config.js` (`proMonthly`, `proYearly`), plus the tip links (`kofi`, `paypal`, `tipCheckout`) and a business email if he has them;

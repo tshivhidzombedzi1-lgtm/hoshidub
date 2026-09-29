@@ -82,7 +82,7 @@
     "afterSign": "tools/after-pack.js"
   },
   "dubit": {
-    "runtimeBase": "",
+    "runtimeBase": "https://grey-woodpecker-803820.hostingersite.com/downloads/runtime",
     "productId": "",
     "checkoutUrl": ""
   },

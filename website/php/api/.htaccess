@@ -1,0 +1,10 @@
+# Hoshidub licence API
+RewriteEngine On
+RewriteRule ^license/(activate|validate|deactivate)/?$ license.php?action=$1 [L,QSA]
+# lib.php is included by the others, never called directly
+<Files "lib.php">
+  Require all denied
+</Files>
+<IfModule mod_headers.c>
+  Header always set Cache-Control "no-store"
+</IfModule>

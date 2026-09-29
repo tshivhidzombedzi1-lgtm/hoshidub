@@ -8,8 +8,8 @@ export const site = {
 };
 
 export const links = {
-  // latest Windows installer (GitHub Releases "latest" asset URL works well)
-  download: '',
+  // latest Windows installer, hosted next to the site in public_html/downloads (see docs/HANDOFF.md)
+  download: '/downloads/Hoshidub-Setup-0.1.0.exe',
   // Lemon Squeezy checkout links for Pro
   proMonthly: '',
   proYearly: '',

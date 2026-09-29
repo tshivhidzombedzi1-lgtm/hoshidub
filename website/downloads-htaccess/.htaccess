@@ -1,0 +1,17 @@
+# public_html/downloads: the installer and the voice engine parts. Serve them as-is (no compression, so resume works).
+<IfModule mod_env.c>
+  SetEnv no-gzip 1
+</IfModule>
+<FilesMatch "\.(exe|[0-9]{3})$">
+  ForceType application/octet-stream
+</FilesMatch>
+<FilesMatch "\.exe$">
+  <IfModule mod_headers.c>
+    Header set Content-Disposition "attachment"
+  </IfModule>
+</FilesMatch>
+<Files "manifest.json">
+  <IfModule mod_headers.c>
+    Header set Cache-Control "no-cache"
+  </IfModule>
+</Files>

@@ -5,12 +5,12 @@ const ready = !!links.download;
 ---
 <div class="dl">
   {ready
-    ? <a class={`btn ${variant}`} href={links.download}>
+    ? <a class={`btn ${variant}`} href={links.download} download>
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m0 0-4.5-4.5M12 15l4.5-4.5M5 19h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
         {label}
       </a>
     : <a class={`btn ${variant}`} href={links.discord} target="_blank" rel="noopener">Join the beta on Discord</a>}
-  {note && <p class="small">{ready ? `Free · Windows 10 and 11 · version ${site.version}` : 'Free beta for Windows 10 and 11 · public download coming soon'}</p>}
+  {note && <p class="small">{ready ? `Free · Windows 10 and 11 · version ${site.version} · 115 MB` : 'Free beta for Windows 10 and 11 · public download coming soon'}</p>}
 </div>
 <style>
   .dl { display: grid; gap: 10px; justify-items: start; }
