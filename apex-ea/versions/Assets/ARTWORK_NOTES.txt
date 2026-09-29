@@ -1,0 +1,10 @@
+APEX Templar cavalry artwork
+
+Original_Cavalry.png: user-supplied reference, retained unchanged. The portrait is used for the program icon and header badge, with format/size conversion for MT5 resources.
+Cavalry_Background.png: generated using the built-in image_gen tool from the supplied image. No API/CLI fallback used. The BMP is a size/format conversion for the embedded MT5 background.
+cavalry.ico: PNG-compressed icon container with 16/32/48/64/128/256 pixel sizes; original portrait proportions preserved.
+
+Final generation prompt:
+Use case: lighting-weather. Edit target: the supplied medieval Templar cavalry painting. Create a portrait dashboard background, aspect ratio 2:3. Preserve this same mounted knight, horse, raised lance, cavalry formation, painterly style and muted sage/steel/ivory palette. Fit the main knight and horse clearly in the upper third; smoothly darken the lower two thirds into charcoal green mist with subtle cavalry silhouettes so live dashboard text can overlay it. Retain enough recognizable artwork at the top to identify the supplied picture. No text, no lettering, no logos, no UI, no border. This is the background asset for APEX Templar cavalry, a successor trading dashboard; do not render that name into the image.
+
+The brand is rendered as actual MT5 text, separate from the image. Dashboard preview PNGs use a read-only MT5 script with offline/sample state, not live trading.

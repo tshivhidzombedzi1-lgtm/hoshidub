@@ -1,0 +1,12 @@
+; Apex Drawdown Zero V12.30 - FTMO 2-step, FAST (XAUUSD H1)
+; Replayed from every start day Jan 2025 - Sep 2026: 382/385 finished challenges passed (3 hit max loss).
+; Median ~74 days for both phases. Worst day -4.0% (FTMO limit 5%).
+; MaxDrawdownPercent is 0 here because the EA's cap trails from PEAK equity, which is stricter than
+; FTMO's static 10% and would halt passable challenges. FTMO's own 10% rule is the backstop.
+TradingMode=0
+RiskPercent=1.5
+DailyLossLimitPercent=3.5
+MaxDrawdownPercent=0
+EquityGuardPercent=5.0
+UseRiskFirewall=true
+TrendPullback=0

@@ -1,0 +1,13 @@
+; Apex Drawdown Zero V12.46 - FTMO MODE, PHASE 2 (+5%)  -  XAUUSD H1
+; 1-min OHLC, 21 start dates: 20/21 passed, 0 failed, median 19 days (phase 2 at the V12.40 sizing).
+; Set FTMOInitialBalance to your challenge size (e.g. 100000) - 0 uses the balance at first attach.
+TradingMode=3
+FTMOPhaseTargetPercent=5.0
+FTMORiskPercent=2.0
+FTMORoomDivisor=2.5
+FTMOInitialBalance=0
+FTMOMaxLossPercent=10.0
+FTMODailyLossPercent=5.0
+FTMOSafetyBufferPercent=1.0
+FTMOMinTradingDays=4
+TrendPullback=0

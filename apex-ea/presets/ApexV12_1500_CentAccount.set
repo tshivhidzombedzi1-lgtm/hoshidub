@@ -1,0 +1,11 @@
+; Apex Drawdown Zero V12.47 - $1,500 on a CENT ACCOUNT (e.g. RoboForex ProCent) - XAUUSD H1
+; $1,500 = 150,000 cents, so the EA can size trades properly at 1% risk and keeps the calm
+; Discipline behaviour: in the $10,000 backtests +43% (2026 Jan-Aug) and +44% (2025),
+; max drawdown ~5%. Check your cent account offers XAUUSD before choosing this route.
+TradingMode=0
+RiskPercent=1.0
+DailyLossLimitPercent=3.0
+MaxDrawdownPercent=10.0
+UseRiskFirewall=true
+TrendPullback=0
+Preset=0

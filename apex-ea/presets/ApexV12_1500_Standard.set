@@ -1,0 +1,10 @@
+; Apex Drawdown Zero V12.47 - $1,500 STANDARD ACCOUNT  -  XAUUSD H1
+; At $1,500 the broker's 0.01 minimum lot already risks ~3-4% per gold trade, so the default
+; Discipline mode (1% risk, 10% stop) halts itself. Growth mode's limits fit that trade size.
+; Backtest, $1,500: 2026 Jan-Aug +105%, 2025 +140%. Expect drawdowns of 20-27%.
+; Aug 2026 +$357, Sep 1-25 2026 +$144. Hypothetical results - demo-test first.
+TradingMode=2
+GrowthRiskPercent=3.0
+UseRiskFirewall=true
+TrendPullback=0
+Preset=0

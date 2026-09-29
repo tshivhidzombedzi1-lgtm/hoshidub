@@ -1,0 +1,13 @@
+; Apex Drawdown Zero V12.46 - FTMO MODE, PHASE 1 SAFE (+10%, slower, more margin)  -  XAUUSD H1
+; Real ticks, 12 start dates: 11/12 passed (last still open), 0 failed, median 53 days, worst day -3.1%.
+; Set FTMOInitialBalance to your challenge size (e.g. 100000) - 0 uses the balance at first attach.
+TradingMode=3
+FTMOPhaseTargetPercent=10.0
+FTMORiskPercent=2.0
+FTMORoomDivisor=3.0
+FTMOInitialBalance=0
+FTMOMaxLossPercent=10.0
+FTMODailyLossPercent=5.0
+FTMOSafetyBufferPercent=1.0
+FTMOMinTradingDays=4
+TrendPullback=0
