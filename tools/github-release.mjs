@@ -5,7 +5,7 @@
 import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
-import { Readable } from 'node:stream';
+import os from 'node:os';
 
 const [tag, ...files] = process.argv.slice(2);
 if (!tag || !files.length) { console.error('usage: node tools/github-release.mjs <tag> <file> [file...]'); process.exit(1); }
@@ -39,13 +39,29 @@ for (const file of files) {
   const old = (rel.assets || []).find((a) => a.name === name);
   if (old) await api(`/repos/${owner}/${repo}/releases/assets/${old.id}`, { method: 'DELETE' });
   const size = fs.statSync(file).size;
-  const started = Date.now();
   const url = rel.upload_url.replace(/\{.*\}$/, `?name=${encodeURIComponent(name)}`);
-  const res = await fetch(url, {
-    method: 'POST', duplex: 'half', body: Readable.toWeb(fs.createReadStream(file)),
-    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/octet-stream', 'Content-Length': String(size), 'User-Agent': 'hoshidub-release' },
-  });
-  if (!res.ok) throw new Error(`upload ${name} -> ${res.status} ${await res.text()}`);
-  console.log(`uploaded ${name} (${(size / 1e6).toFixed(1)} MB) in ${Math.round((Date.now() - started) / 1000)} s`);
+  // curl streams big files steadily (Node's fetch upload stalled and GitHub answered 408). The token goes in a
+  // header file that only exists during the upload, so it never shows up in a process list.
+  const headers = path.join(os.tmpdir(), `gh-upload-${process.pid}.txt`);
+  fs.writeFileSync(headers, `Authorization: Bearer ${token}\nContent-Type: application/octet-stream\nUser-Agent: hoshidub-release\n`, { mode: 0o600 });
+  try {
+    for (let attempt = 1; ; attempt++) {
+      const started = Date.now();
+      try {
+        const out = execFileSync('curl', ['-sS', '--fail-with-body', '-X', 'POST', '-H', `@${headers}`, '--data-binary', `@${file}`, url],
+          { encoding: 'utf8', maxBuffer: 16 << 20 });
+        if (!JSON.parse(out).id) throw new Error(out.slice(0, 200));
+        console.log(`uploaded ${name} (${(size / 1e6).toFixed(1)} MB) in ${Math.round((Date.now() - started) / 1000)} s`);
+        break;
+      } catch (e) {
+        if (attempt >= 3) throw e;
+        console.log(`retrying ${name} (attempt ${attempt} failed: ${String(e.message).slice(0, 120)})`);
+        const partial = (await api(`/repos/${owner}/${repo}/releases/${rel.id}/assets`)).find?.((a) => a.name === name);
+        if (partial) await api(`/repos/${owner}/${repo}/releases/assets/${partial.id}`, { method: 'DELETE' });
+      }
+    }
+  } finally {
+    fs.rmSync(headers, { force: true });
+  }
 }
 console.log(`https://github.com/${owner}/${repo}/releases/tag/${tag}`);
