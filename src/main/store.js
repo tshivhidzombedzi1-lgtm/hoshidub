@@ -11,7 +11,9 @@ const DEFAULTS = {
   captionSize: 'medium',   // small | medium | large
   dubPanelOpen: true,
   reduceTransparency: false,
-  preferSubtitles: true,   // speak the site's own English subtitles when it has them
+  preferSubtitles: true,
+  adblock: true,           // block ads and trackers in the built-in browser
+  adblockAllow: null,      // sites where blocking is off (null = the default list)   // speak the site's own English subtitles when it has them
   lastUrl: '',
 };
 

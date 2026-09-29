@@ -9,6 +9,7 @@ const { Engine } = require('./engine');
 const subtitles = require('./subtitles');
 const { License } = require('./license');
 const { Setup } = require('./setup');
+const { AdBlock } = require('./adblock');
 
 const CHECKOUT_URL = process.env.KOE_CHECKOUT_URL || '';   // Lemon Squeezy checkout link, set once the store exists
 
@@ -27,7 +28,7 @@ protocol.registerSchemesAsPrivileged([
   { scheme: 'koe', privileges: { standard: true, secure: true, supportFetchAPI: true } },
 ]);
 
-let win, browser, captions, store, engine, license, setup;
+let win, browser, captions, store, engine, license, setup, adblock;
 let viewport = { x: 0, y: 0, width: 800, height: 600 };
 let captionBox = { width: 0, height: 0 };
 let captionTimer = null;
@@ -64,7 +65,11 @@ function navState() {
   };
 }
 
-function pushNav() { sendUi('nav:state', navState()); }
+function pushNav() { sendUi('nav:state', navState()); pushAdblock(); }
+
+function pushAdblock() {
+  if (adblock && browser) sendUi('adblock:state', adblock.state(browser.webContents.getURL(), browser.webContents.id));
+}
 
 function contentArea() {
   const [width, height] = win.getContentSize();
@@ -162,6 +167,9 @@ function createWindow() {
 
   wireBrowser(browser.webContents);
   watchPlayerData(browser.webContents);
+  adblock = new AdBlock({ session: browser.webContents.session, store, dir: app.getPath('userData') });
+  adblock.on('count', (id) => { if (id === browser.webContents.id) pushAdblock(); });
+  adblock.start().then(pushAdblock);
   wireUiSession();
 
   win.webContents.on('before-input-event', (e, input) => { if (handleShortcut(input)) e.preventDefault(); });
@@ -201,6 +209,7 @@ function wireBrowser(wc) {
     wc.on(ev, pushNav);
   }
   let lastPath = '';
+  wc.on('did-start-navigation', (d) => { if (d.isMainFrame && !d.isSameDocument) adblock?.resetCount(wc.id); });
   wc.on('did-navigate', (_e, url) => {
     try { lastPath = new URL(url).pathname; } catch { lastPath = ''; }
     setSubs(null);
@@ -398,6 +407,13 @@ function wireIpc() {
     pushNav();
   });
   handle('dub:log', (entry) => log.info('dub', entry));
+  handle('adblock:state', () => adblock.state(browser.webContents.getURL(), browser.webContents.id));
+  handle('adblock:toggle-site', () => {
+    adblock.toggleSite(browser.webContents.getURL());
+    browser.webContents.reload();
+    pushAdblock();
+  });
+  handle('adblock:set-enabled', (on) => { adblock.setEnabled(!!on); browser.webContents.reload(); pushAdblock(); });
   handle('setup:status', () => setup.status || setup.check());
   handle('setup:start', (packs) => setup.start(Array.isArray(packs) ? packs.filter((p) => /^[a-z-]+$/.test(p)) : []));
   handle('license:get', () => { license.refresh().then((s) => sendUi('license:state', s)); return license.summary(); });

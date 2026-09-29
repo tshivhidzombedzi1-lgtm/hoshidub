@@ -102,6 +102,7 @@ function renderNav(nav) {
   if (nav.showingBrowser && state.page !== 'browser' && state.page !== 'error') showPage('browser');
   if (!nav.showingBrowser && state.page === 'browser') showPage('home');
   document.title = nav.showingBrowser && nav.title ? `${nav.title} — Dub It` : 'Dub It';
+  if (state.adblock) renderAdblock(state.adblock);
   renderDubButton();
 }
 
@@ -215,6 +216,34 @@ dubber.addEventListener('state', () => {
     if (remaining <= 0) { await toggleDub(false); showUpgrade('limit'); }
   }, 10000);
 });
+
+// ---------------------------------------------------------------- ad blocker
+function renderAdblock(s) {
+  state.adblock = s;
+  const btn = $('shield-btn');
+  btn.hidden = !s.available || !state.nav.showingBrowser || !s.site;
+  const on = s.enabled && !s.allowed;
+  btn.classList.toggle('off', !on);
+  $('shield-icon').querySelector('use').setAttribute('href', on ? '#i-shield' : '#i-shield-off');
+  $('shield-count').textContent = s.blocked > 999 ? '999+' : String(s.blocked);
+  const tip = !s.enabled ? 'Ad blocker is off (Settings)'
+    : s.allowed ? `Ads allowed on ${s.site}. Click to block them.`
+      : `${s.blocked} ads and trackers blocked on ${s.site}. Click to allow ads on this site.`;
+  btn.dataset.tip = tip;
+  btn.setAttribute('aria-label', tip);
+  $('set-adblock').checked = s.enabled;
+}
+
+function bindAdblock() {
+  $('shield-btn').addEventListener('click', async () => {
+    const s = state.adblock;
+    if (!s?.enabled) { showPage('settings'); return; }
+    await koe.adblock.toggleSite();
+    toast(s.allowed ? `Blocking ads on ${s.site}` : `Ads allowed on ${s.site}`);
+  });
+  $('set-adblock').addEventListener('change', (e) => koe.adblock.setEnabled(e.target.checked));
+  koe.adblock.onState(renderAdblock);
+}
 
 // ---------------------------------------------------------------- first-run setup: download the voices
 const mb = (bytes) => Math.round(bytes / 1e6);
@@ -555,6 +584,8 @@ async function init() {
   bindTooltips();
   bindPlan();
   bindSetup();
+  bindAdblock();
+  renderAdblock(await koe.adblock.state());
   state.license = await koe.license.get();
   renderPlan();
   state.setup = await koe.setup.status();
