@@ -40,14 +40,14 @@ class Setup extends EventEmitter {
       return this.runtime.manifest().then(
         (m) => (this.status = { runtime: false, packs: {}, gpu: {}, ready: false,
           sizes_mb: { runtime: Math.round(m.total / 1e6), core: 330, 'voices-en': 6, ear: 3090 } }),
-        () => this.fail('Otodub couldn\'t reach its download server. Check your internet connection and reopen the app.'),
+        () => this.fail('Hoshidub couldn\'t reach its download server. Check your internet connection and reopen the app.'),
       );
     }
     return new Promise((resolve) => {
       let out = '';
       const p = this.run([]);
       p.stdout.on('data', (d) => { out += d; });
-      p.on('error', () => resolve(this.fail('Otodub\'s dubbing runtime is missing. Reinstall the app.')));
+      p.on('error', () => resolve(this.fail('Hoshidub\'s dubbing runtime is missing. Reinstall the app.')));
       p.on('exit', () => {
         try {
           const s = JSON.parse(out.trim().split('\n').pop());

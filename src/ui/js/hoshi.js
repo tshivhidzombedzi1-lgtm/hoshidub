@@ -1,4 +1,4 @@
-// Hoshi's avatar: an original animated character drawn in SVG (owned by Otodub / MCP Labs).
+// Hoshi's avatar: an original animated character drawn in SVG (owned by Hoshidub / MCP Labs).
 // Idle life (float, blink, sway, wander), expressions, lip-sync from her voice, jumps and waves.
 
 const MOUTHS = {

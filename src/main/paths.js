@@ -1,4 +1,4 @@
-// Where things live, for both a source checkout and an installed copy of Otodub.
+// Where things live, for both a source checkout and an installed copy of Hoshidub.
 const fs = require('fs');
 const path = require('path');
 const { app } = require('electron');

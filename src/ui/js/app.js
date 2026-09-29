@@ -105,7 +105,7 @@ function renderNav(nav) {
   $('address-icon').querySelector('use').setAttribute('href', secure ? '#i-lock' : '#i-search');
   if (nav.showingBrowser && state.page !== 'browser' && state.page !== 'error') showPage('browser');
   if (!nav.showingBrowser && state.page === 'browser') showPage('home');
-  document.title = nav.showingBrowser && nav.title ? `${nav.title} — Otodub` : 'Otodub';
+  document.title = nav.showingBrowser && nav.title ? `${nav.title} — Hoshidub` : 'Hoshidub';
   if (state.adblock) renderAdblock(state.adblock);
   renderDubButton();
 }
@@ -344,7 +344,7 @@ function bindSetup() {
     $('setup-go').disabled = false;
     $('setup-ear').disabled = false;
     renderDownloads();
-    toast('Voices downloaded. Otodub is warming up.');
+    toast('Voices downloaded. Hoshidub is warming up.');
   });
   koe.setup.onError((msg) => {
     $('setup-error').textContent = msg;
@@ -384,7 +384,7 @@ function renderPlan() {
     $('meter-fill').style.width = `${(l.remaining / l.freeSeconds) * 100}%`;
     meter.classList.toggle('low', l.remaining < 5 * 60);
   }
-  $('plan-name').textContent = pro ? 'Otodub Pro' : 'Free';
+  $('plan-name').textContent = pro ? 'Hoshidub Pro' : 'Free';
   $('plan-detail').textContent = pro ? `Licence ${l.key} · unlimited dubbing` : `${minutes(l.freeSeconds)} minutes of dubbing a day · ${minutes(l.remaining)} left today`;
   $('plan-upgrade').hidden = pro;
   $('plan-deactivate').hidden = !pro;
@@ -422,7 +422,7 @@ function bindPlan() {
     if (!r.ok) { $('up-error').textContent = r.error; $('up-error').hidden = false; return; }
     hideUpgrade();
     $('up-key').value = '';
-    toast('Welcome to Otodub Pro');
+    toast('Welcome to Hoshidub Pro');
   });
   let armed = false;
   $('plan-deactivate').addEventListener('click', async (e) => {
@@ -590,7 +590,7 @@ async function startListening() {
     $('hoshi-mic').classList.add('listening');
     avatars.panel?.set('surprised');
   } catch {
-    toast('Otodub needs your microphone to hear you. Allow it in Windows privacy settings.', 'error', 6000);
+    toast('Hoshidub needs your microphone to hear you. Allow it in Windows privacy settings.', 'error', 6000);
   }
 }
 

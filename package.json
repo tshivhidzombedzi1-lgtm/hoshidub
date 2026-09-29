@@ -1,8 +1,8 @@
 {
   "name": "koe",
-  "productName": "Otodub",
+  "productName": "Hoshidub",
   "version": "0.1.0",
-  "description": "Otodub: watch anime with a live English dub.",
+  "description": "Hoshidub: watch anime with a live English dub.",
   "main": "src/main/main.js",
   "private": true,
   "scripts": {
@@ -24,7 +24,7 @@
   "author": "MCP Labs",
   "build": {
     "appId": "app.dubit.desktop",
-    "productName": "Otodub",
+    "productName": "Hoshidub",
     "copyright": "Copyright © 2026 MCP Labs",
     "electronDist": "node_modules/electron/dist",
     "electronVersion": "44.1.0",
@@ -58,14 +58,14 @@
       ],
       "icon": "build/icon.ico",
       "artifactName": "Dub-It-Setup-${version}.${ext}",
-      "legalTrademarks": "Otodub is a product of MCP Labs"
+      "legalTrademarks": "Hoshidub is a product of MCP Labs"
     },
     "nsis": {
       "oneClick": true,
       "perMachine": false,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
-      "shortcutName": "Otodub",
+      "shortcutName": "Hoshidub",
       "deleteAppDataOnUninstall": false,
       "installerIcon": "build/icon.ico",
       "uninstallerIcon": "build/icon.ico"

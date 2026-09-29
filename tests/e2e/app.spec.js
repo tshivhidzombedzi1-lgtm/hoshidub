@@ -10,7 +10,7 @@ test('launches fast and shows onboarding on first run', async () => {
   console.log(`time to interactive: ${readyMs} ms`);
   expect(readyMs).toBeLessThan(6000);
   await expect(ui.locator('#onboarding')).toBeVisible();
-  await expect(ui.locator('#ob-title')).toHaveText('Welcome to Otodub');
+  await expect(ui.locator('#ob-title')).toHaveText('Welcome to Hoshidub');
   await shot(ui, '01-onboarding');
   await ui.click('#ob-next');
   await ui.click('#ob-next');

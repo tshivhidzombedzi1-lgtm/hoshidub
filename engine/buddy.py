@@ -1,5 +1,5 @@
 """Hoshi, the watch buddy. The pipeline follows Project Riko (github.com/rayenfeng/riko_project, MIT):
-listen -> understand -> reply in character -> speak. Rebuilt for Otodub to run free on the user's own GPU and to
+listen -> understand -> reply in character -> speak. Rebuilt for Hoshidub to run free on the user's own GPU and to
 know the show:
 
   * brain     a local 4-bit Qwen3-4B-Instruct (Apache-2.0) instead of a paid cloud API

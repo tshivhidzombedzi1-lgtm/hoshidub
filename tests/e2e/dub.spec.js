@@ -1,4 +1,4 @@
-// The whole product in one test: a real page plays Japanese video in Otodub's browser, the user presses Dub,
+// The whole product in one test: a real page plays Japanese video in Hoshidub's browser, the user presses Dub,
 // and English lines come back with separate voices, captions, and a live transcript. Runs silently.
 const { test, expect } = require('@playwright/test');
 const fs = require('fs');

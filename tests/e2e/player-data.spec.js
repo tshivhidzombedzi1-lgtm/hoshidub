@@ -1,4 +1,4 @@
-// A site whose player gets its subtitle list inside JSON (no <track>, no .vtt URL): Otodub must still find it.
+// A site whose player gets its subtitle list inside JSON (no <track>, no .vtt URL): Hoshidub must still find it.
 const { test, expect } = require('@playwright/test');
 const fs = require('fs');
 const http = require('http');

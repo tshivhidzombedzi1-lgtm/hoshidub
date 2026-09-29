@@ -50,16 +50,16 @@ test('Free plan shows the allowance; a licence key unlocks Pro and survives a re
   await ui.fill('#up-key', GOOD);
   await ui.click('#up-activate');
   await expect(ui.locator('#upgrade')).toBeHidden();
-  await expect(ui.locator('.toast')).toContainText('Welcome to Otodub Pro');
+  await expect(ui.locator('.toast')).toContainText('Welcome to Hoshidub Pro');
   await expect(ui.locator('#plan-meter')).toBeHidden();
   await ui.click('#nav-settings');
-  await expect(ui.locator('#plan-name')).toHaveText('Otodub Pro');
+  await expect(ui.locator('#plan-name')).toHaveText('Hoshidub Pro');
   await expect(ui.locator('#plan-detail')).toContainText('A1B2…4A5B');
   await app.close();
 
   ({ app, ui } = await launch({ profile, env }));            // still Pro after a restart, no re-entry
   await ui.click('#nav-settings');
-  await expect(ui.locator('#plan-name')).toHaveText('Otodub Pro');
+  await expect(ui.locator('#plan-name')).toHaveText('Hoshidub Pro');
   await ui.click('#plan-deactivate');
   await ui.click('#plan-deactivate');                      // two-step confirm
   await expect(ui.locator('#plan-name')).toHaveText('Free');

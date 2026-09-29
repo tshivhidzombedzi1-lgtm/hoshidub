@@ -1,4 +1,4 @@
-// Otodub main process: one window = glass UI (the window's own page) + the browser view + a captions view.
+// Hoshidub main process: one window = glass UI (the window's own page) + the browser view + a captions view.
 const { app, BrowserWindow, WebContentsView, components, ipcMain, nativeTheme, net, protocol, session, shell } = require('electron');
 const fs = require('fs');
 const path = require('path');
@@ -184,7 +184,7 @@ function createWindow() {
     width: ws.width, height: ws.height, x: testing ? -30000 : ws.x, y: testing ? 0 : ws.y,
     skipTaskbar: testing,
     minWidth: 980, minHeight: 620,
-    title: 'Otodub',
+    title: 'Hoshidub',
     icon: path.join(UI_DIR, 'icon.png'),
     show: false,
     backgroundColor: '#00000000',
