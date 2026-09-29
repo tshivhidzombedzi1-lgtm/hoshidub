@@ -497,7 +497,25 @@ function setTab(tab) {
   if (hoshiTab) { $('hoshi-peek').hidden = true; greetOnce(); }
 }
 
+// what to tell the viewer when Hoshi can't answer yet
+function hoshiNotReady() {
+  return {
+    missing: hoshiDownloading ? "I'm still downloading. Almost there!" : 'Download me first with the button above, then we can talk!',
+    loading: "I'm waking up. Give me a few seconds!",
+    error: "I couldn't start this time. Try restarting Hoshidub.",
+    offline: "I'm not connected yet. The dubbing engine is still starting.",
+  }[hoshiState] || "One sec, I'm not ready yet.";
+}
+
+function renderHoshiStatus() {
+  const label = { ready: 'Ready to chat', loading: 'Waking up…', missing: hoshiDownloading ? 'Downloading…' : 'Not downloaded yet',
+    error: "Couldn't start", offline: 'Connecting…' }[hoshiState] || hoshiState;
+  $('hoshi-status-text').textContent = label;
+  $('hoshi-dot').dataset.state = { ready: 'ready', loading: 'loading', offline: 'loading', error: 'error' }[hoshiState] || '';
+}
+
 function renderHoshi() {
+  renderHoshiStatus();
   const on = state.settings.hoshi;
   $('tab-hoshi').hidden = !on;
   $('home-hoshi').hidden = !on;
@@ -565,7 +583,8 @@ async function hoshiContext() {
 }
 
 async function askHoshi(text) {
-  if (!text.trim() || hoshiState !== 'ready') return;
+  if (!text.trim()) return;
+  if (hoshiState !== 'ready') { chat(text, 'me'); chat(hoshiNotReady(), 'them'); return; }
   chat(text, 'me');
   const typing = chat('Hoshi is thinking…', 'them typing');
   avatars.panel?.set('thinking');
@@ -576,7 +595,8 @@ async function askHoshi(text) {
 // hold-to-talk: record the mic at 16 kHz with the same audio tap the dub uses
 let rec = null;
 async function startListening() {
-  if (rec || hoshiState !== 'ready') return;
+  if (rec) return;
+  if (hoshiState !== 'ready') { chat(hoshiNotReady(), 'them'); avatars.panel?.set('thinking'); return; }
   try {
     const stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } });
     const ctx = new AudioContext();

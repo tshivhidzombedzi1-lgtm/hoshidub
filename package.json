@@ -66,7 +66,7 @@
         }
       ],
       "icon": "build/icon.ico",
-      "artifactName": "Dub-It-Setup-${version}.${ext}",
+      "artifactName": "Hoshidub-Setup-${version}.${ext}",
       "legalTrademarks": "Hoshidub is a product of MCP Labs"
     },
     "nsis": {
