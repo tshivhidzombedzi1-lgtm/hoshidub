@@ -181,7 +181,7 @@ The same table as the home section, plus a plan comparison and billing FAQ.
 - A SmartScreen note until the installer is code-signed. **OWNER DECIDES:** code-signing certificate.
 
 ### 6.4 Legal: `/privacy`, `/terms`
-- Privacy: no account; no analytics in the app; everything runs locally; Hoshi's memory stays on the PC; the licence check sends only the key and an instance ID to Lemon Squeezy; the website uses privacy-friendly analytics only (see §9).
+- Privacy: no account; no analytics in the app; everything runs locally; Hoshi's memory stays on the PC; the licence check sends only the key and an instance ID to Stripe; the website uses privacy-friendly analytics only (see §9).
 - Terms: personal use with your own streaming subscriptions; no DRM circumvention; no recording or redistribution. **OWNER DECIDES:** have a lawyer review both before launch.
 
 ### 6.5 Support `/support` and Press `/press`
@@ -220,9 +220,9 @@ Don't publish personal contact details (phone, personal email or home location) 
 | **Pro** | **$6.99 / month** or **$49 / year** (save 40%) | Unlimited dubbing · official-subtitle mode with zero delay · a voice per character · soundtrack-safe mixing · captions · Hoshi |
 | **Cloud** *(coming 2027)* | $11.99 / month | Everything in Pro, runs on any laptop without a gaming GPU, premium voices, more languages |
 
-Checkout is **Lemon Squeezy** (merchant of record: handles global tax, emails the licence key). Pro buttons open the Lemon Squeezy checkout overlay. **OWNER DECIDES:** store URL and product/variant IDs. The app activates keys through Lemon Squeezy's public licence API, so the site doesn't need a backend for licensing.
+Checkout is **Stripe** (merchant of record: handles global tax, emails the licence key). Pro buttons open the Stripe checkout overlay. **OWNER DECIDES:** store URL and product/variant IDs. The app activates keys through Stripe's public licence API, so the site doesn't need a backend for licensing.
 
-Referral: *Give a month, get a month* (both people get a free month when a friend subscribes). Affiliates: 30% recurring for 12 months via Lemon Squeezy affiliates.
+Referral: *Give a month, get a month* (both people get a free month when a friend subscribes). Affiliates: 30% recurring for 12 months via Stripe affiliates.
 
 ---
 
@@ -262,7 +262,7 @@ The site ships only when every box is true:
 - [ ] Works at 360 px wide with no horizontal scroll; tap targets ≥ 44 px.
 - [ ] Keyboard-only walkthrough reaches every link and button in a logical order.
 - [ ] No streaming-service logos, key art or footage anywhere; the not-affiliated line is in the footer.
-- [ ] Every CTA works: Download → latest installer; Get Pro → Lemon Squeezy checkout; waitlist stores the email.
+- [ ] Every CTA works: Download → latest installer; Get Pro → Stripe checkout; waitlist stores the email.
 - [ ] Copy matches this brief's tone: short, warm, no hype words, no spoilers.
 - [ ] Credits present: "A product of MCP Labs" and "Created by Tshivhidzo (Moss) Mbedzi" in the footer, plus the `/about` page with the founder bio, links and JSON-LD from §6.6.
 

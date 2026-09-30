@@ -9,16 +9,16 @@ export const site = {
 
 export const links = {
   // latest Windows installer, hosted next to the site in public_html/downloads (see docs/HANDOFF.md)
-  download: '/downloads/Hoshidub-Setup-0.1.0.exe',
-  // Lemon Squeezy checkout links for Pro
-  proMonthly: '',
-  proYearly: '',
-  // customer self-service (Lemon Squeezy "My Orders": log in by email link, see licence keys, update card, cancel)
-  account: 'https://app.lemonsqueezy.com/my-orders',
+  download: '/api/dl.php',   // counts the download, then sends /downloads/Hoshidub-Setup-0.1.0.exe
+  // Stripe Payment Links for Pro (monthly $6.99, yearly $49); empty shows "coming soon"
+  proMonthly: '/api/checkout.php?plan=monthly',
+  proYearly: '/api/checkout.php?plan=yearly',
+  // Stripe customer-portal login link (https://billing.stripe.com/p/login/...): update card, invoices, cancel. Empty hides the "My account" links.
+  account: 'https://billing.stripe.com/p/login/4gM3cwgwXcH17MW3MvbAs00',
   // tip jar
   kofi: '',             // e.g. https://ko-fi.com/hoshidub
   paypal: '',           // e.g. https://paypal.me/yourname
-  tipCheckout: '',      // Lemon Squeezy "pay what you want" product
+  tipCheckout: '/api/checkout.php?plan=tip&amount=5',      // Stripe one-time "customer chooses price" Payment Link
   discord: 'https://discord.gg/5SBWbgG7Xp',
   youtube: 'https://www.youtube.com/@FTMORangeBreakoutProea',
   linkedin: 'https://www.linkedin.com/in/tshivhidzo-mbedzi-a74040233/',

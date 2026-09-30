@@ -32,10 +32,16 @@ function db(): PDO {
   // plain SQL that works on both SQLite and MySQL
   $pdo->exec('CREATE TABLE IF NOT EXISTS licenses (
     license_key VARCHAR(40) PRIMARY KEY, email VARCHAR(255) NOT NULL, status VARCHAR(20) NOT NULL,
-    stripe_customer VARCHAR(64), stripe_subscription VARCHAR(64), activation_limit INTEGER NOT NULL,
+    stripe_customer VARCHAR(64), stripe_subscription VARCHAR(64), plan VARCHAR(20), activation_limit INTEGER NOT NULL,
     note VARCHAR(255), created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL)');
+  try { $pdo->exec('ALTER TABLE licenses ADD COLUMN plan VARCHAR(20)'); } catch (Throwable $e) { /* already there */ }
+  try { $pdo->exec('ALTER TABLE licenses ADD COLUMN discord_id VARCHAR(24)'); } catch (Throwable $e) { /* already there */ }
+  $pdo->exec('CREATE TABLE IF NOT EXISTS admin_log (id VARCHAR(40) PRIMARY KEY, at INTEGER NOT NULL, what VARCHAR(255) NOT NULL)');
   $pdo->exec('CREATE TABLE IF NOT EXISTS activations (
     id VARCHAR(32) PRIMARY KEY, license_key VARCHAR(40) NOT NULL, name VARCHAR(255), created_at INTEGER NOT NULL)');
+  $pdo->exec('CREATE TABLE IF NOT EXISTS admin_auth (id INTEGER PRIMARY KEY, hash VARCHAR(255) NOT NULL, must_change INTEGER NOT NULL, updated_at INTEGER NOT NULL)');
+  $pdo->exec('CREATE TABLE IF NOT EXISTS downloads (id VARCHAR(24) PRIMARY KEY, at INTEGER NOT NULL, ip_hash VARCHAR(64), file VARCHAR(120))');
+  $pdo->exec('CREATE TABLE IF NOT EXISTS stripe_log (id VARCHAR(24) PRIMARY KEY, at INTEGER NOT NULL, type VARCHAR(60), email VARCHAR(255), detail VARCHAR(255))');
   $pdo->exec('CREATE TABLE IF NOT EXISTS events (id VARCHAR(120) PRIMARY KEY, created_at INTEGER NOT NULL)');
   return $pdo;
 }
@@ -72,12 +78,12 @@ function activation_count(string $key): int {
   return (int) $q->fetchColumn();
 }
 
-function create_license(string $email, ?string $customer, ?string $subscription, string $note = ''): string {
+function create_license(string $email, ?string $customer, ?string $subscription, string $note = '', string $plan = 'manual', ?int $limit = null): string {
   $key = new_license_key();
   $now = time();
-  db()->prepare('INSERT INTO licenses (license_key, email, status, stripe_customer, stripe_subscription, activation_limit, note, created_at, updated_at)
-                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)')
-      ->execute([$key, strtolower($email), 'active', $customer, $subscription, (int) (cfg()['activation_limit'] ?? 2), $note, $now, $now]);
+  db()->prepare('INSERT INTO licenses (license_key, email, status, stripe_customer, stripe_subscription, plan, activation_limit, note, created_at, updated_at)
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)')
+      ->execute([$key, strtolower($email), 'active', $customer, $subscription, $plan, $limit ?? (int) (cfg()['activation_limit'] ?? 2), $note, $now, $now]);
   return $key;
 }
 
@@ -93,6 +99,7 @@ function send_keys(string $email, array $keys): bool {
     '',
     ...$lines,
     '',
+    'Not installed yet? Download Hoshidub for Windows: ' . ($c['site_url'] ?? 'https://hoshidub.com') . '/download',
     'To activate: open Hoshidub, go to Settings, then Upgrade, paste the key and press Activate.',
     'You can use it on ' . (int) ($c['activation_limit'] ?? 2) . ' PCs. To move it, press Deactivate on the old PC first.',
     '',
@@ -104,4 +111,40 @@ function send_keys(string $email, array $keys): bool {
   if (!empty($c['mail_disabled'])) return true;             // tests
   $headers = "From: $from\r\nReply-To: " . ($c['reply_to'] ?? $from) . "\r\nContent-Type: text/plain; charset=utf-8";
   return mail($email, 'Your Hoshidub Pro licence key', $body, $headers);
+}
+
+// ---- Stripe (raw API, no SDK; same approach as the MCP Automation shop) ----
+// The secret key is read at run time from a private .env file (config 'stripe_env_file', e.g. the MCP Automation app's .env),
+// or from config 'stripe_secret_key'. It is never copied into the website folder and never sent to a browser.
+function stripe_key(): string {
+  $c = cfg();
+  if (!empty($c['stripe_secret_key'])) return (string) $c['stripe_secret_key'];
+  $f = $c['stripe_env_file'] ?? '';
+  if ($f && is_readable($f) && preg_match('/^STRIPE_SECRET_KEY=(\S+)/m', (string) file_get_contents($f), $m)) return trim($m[1], "\"'");
+  return '';
+}
+
+function stripe_api(string $path, array $params = [], string $method = 'POST'): array {
+  $key = stripe_key();
+  if ($key === '') return ['error' => ['message' => 'No Stripe key configured.']];
+  $ch = curl_init('https://api.stripe.com/v1/' . $path);
+  curl_setopt_array($ch, [CURLOPT_RETURNTRANSFER => true, CURLOPT_CUSTOMREQUEST => $method, CURLOPT_USERPWD => $key . ':', CURLOPT_TIMEOUT => 30]);
+  if ($method === 'POST') curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($params));
+  $res = curl_exec($ch);
+  if ($res === false) { error_log('hoshidub stripe curl: ' . curl_error($ch)); return ['error' => ['message' => 'Could not reach Stripe.']]; }
+  return json_decode((string) $res, true) ?: [];
+}
+
+const PLANS = [   // price in US cents; Stripe Checkout builds the product on the fly, so nothing to set up in the dashboard
+  'monthly' => ['name' => 'Hoshidub Pro (monthly)', 'cents' => 699, 'interval' => 'month'],
+  'yearly'  => ['name' => 'Hoshidub Pro (yearly)',  'cents' => 4900, 'interval' => 'year'],
+];
+
+function admin_log(string $what): void {
+  db()->prepare('INSERT INTO admin_log (id, at, what) VALUES (?, ?, ?)')->execute([bin2hex(random_bytes(8)), time(), mb_substr($what, 0, 255)]);
+}
+
+function stripe_log(string $type, string $email, string $detail): void {
+  db()->prepare('INSERT INTO stripe_log (id, at, type, email, detail) VALUES (?, ?, ?, ?, ?)')
+     ->execute([bin2hex(random_bytes(10)), time(), $type, $email, mb_substr($detail, 0, 255)]);
 }

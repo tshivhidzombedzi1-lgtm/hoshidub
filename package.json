@@ -84,8 +84,9 @@
   },
   "dubit": {
     "runtimeBase": "https://grey-woodpecker-803820.hostingersite.com/downloads/runtime",
+    "licenseApi": "https://hoshidub.com/api/license",
     "productId": "",
-    "checkoutUrl": ""
+    "checkoutUrl": "https://hoshidub.com/api/checkout.php?plan=monthly"
   },
   "dependencies": {
     "@ghostery/adblocker-electron": "^2.18.2"

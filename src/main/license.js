@@ -1,12 +1,12 @@
-// Plan and licence: Free (daily dubbing allowance) or Pro (a Lemon Squeezy licence key activated on this PC).
-// Uses Lemon Squeezy's public licence API, which needs no secret: activate / validate / deactivate.
+// Plan and licence: Free (daily dubbing allowance) or Pro (a licence key from our own licence server, activated on this PC).
+// The server (website/php/api) speaks activate / validate / deactivate and needs no secret in the app.
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
 const log = require('./log');
 const paths = require('./paths');
 
-const API = process.env.KOE_LICENSE_API || 'https://api.lemonsqueezy.com/v1/licenses';
+const API = paths.licenseApi() || 'https://hoshidub.com/api/license';
 const PRODUCT_ID = paths.productId() ? Number(paths.productId()) : null;   // package.json "dubit.productId", set once the store exists
 const FREE_SECONDS = Number(process.env.KOE_FREE_SECONDS || 30 * 60);
 const REVALIDATE_MS = 24 * 3600 * 1000;
@@ -109,7 +109,8 @@ class License {
         s.status = 'active';
         s.validatedAt = Date.now();
       } else if (r.ok || r.body.valid === false) {
-        s.status = status || 'invalid';            // expired, disabled, or deactivated elsewhere
+        // expired / disabled show in license_key.status; a key deactivated on this PC still says 'active' there, so that is 'invalid'
+        s.status = status && status !== 'active' ? status : 'invalid';
         log.info('licence no longer active', { status: s.status });
       }
       this.save();

@@ -11,3 +11,9 @@ __pycache__/
 dist/
 build/runtime-stage/
 build/*.tar.gz
+
+# licence database, sessions and secrets live outside the repo; never commit them
+hoshidub-data/
+*.sqlite
+website/php/config.php
+website/php/error_log

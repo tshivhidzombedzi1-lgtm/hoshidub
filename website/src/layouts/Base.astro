@@ -3,10 +3,15 @@ import '../styles/global.css';
 import Logo from '../components/Logo.astro';
 import { site, links, founder } from '../config.js';
 
-const { title, description = site.description, image = '/img/og.png', jsonld = null } = Astro.props;
-const pageTitle = title ? `${title} · Hoshidub` : `Hoshidub: ${site.slogan}`;
-const canonical = new URL(Astro.url.pathname, site.url).toString();
-const path = Astro.url.pathname.replace(/\/$/, '') || '/';
+const { title, fullTitle = '', description = site.description, image = '/img/og.png', jsonld = null, noindex = false } = Astro.props;
+const pageTitle = fullTitle || (title ? `${title} · Hoshidub` : `Hoshidub: ${site.slogan}`);
+const clean = Astro.url.pathname.replace(/index\.html$/, '').replace(/\.html$/, '') || '/';   // build format is 'file' (pricing.html), but the live URLs are clean (/pricing)
+const canonical = new URL(clean, site.url).toString();
+const path = clean.replace(/\/$/, '') || '/';
+const crumbs = path === '/' ? null : { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [
+  { '@type': 'ListItem', position: 1, name: 'Hoshidub', item: site.url + '/' },
+  { '@type': 'ListItem', position: 2, name: title || path.slice(1), item: canonical } ] };
+const website = path === '/' ? { '@context': 'https://schema.org', '@type': 'WebSite', name: 'Hoshidub', url: site.url, description: site.description, publisher: { '@type': 'Organization', name: 'MCP Labs' } } : null;
 const nav = [
   ['/#features', 'Features'], ['/#hoshi', 'Hoshi'], ['/pricing', 'Pricing'], ['/#faq', 'FAQ'], ['/about', 'About'],
 ];
@@ -36,18 +41,29 @@ const org = {
   <meta property="og:url" content={canonical} />
   <meta property="og:image" content={new URL(image, site.url).toString()} />
   <meta name="twitter:card" content="summary_large_image" />
+  <meta name="robots" content={noindex ? 'noindex, follow' : 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1'} />
+  <meta name="author" content="MCP Labs" />
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Hoshidub: watch anime in Japanese and hear it in English, live, with Hoshi beside the player" />
+  <meta name="twitter:title" content={pageTitle} />
+  <meta name="twitter:description" content={description} />
+  <meta name="twitter:image" content={new URL(image, site.url).toString()} />
   <script is:inline src="/theme.js"></script>
   <script type="application/ld+json" set:html={JSON.stringify(org)} />
+  {crumbs && <script type="application/ld+json" set:html={JSON.stringify(crumbs)} />}
+  {website && <script type="application/ld+json" set:html={JSON.stringify(website)} />}
   {jsonld && <script type="application/ld+json" set:html={JSON.stringify(jsonld)} />}
 </head>
 <body>
   <a class="skip" href="#main">Skip to content</a>
   <div class="backdrop" aria-hidden="true">
+    <img class="bg on" src="/img/bg/fuji.webp" alt="" width="1200" height="675" fetchpriority="high" decoding="async" data-mood="dawn" />
+    <img class="bg" src="/img/bg/fuji.webp" alt="" width="1200" height="675" loading="lazy" decoding="async" data-mood="dusk" />
+    <img class="bg" src="/img/bg/fuji.webp" alt="" width="1200" height="675" loading="lazy" decoding="async" data-mood="night" />
     <i></i><i></i><i></i>
-    <svg viewBox="0 0 1440 400" preserveAspectRatio="none">
-      <path d="M0 400 L0 300 C160 270 240 240 330 250 C420 262 470 210 560 200 L720 60 L880 200 C970 210 1020 262 1110 250 C1200 240 1280 270 1440 300 L1440 400 Z" fill="var(--text)" opacity="0.35" />
-      <path d="M660 115 L720 60 L780 115 C760 108 745 124 720 112 C695 124 680 108 660 115 Z" fill="var(--text)" opacity="0.7" />
-    </svg>
+    <div class="veil"></div>
   </div>
 
   <header class="nav-wrap">
@@ -66,7 +82,7 @@ const org = {
           <div class="menu-panel glass strong">
             {nav.map(([href, label]) => <a href={href}>{label}</a>)}
             <a href="/tip">Support us</a>
-            <a href={links.account} target="_blank" rel="noopener">My account</a>
+            {links.account && <a href={links.account} target="_blank" rel="noopener">My account</a>}
             <a class="btn primary" href="/download">Download for Windows</a>
           </div>
         </details>
@@ -85,7 +101,7 @@ const org = {
       </div>
       <div>
         <h3 class="foot-h">Product</h3>
-        <a href="/#features">Features</a><a href="/#hoshi">Meet Hoshi</a><a href="/pricing">Pricing</a><a href="/download">Download</a><a href={links.account} target="_blank" rel="noopener">My account</a>
+        <a href="/#features">Features</a><a href="/#hoshi">Meet Hoshi</a><a href="/pricing">Pricing</a><a href="/download">Download</a>{links.account && <a href={links.account} target="_blank" rel="noopener">My account</a>}
       </div>
       <div>
         <h3 class="foot-h">Company</h3>
@@ -104,6 +120,17 @@ const org = {
     </div>
   </footer>
 
+  <script>
+    // the Fuji backdrop drifts between dawn, dusk and night; reduced-motion visitors get one still mood
+    const moods = [...document.querySelectorAll<HTMLImageElement>('.backdrop .bg')];
+    if (moods.length > 1) {
+      const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      let i = Math.floor(Math.random() * moods.length);
+      const show = (n: number) => moods.forEach((m, k) => m.classList.toggle('on', k === n));
+      show(i);
+      if (!still) setInterval(() => { if (!document.hidden) { i = (i + 1) % moods.length; show(i); } }, 30000);
+    }
+  </script>
   <script>
     const btn = document.getElementById('theme-btn');
     btn?.addEventListener('click', () => {

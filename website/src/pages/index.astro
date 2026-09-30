@@ -13,7 +13,9 @@ import { site } from '../config.js';
 
 const app = {
   '@context': 'https://schema.org', '@type': 'SoftwareApplication', name: 'Hoshidub', operatingSystem: 'Windows 10, Windows 11',
-  applicationCategory: 'MultimediaApplication', description: site.description, publisher: { '@type': 'Organization', name: 'MCP Labs' },
+  applicationCategory: 'MultimediaApplication', description: site.description, softwareVersion: site.version, downloadUrl: site.url + '/download',
+  screenshot: site.url + '/img/screens/02-home.webp', image: site.url + '/img/og.png', url: site.url,
+  featureList: ['Live English dub for anime', 'A different voice for every character', 'Official subtitles voiced with zero delay', 'Soundtrack stays at full volume', 'Hoshi, an AI watch buddy that never spoils'], publisher: { '@type': 'Organization', name: 'MCP Labs' },
   offers: [
     { '@type': 'Offer', name: 'Free', price: '0', priceCurrency: 'USD' },
     { '@type': 'Offer', name: 'Pro monthly', price: '6.99', priceCurrency: 'USD' },
@@ -21,7 +23,7 @@ const app = {
   ],
 };
 ---
-<Base jsonld={app}>
+<Base fullTitle="Hoshidub: Live English Dub for Anime | Watch in Japanese" description="Hoshidub is a Windows anime browser that gives every character their own English voice, live, with the soundtrack at full volume. Free to start." jsonld={app}>
   <!-- hero -->
   <section class="hero wrap">
     <div class="hero-copy">

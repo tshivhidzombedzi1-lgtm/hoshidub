@@ -39,6 +39,9 @@ AddType image/webp .webp
 
 <IfModule mod_rewrite.c>
   RewriteEngine On
+  # one address only: www goes to the bare domain
+  RewriteCond %{HTTP_HOST} ^www\\.hoshidub\\.com$ [NC]
+  RewriteRule ^ https://hoshidub.com%{REQUEST_URI} [L,R=301]
   # always HTTPS
   RewriteCond %{HTTPS} off
   RewriteCond %{HTTP:X-Forwarded-Proto} !https
@@ -46,6 +49,7 @@ AddType image/webp .webp
   # old-style /about.html links go to /about
   RewriteCond %{THE_REQUEST} \\s/([^.?\\s]+)\\.html[\\s?]
   RewriteRule ^ /%1 [R=301,L]
+  RewriteRule ^admin/?$ /api/admin.php [L]
   # clean links: /about serves about.html
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d
@@ -77,6 +81,8 @@ const immutable = `<IfModule mod_headers.c>
 const stat = path.join(release, 'static');
 fs.cpSync(path.join(root, 'dist'), stat, { recursive: true });
 fs.writeFileSync(path.join(stat, '.htaccess'), htaccess);
+// licence server (PHP): /api/license/*, the Stripe webhook and the lost-key form. Needs <home>/hoshidub-data/config.php (php/config.sample.php)
+fs.cpSync(path.join(root, 'php', 'api'), path.join(stat, 'api'), { recursive: true });
 fs.writeFileSync(path.join(stat, '_astro', '.htaccess'), immutable);
 zipDir(stat, path.join(release, 'hoshidub-website-static.zip'));
 

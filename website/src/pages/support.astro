@@ -9,11 +9,11 @@ const help = [
   ['The dub is late', 'Turn on the show’s English subtitles in the player. Hoshidub then reads them ahead of time and speaks with no delay. Without subtitles, it translates by ear, about a second behind.'],
   ['Hoshi doesn’t answer', 'Hoshi needs her download (about 3.2 GB) and works best on an NVIDIA RTX card. The Hoshi panel shows what she’s waiting for.'],
   ['A site looks broken', 'Click the shield in the toolbar to turn off the ad blocker for that site.'],
-  ['Where is my licence key? How do I cancel?', 'It’s in your receipt email. You can also open My account (bottom of every page), enter your email and get a login link to see your keys, update your card or cancel.'],
+  ['Where is my licence key? How do I cancel?', 'We email it right after you pay. Lost it? Use the form below and we’ll send it again. To update your card or cancel, use the billing link in your Stripe receipt.'],
   ['How do I move Pro to a new PC?', 'In the old PC, open Settings, Upgrade, and choose Deactivate. Then paste your key on the new PC.'],
 ];
 ---
-<Base title="Help" description="Help and answers for Hoshidub.">
+<Base fullTitle="Hoshidub Help: Playback, Dub Delay and Activation" description="Fixes for the most common Hoshidub questions: video will not play, no dub sound, late dubbing, activating Pro and moving your licence to a new PC.">
   <header class="page-head wrap">
     <p class="eyebrow">Help</p>
     <h1>How can we help?</h1>
@@ -22,12 +22,31 @@ const help = [
     {links.email && <p class="small">or email <a href={`mailto:${links.email}`}>{links.email}</a></p>}
   </header>
   <section class="wrap"><Faq items={help} /></section>
+  <section class="wrap" id="lost-key">
+    <form class="lost glass" method="post" action="/api/resend.php">
+      <h2>Lost your licence key?</h2>
+      <p class="muted">Enter the email you paid with and we’ll send your key again.</p>
+      <div class="lost-row">
+        <input type="email" name="email" required autocomplete="email" placeholder="you@example.com" aria-label="Email you paid with" />
+        <button class="btn primary" type="submit">Email my key</button>
+      </div>
+      <p class="small" id="lost-done" hidden>If that address has a Pro licence, the key is on its way. Check your spam folder too.</p>
+    </form>
+  </section>
   <section class="section wrap">
     <h2 class="sec-title">General questions</h2>
-    <Faq />
+    <Faq schema={false} />
   </section>
 </Base>
 
 <style>
+  .lost { max-width: 640px; margin: 32px auto 0; padding: clamp(22px, 4vw, 36px); display: grid; gap: 12px; }
+  .lost h2 { font-size: 24px; }
+  .lost-row { display: flex; flex-wrap: wrap; gap: 10px; }
+  .lost-row input { flex: 1 1 220px; min-width: 0; min-height: 48px; padding: 0 16px; border-radius: 999px; border: 1px solid var(--line); background: var(--hover); color: var(--text); font: inherit; }
   .sec-title { text-align: center; font-size: clamp(26px, 3.4vw, 38px); letter-spacing: -0.025em; margin-bottom: 24px; }
 </style>
+
+<script>
+  if (new URLSearchParams(location.search).get('sent')) document.getElementById('lost-done')?.removeAttribute('hidden');
+</script>

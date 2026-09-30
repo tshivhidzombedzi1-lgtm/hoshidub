@@ -9,8 +9,10 @@ export const faqs = [
   ['Which languages?', 'English now. Spanish, Portuguese, Hindi and French are next.'],
   ['Can I cancel Pro?', 'Any time, from the link in your receipt email. No questions, no tricks.'],
 ];
-const { items = faqs } = Astro.props;
+const { items = faqs, schema = true } = Astro.props;
+const faqLd = { "@context": "https://schema.org", "@type": "FAQPage", mainEntity: items.map(([q, a]) => ({ "@type": "Question", name: q, acceptedAnswer: { "@type": "Answer", text: a } })) };
 ---
+{schema && <script type="application/ld+json" set:html={JSON.stringify(faqLd)} />}
 <div class="faq">
   {items.map(([q, a]) => (
     <details class="glass">

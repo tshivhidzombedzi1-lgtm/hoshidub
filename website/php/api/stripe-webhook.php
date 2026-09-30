@@ -6,7 +6,7 @@
 declare(strict_types=1);
 require __DIR__ . '/lib.php';
 
-$payload = file_get_contents('php://input') ?: '';
+$payload = $GLOBALS['__body'] ?? (file_get_contents('php://input') ?: '');   // __body: set only by test/harness.php
 $secret = (string) (cfg()['stripe_webhook_secret'] ?? '');
 if ($secret === '' || !stripe_signature_ok($payload, $_SERVER['HTTP_STRIPE_SIGNATURE'] ?? '', $secret)) {
   reply(['error' => 'Bad signature.'], 400);
@@ -49,8 +49,9 @@ try {
       $have = $pdo->prepare('SELECT license_key FROM licenses WHERE stripe_subscription = ?');
       $have->execute([$sub]);
       if ($have->fetchColumn()) break;
-      $key = create_license($email, $obj['customer'] ?? null, $sub, 'checkout ' . ($obj['id'] ?? ''));
+      $key = create_license($email, $obj['customer'] ?? null, $sub, 'checkout ' . ($obj['id'] ?? ''), $obj['metadata']['plan'] ?? 'monthly');
       $mail = [$email, [$key]];
+      stripe_log('purchase', $email, (($obj['metadata']['plan'] ?? 'monthly') . ' $' . number_format(((int) ($obj['amount_total'] ?? 0)) / 100, 2)) . ' key ' . $key);
       break;
 
     case 'customer.subscription.updated':
@@ -59,6 +60,7 @@ try {
         : (in_array($obj['status'] ?? '', ['active', 'trialing', 'past_due'], true) ? 'active' : 'expired');
       $pdo->prepare('UPDATE licenses SET status = ?, updated_at = ? WHERE stripe_subscription = ? AND status <> ?')
           ->execute([$status, time(), $obj['id'] ?? '', 'disabled']);          // a key you disabled by hand stays disabled
+      stripe_log($event['type'] === 'customer.subscription.deleted' ? 'cancelled' : 'subscription', '', ($obj['id'] ?? '') . ' now ' . $status . ' (stripe: ' . ($obj['status'] ?? '?') . ')');
       break;
   }
   $pdo->commit();
@@ -69,4 +71,10 @@ try {
 }
 
 if ($mail) send_keys($mail[0], $mail[1]);
+// keep Discord roles in step with the subscription (no-op when nobody linked a key)
+if (in_array($event['type'], ['customer.subscription.updated', 'customer.subscription.deleted'], true)) {
+  require_once __DIR__ . '/discord-lib.php';
+  $ks = db()->prepare('SELECT license_key FROM licenses WHERE stripe_subscription = ?'); $ks->execute([$obj['id'] ?? '']);
+  foreach ($ks->fetchAll(PDO::FETCH_COLUMN) as $k) dc_sync_key($k);
+}
 reply(['received' => true]);

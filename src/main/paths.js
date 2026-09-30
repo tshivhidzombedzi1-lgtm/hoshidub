@@ -35,6 +35,7 @@ function setting(key, envName) {
 }
 const runtimeBase = () => setting('runtimeBase', 'KOE_RUNTIME_BASE');     // where the runtime pack downloads from (a GitHub release)
 const productId = () => setting('productId', 'KOE_PRODUCT_ID');           // Lemon Squeezy product that Pro keys must belong to
-const checkoutUrl = () => setting('checkoutUrl', 'KOE_CHECKOUT_URL');     // Lemon Squeezy checkout link behind "Get Pro"
+const licenseApi = () => setting('licenseApi', 'KOE_LICENSE_API');       // Hoshidub licence server (website/php/api), Stripe-backed
+const checkoutUrl = () => setting('checkoutUrl', 'KOE_CHECKOUT_URL');     // Stripe Payment Link behind "Get Pro"
 
-module.exports = { LOCAL, ADOPTED, RUNTIME_DIR, RUNTIME_PYTHON, engineDir, python, runtimeBase, productId, checkoutUrl };
+module.exports = { LOCAL, ADOPTED, RUNTIME_DIR, RUNTIME_PYTHON, engineDir, python, runtimeBase, productId, checkoutUrl, licenseApi };

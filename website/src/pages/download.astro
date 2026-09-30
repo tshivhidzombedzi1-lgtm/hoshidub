@@ -16,7 +16,13 @@ const steps = [
   ['Press Dub', 'Open your streaming service, sign in with your own account, play an episode and press Dub.'],
 ];
 ---
-<Base title="Download" description="Download Hoshidub for Windows 10 and 11. Free for 30 minutes of dubbing a day.">
+<Base fullTitle="Download Hoshidub for Windows · Free Live Anime Dub" description="Download Hoshidub for Windows 10 and 11. Free for 30 minutes of live English dubbing a day, no account needed. Use your own streaming account.">
+  <section class="wrap" id="paid" hidden>
+    <div class="paid glass strong">
+      <h2>Thank you for going Pro!</h2>
+      <p>Your licence key is on its way to your email (check spam if it takes more than a minute). Install Hoshidub below, open <b>Settings → Upgrade</b>, paste the key and press <b>Activate</b>.</p>
+    </div>
+  </section>
   <header class="page-head wrap">
     <p class="eyebrow">Download</p>
     <h1>Hoshidub for Windows</h1>
@@ -47,6 +53,8 @@ const steps = [
 </Base>
 
 <style>
+  .paid { max-width: 720px; margin: 24px auto 0; padding: clamp(20px, 4vw, 32px); display: grid; gap: 8px; text-align: center; border-radius: 26px; }
+  .paid h2 { font-size: clamp(22px, 3vw, 30px); }
   .steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
   .num { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; font-weight: 750; color: #fff; background: var(--brand-gradient); }
   .reqs { margin: 0; display: grid; gap: 0; }
@@ -56,3 +64,7 @@ const steps = [
   dd { margin: 0; color: var(--text-2); }
   @media (max-width: 760px) { .steps { grid-template-columns: 1fr; } .reqs div { grid-template-columns: 1fr; gap: 2px; } }
 </style>
+
+<script>
+  if (new URLSearchParams(location.search).get('paid')) document.getElementById('paid')?.removeAttribute('hidden');
+</script>
