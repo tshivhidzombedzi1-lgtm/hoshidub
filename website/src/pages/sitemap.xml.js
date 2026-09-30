@@ -1,5 +1,5 @@
 // Sitemap of every indexable page (built at build time, no plugin needed). 404 and the admin are left out on purpose.
-const pages = [['', 1.0], ['/pricing', 0.9], ['/download', 0.9], ['/about', 0.6], ['/support', 0.5], ['/press', 0.4], ['/tip', 0.3], ['/privacy', 0.2], ['/terms', 0.2]];
+const pages = [['', 1.0], ['/pricing', 0.9], ['/download', 0.9], ['/how-live-anime-dubbing-works', 0.8], ['/watch-crunchyroll-english-dub', 0.8], ['/about', 0.6], ['/support', 0.5], ['/press', 0.4], ['/tip', 0.3], ['/privacy', 0.2], ['/terms', 0.2]];
 
 export function GET({ site }) {
   const day = new Date().toISOString().slice(0, 10);

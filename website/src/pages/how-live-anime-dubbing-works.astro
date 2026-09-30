@@ -1,0 +1,66 @@
+---
+import Base from '../layouts/Base.astro';
+import DownloadButton from '../components/DownloadButton.astro';
+import Faq from '../components/Faq.astro';
+
+const faq = [
+  ['What is a live anime dub?', 'A live dub speaks the English lines out loud while the Japanese episode plays, instead of making you read subtitles. Hoshidub does it on your own PC, in real time, with a different voice for every character.'],
+  ['Is it as good as a professional dub?', 'No, and it is not trying to replace one. Professional voice actors are unbeatable. Hoshidub is for the shows, episodes and moments that have no English dub, or when you would rather listen than read.'],
+  ['How can it be zero delay?', 'When the show has official English subtitles, Hoshidub reads them ahead of time and prepares each line before it is spoken, so the voice starts on cue.'],
+  ['What if a show has no subtitles?', 'Hoshidub can translate by ear. That runs about a second behind the picture, because it has to hear the line before it can speak it.'],
+  ['Does it record or copy the video?', 'Never. It plays the streaming service in its normal player, listens to the sound like a person in the room, and reads the subtitle files the player already receives. It does not record, save or decrypt video.'],
+  ['Does it run online or on my PC?', 'On your PC. Dubbing, the voices and Hoshi all run locally. There is no account and no tracking in the app.'],
+];
+---
+<Base title="How live dubbing works" fullTitle="How Live Anime Dubbing Works: Hear Any Show in English" description="How a live English dub works for anime: official subtitles read ahead for zero delay, a voice per character, the soundtrack kept at full volume, all on your PC." >
+  <header class="page-head wrap">
+    <p class="eyebrow">Guide</p>
+    <h1>How live anime dubbing works</h1>
+    <p class="lede">Watch in Japanese, hear it in English, the moment each character speaks. Here is what happens behind the button, in plain words.</p>
+    <DownloadButton />
+  </header>
+
+  <section class="wrap">
+    <div class="prose glass">
+      <h2>What a live dub is</h2>
+      <p>A normal dub is recorded months later by voice actors. A <strong>live dub</strong> is made while you watch: the episode plays in Japanese, and a computer voice speaks the English line right as it is said. It is for the times when there is no official English dub, the dub has not arrived yet, or you would simply rather listen than read.</p>
+
+      <h2>The three parts, in order</h2>
+      <p><strong>1. It gets the words.</strong> Most streaming shows come with official English subtitles. Hoshidub reads those subtitle lines ahead of the picture, so it always knows what is about to be said. If a show has no subtitles, Hoshidub can listen and translate by ear instead.</p>
+      <p><strong>2. It picks a voice for each character.</strong> Every character gets their own English voice, so a calm narrator and a shouting hero do not sound the same. You can change voices in settings.</p>
+      <p><strong>3. It mixes it in.</strong> The English voices play on top of the episode while the music and sound effects stay at full volume. Only the Japanese voices step back, and you choose how far.</p>
+
+      <h2>Why the timing feels right</h2>
+      <p>With official subtitles, each English line is prepared <em>before</em> it is spoken, so the voice starts on cue with <strong>no delay</strong>. Translating by ear is about a second behind, because a line cannot be spoken before it has been heard. That is why turning on the show's English subtitles in the player gives the best result.</p>
+
+      <h2>What stays on your PC</h2>
+      <p>Hoshidub plays the service you already pay for, in its normal player. It listens to the sound the way a person in the room would. It <strong>never records, saves or decrypts video</strong>, and the dubbing, the voices and Hoshi all run on your own computer. There is no account and no tracking in the app.</p>
+
+      <h2>Meet Hoshi</h2>
+      <p>Hoshi is an anime friend who watches along with you and chats about the episode out loud. She only knows what has already happened in the episode, so she never spoils what is coming.</p>
+
+      <h2>What you need</h2>
+      <p>A Windows 10 or 11 PC. An NVIDIA RTX graphics card with 6 GB or more is recommended for fast dubbing and Hoshi. The first run downloads the voice engine (about 3.4 GB) once. Hoshidub is free for 30 minutes of dubbing a day, and <a href="/pricing">Pro</a> is unlimited.</p>
+      <p class="small">Live dubbing is a viewing aid, not a replacement for the people who voice anime. If a show has an official English dub, that is worth watching too.</p>
+    </div>
+  </section>
+
+  <section class="section wrap">
+    <h2 class="sec-title">Common questions</h2>
+    <Faq items={faq} />
+  </section>
+
+  <section class="wrap">
+    <div class="cta glass strong">
+      <h2>Try it on your next episode</h2>
+      <p class="muted">Free, no account needed. See it work with the <a href="/watch-crunchyroll-english-dub">Crunchyroll guide</a> or read the <a href="/pricing">pricing</a>.</p>
+      <DownloadButton />
+    </div>
+  </section>
+</Base>
+
+<style>
+  .sec-title { text-align: center; font-size: clamp(26px, 3.4vw, 38px); letter-spacing: -0.025em; margin-bottom: 24px; }
+  .cta { display: grid; justify-items: center; text-align: center; gap: 12px; padding: clamp(28px, 5vw, 56px) 24px; border-radius: 28px; margin-bottom: 20px; }
+  .cta :global(.dl) { justify-items: center; }
+</style>

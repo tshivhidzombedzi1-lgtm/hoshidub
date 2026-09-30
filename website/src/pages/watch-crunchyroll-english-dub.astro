@@ -1,0 +1,70 @@
+---
+import Base from '../layouts/Base.astro';
+import DownloadButton from '../components/DownloadButton.astro';
+import Faq from '../components/Faq.astro';
+
+const steps = [
+  ['Install Hoshidub', 'Download the free installer for Windows 10 or 11 and run it. The first launch fetches the voice engine once.'],
+  ['Open Crunchyroll inside Hoshidub', 'Go to Crunchyroll in Hoshidub’s browser and sign in with your own account, exactly as you would anywhere else.'],
+  ['Turn on English subtitles', 'Pick the show’s English subtitles in the player. Hoshidub reads them ahead of time, which is what makes the dub start on cue.'],
+  ['Press Dub', 'Every character speaks English in their own voice while the music and effects stay at full volume.'],
+];
+const faq = [
+  ['Does Hoshidub work with Crunchyroll?', 'Yes. Open Crunchyroll inside Hoshidub and sign in with your own account. Hoshidub uses the show’s official English subtitles when they are available.'],
+  ['Do I still need a Crunchyroll subscription?', 'Yes. Hoshidub does not give you any shows. It plays the service you already pay for in its normal player.'],
+  ['Does it download or record Crunchyroll videos?', 'Never. Hoshidub does not record, save or decrypt video, and it does not get around any protection. It listens to the sound like a person in the room and reads the subtitle files the player already receives.'],
+  ['The dub is late. What do I do?', 'Turn on the show’s English subtitles in the player. Hoshidub then reads them ahead and speaks with no delay. Without subtitles it translates by ear, about a second behind.'],
+  ['The video will not play. What now?', 'Update Hoshidub to the latest version from this site. Streaming services need the protected-video module that ships with the official installer, so copies from other places will not play.'],
+  ['Is Hoshidub made by Crunchyroll?', 'No. Hoshidub is made by MCP Labs and is not affiliated with, or endorsed by, Crunchyroll. Crunchyroll is a trademark of its owner.'],
+];
+---
+<Base title="Crunchyroll English dub" fullTitle="Watch Crunchyroll with a Live English Dub · Hoshidub" description="Watch Crunchyroll in Japanese and hear it in English, live. Sign in with your own account and press Dub: a voice per character, soundtrack kept at full volume.">
+  <header class="page-head wrap">
+    <p class="eyebrow">Guide</p>
+    <h1>Watch Crunchyroll with a live English dub</h1>
+    <p class="lede">Keep the Japanese audio and hear every character in English as they speak. Use your own Crunchyroll account, in four steps.</p>
+    <DownloadButton />
+  </header>
+
+  <section class="wrap">
+    <ol class="steps">
+      {steps.map(([t, d], i) => (
+        <li class="card glass"><span class="num">{i + 1}</span><h3>{t}</h3><p class="muted">{d}</p></li>
+      ))}
+    </ol>
+  </section>
+
+  <section class="section wrap">
+    <div class="prose glass">
+      <h2>Why use a live dub?</h2>
+      <p>Some shows never get an English dub, and new episodes often air with subtitles only. A live dub lets you listen instead of reading, for example while you eat, draw or keep an eye on something else, and it works on whatever you are watching.</p>
+      <h2>What you keep, what changes</h2>
+      <p>You keep the original Japanese performance, the music and the sound effects. Only the Japanese voices step back, and you choose how far. The English voices come from Hoshidub, one for each character.</p>
+      <h2>Fair and above board</h2>
+      <p>Hoshidub plays Crunchyroll in its normal player with your own account. It <strong>never records, saves or decrypts video</strong> and does not bypass anything. It is a viewing aid, not a replacement for voice actors, so watch the official English dub when one exists.</p>
+      <p>Want the full picture? Read <a href="/how-live-anime-dubbing-works">how live anime dubbing works</a>, or check the <a href="/download">system requirements</a>. Hoshidub is free for 30 minutes of dubbing a day; <a href="/pricing">Pro</a> removes the limit.</p>
+    </div>
+  </section>
+
+  <section class="section wrap">
+    <h2 class="sec-title">Questions about Crunchyroll and Hoshidub</h2>
+    <Faq items={faq} />
+  </section>
+
+  <section class="wrap">
+    <div class="cta glass strong">
+      <h2>Ready for your next episode?</h2>
+      <DownloadButton />
+    </div>
+  </section>
+</Base>
+
+<style>
+  .steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+  .num { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; font-weight: 750; color: #fff; background: var(--brand-gradient); margin-bottom: 4px; }
+  .sec-title { text-align: center; font-size: clamp(26px, 3.4vw, 38px); letter-spacing: -0.025em; margin-bottom: 24px; }
+  .cta { display: grid; justify-items: center; text-align: center; gap: 12px; padding: clamp(28px, 5vw, 56px) 24px; border-radius: 28px; margin-bottom: 20px; }
+  .cta :global(.dl) { justify-items: center; }
+  @media (max-width: 980px) { .steps { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 560px) { .steps { grid-template-columns: 1fr; } }
+</style>
