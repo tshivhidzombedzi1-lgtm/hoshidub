@@ -140,3 +140,7 @@ Electron (castLabs ECS v44.1.0+wvcus, Widevine, VMP-signed)
 - Two downloads writing the same file corrupted Hoshi's brain once; `packs.py` now locks files and verifies size and SHA-256.
 - Chatterbox pins torch 2.6: install it with `--no-deps` to keep cu128 torch.
 - Git Bash rewrites arguments that start with `/` into Windows paths; tools take page names without slashes.
+
+## Addendum 2026-09-30 (website sizing pass, run on the Hostinger server)
+- The site is served from this same server (`~/domains/hoshidub.com/public_html`); "upload" = extract the zip there. Installer is already in `public_html/downloads`; `runtime/` is still empty (the 8 parts are only in the private GitHub Release, and the server has no GitHub login).
+- The account is capped at ~105 threads. Builds need `ROLLDOWN_WORKER_THREADS=2 ROLLDOWN_MAX_BLOCKING_THREADS=4 TOKIO_WORKER_THREADS=2 RAYON_NUM_THREADS=2 GOMAXPROCS=1 UV_THREADPOOL_SIZE=1` and `taskset -c 0-1`. Headless Chrome could not open its debug port in that session, so `website/tools/run-shots.sh` (thread-capped screenshots) is untested; the sizing fixes (hero title `min(78px, 9.6cqi)`, wrap-safe buttons, `overflow-wrap`) were made from reading the CSS and are NOT yet checked at the 6 sizes.

@@ -199,7 +199,7 @@ const app = {
   .hero { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr); gap: clamp(16px, 3vw, 40px); align-items: center; padding-block: clamp(40px, 7vw, 90px) 20px; }
   .hero-copy { display: grid; gap: 22px; container-type: inline-size; }
   /* each sentence on its own line, sized to the column it sits in (10.4cqi fits "Watch in Japanese." exactly) */
-  .hero-title { font-size: clamp(34px, 10.4cqi, 78px); line-height: 1.04; }
+  .hero-title { font-size: min(78px, 9.6cqi); line-height: 1.06; /* 9.6 leaves a little slack under the 10.4 that exactly fits, so a slower font fallback cannot overflow; no floor, so a 320px phone still fits */ }
   .hero-title .line { display: block; white-space: nowrap; }
   .grad { background: var(--brand-gradient); -webkit-background-clip: text; background-clip: text; color: transparent; }
   .hero-cta { display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-start; }

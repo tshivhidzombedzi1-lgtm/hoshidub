@@ -1,6 +1,6 @@
 // Full-page screenshots of every page, desktop and phone, in dark and light (headless Edge; nothing opens on screen).
 //   node tools/shots.mjs [baseUrl] [outDir]
-import { chromium } from '../../node_modules/playwright/index.mjs';
+const { chromium } = await import(process.env.PLAYWRIGHT || '../../node_modules/playwright/index.mjs');
 import fs from 'node:fs';
 
 const base = process.argv[2] || 'http://localhost:4321';
@@ -15,7 +15,7 @@ const viewport = {
 };
 fs.mkdirSync(out, { recursive: true });
 
-const browser = await chromium.launch({ channel: 'msedge', headless: true });
+const browser = await chromium.launch({ ...(process.env.CHANNEL === 'none' ? {} : { channel: process.env.CHANNEL || 'msedge' }), headless: true });
 const problems = [];
 for (const size of sizes) for (const scheme of schemes) {
   const ctx = await browser.newContext({ viewport: viewport[size], colorScheme: scheme, deviceScaleFactor: 1, reducedMotion: 'reduce' });
