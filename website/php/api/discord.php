@@ -1,8 +1,8 @@
 <?php
 // /api/discord.php: the Hoshidub slash commands. Discord talks to the MCP Automation endpoint; that endpoint forwards every
 // /hoshidub command here with the original signature headers, and this file verifies the signature again before doing anything.
-//   /hoshidub buy | activate key | status | help question | faq | download
-//   /hoshidub admin setup | lookup | grant | disable | enable | stats | announce     (server admins only)
+//   /hoshidub buy | activate key | status | help question | faq | download | claim code
+//   /hoshidub admin lookup | grant | disable | enable | stats | announce     (server admins only)
 declare(strict_types=1);
 require __DIR__ . '/lib.php';
 require __DIR__ . '/discord-lib.php';
@@ -33,6 +33,18 @@ $pdo = db();
 $mine = function () use ($pdo, $uid): array { $q = $pdo->prepare('SELECT l.*, (SELECT COUNT(*) FROM activations a WHERE a.license_key = l.license_key) pcs FROM licenses l WHERE discord_id = ? ORDER BY created_at'); $q->execute([$uid]); return $q->fetchAll(); };
 
 switch ($sub) {
+  case 'claim':   // the bot created this server and owns it; the first person with the one-time code becomes the owner
+    $hash = (string) (cfg()['discord_claim_hash'] ?? '');
+    if ($hash === '') say('Nothing to claim: this server already has its owner.');
+    if (!password_verify(strtoupper(trim((string) ($opts['code'] ?? ''))), $hash)) say('That claim code is not right.');
+    $r = dc_call('PATCH', '/guilds/' . dc_guild(), ['owner_id' => $uid]);
+    if ($r['code'] >= 300) say('Discord would not transfer the server (HTTP ' . $r['code'] . '). Make sure you joined the server first.');
+    $cf = getenv('HOSHIDUB_CONFIG') ?: data_dir() . '/config.php'; $t = (string) file_get_contents($cf);
+    file_put_contents($cf, preg_replace("/\n  'discord_claim_hash' => '[^']*',/", '', $t), LOCK_EX);
+    $own = dc_find('role', 'Owner'); if ($own) dc_call('PUT', '/guilds/' . dc_guild() . "/members/$uid/roles/{$own['id']}");
+    admin_log("discord server claimed by $uname ($uid)");
+    say('👑 You now own the Hoshidub server, and you have the **Owner** role. Enjoy it!');
+
   case 'buy':
     say("**Hoshidub Pro**\n• Monthly $6.99: $site/api/checkout.php?plan=monthly\n• Yearly $49 (best value): $site/api/checkout.php?plan=yearly\n\nAfter you pay, your licence key is emailed to you. Then use `/hoshidub activate` here to get your Pro role.\nFree plan: 30 minutes of dubbing a day, download at $site/download");
 
@@ -95,33 +107,9 @@ switch ($sub) {
       . "\nPCs activated: " . $c('SELECT COUNT(*) FROM activations') . "\nFull dashboard: $site/admin");
 
   case 'admin announce':
-    $ch = dc_find('channel', 'hoshidub-announcements'); if (!$ch) say('The announcements channel does not exist yet. Run `/hoshidub admin setup` first.');
+    $ch = null; foreach (dc_call('GET', '/guilds/' . dc_guild() . '/channels')['body'] as $x) if (str_contains($x['name'] ?? '', 'announcements')) $ch = $x; if (!$ch) say('There is no announcements channel.');
     $m = dc_call('POST', "/channels/{$ch['id']}/messages", ['content' => mb_substr((string) ($opts['message'] ?? ''), 0, 1900), 'allowed_mentions' => ['parse' => !empty($opts['ping']) ? ['everyone'] : []]]);
     say($m['code'] < 300 ? 'Posted in <#' . $ch['id'] . '>.' : 'Discord refused the post (check the bot can write there).');
-
-  case 'admin setup':
-    dc_defer();
-    $g = dc_guild(); $log = [];
-    $ensure = function (string $kind, string $name, array $create) use ($g, &$log): ?array {
-      $found = dc_find($kind, $name); if ($found) { $log[] = "• $name already there"; return $found; }
-      $r = dc_call('POST', "/guilds/$g/" . ($kind === 'role' ? 'roles' : 'channels'), $create + ['name' => $name]);
-      $log[] = $r['code'] < 300 ? "✅ created $name" : "❌ could not create $name (does the bot have Manage " . ($kind === 'role' ? 'Roles' : 'Channels') . '?)';
-      return $r['code'] < 300 ? $r['body'] : null;
-    };
-    $pro = $ensure('role', DC_PRO_ROLE, ['color' => 0xC38BFF, 'hoist' => true, 'mentionable' => false]);
-    $cat = $ensure('channel', DC_CATEGORY, ['type' => 4]);
-    $cid = $cat['id'] ?? null; $everyone = $g;
-    $mk = fn(string $n, string $topic, array $extra = []) => $ensure('channel', $n, ['type' => 0, 'parent_id' => $cid, 'topic' => $topic] + $extra);
-    $ann = $mk('hoshidub-announcements', 'News and releases for Hoshidub. Read only.', ['permission_overwrites' => [['id' => $everyone, 'type' => 0, 'deny' => '2048']]]);
-    $mk('hoshidub-general', 'Talk about Hoshidub, anime and the live dub.');
-    $mk('hoshidub-support', 'Something not working? Ask here, or try /hoshidub help.');
-    $mk('hoshidub-feedback', 'Ideas, voices you want, shows to try.');
-    $mk('hoshidub-showcase', 'Share clips and screenshots of the dub in action.');
-    if ($pro) $mk('hoshidub-pro-lounge', 'Pro members only: early builds and direct feedback.', ['permission_overwrites' => [['id' => $everyone, 'type' => 0, 'deny' => '1024'], ['id' => $pro['id'], 'type' => 0, 'allow' => '1024']]]);
-    if ($ann && str_contains(implode('', $log), '✅ created hoshidub-announcements')) dc_call('POST', "/channels/{$ann['id']}/messages", ['content' =>
-      "**Welcome to Hoshidub** 🌸 *Don't read it. Dub it.*\nWatch anime in Japanese and hear it in English, live, with a voice for every character.\n\n• Download (free): $site/download\n• Go Pro: `/hoshidub buy`, then `/hoshidub activate` to get your role\n• Questions: `/hoshidub help question:...` or the support channel\n\nBe kind, no piracy links, and never share your licence key."]);
-    dc_edit_reply((string) ($i['application_id'] ?? dc_env('DISCORD_APP_ID')), (string) $i['token'], "**Hoshidub server setup**\n" . implode("\n", $log));
-    exit;
 
   default:
     say("Try `/hoshidub buy`, `activate`, `status`, `help`, `faq` or `download`.");

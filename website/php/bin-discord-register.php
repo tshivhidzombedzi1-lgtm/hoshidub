@@ -16,8 +16,8 @@ $hoshidub = ['name' => 'hoshidub', 'description' => 'Hoshidub: get Pro, activate
   ['type' => $S, 'name' => 'help', 'description' => 'Ask a question about Hoshidub', 'options' => [$opt($STR, 'question', 'What do you need help with?', true, ['max_length' => 200])]],
   ['type' => $S, 'name' => 'faq', 'description' => 'List common questions'],
   ['type' => $S, 'name' => 'download', 'description' => 'Get the Windows installer'],
+  ['type' => $S, 'name' => 'claim', 'description' => 'Claim ownership of this server (one-time code)', 'options' => [$opt($STR, 'code', 'The claim code', true, ['max_length' => 20])]],
   ['type' => $G, 'name' => 'admin', 'description' => 'Server admin tools', 'options' => [
-    ['type' => $S, 'name' => 'setup', 'description' => 'Create the Hoshidub channels and Pro role'],
     ['type' => $S, 'name' => 'lookup', 'description' => 'Find a key by email, key or Discord user', 'options' => [$opt($STR, 'query', 'Email, key or user id', true)]],
     ['type' => $S, 'name' => 'grant', 'description' => 'Create a key and email it', 'options' => [$opt($STR, 'email', 'Customer email', true), $opt($STR, 'plan', 'comp (gift) or manual (paid another way)', false, ['choices' => [['name' => 'Free gift', 'value' => 'comp'], ['name' => 'Paid another way', 'value' => 'manual']]])]],
     ['type' => $S, 'name' => 'disable', 'description' => 'Switch a key off', 'options' => [$opt($STR, 'key', 'Licence key', true)]],
