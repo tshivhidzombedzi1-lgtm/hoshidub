@@ -26,7 +26,7 @@ const app = {
   <section class="hero wrap">
     <div class="hero-copy">
       <p class="eyebrow">Live English dub for anime</p>
-      <h1>Watch in Japanese.<br /><span class="grad">Hear it in English.</span></h1>
+      <h1 class="hero-title"><span class="line">Watch in Japanese.</span> <span class="line grad">Hear it in English.</span></h1>
       <p class="lede">Hoshidub gives every character their own English voice, the moment they speak. And Hoshi watches along with you.</p>
       <div class="hero-cta">
         <DownloadButton />
@@ -196,8 +196,11 @@ const app = {
 
 
 <style>
-  .hero { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr); gap: 24px; align-items: center; padding-block: clamp(40px, 7vw, 90px) 20px; }
-  .hero-copy { display: grid; gap: 22px; }
+  .hero { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr); gap: clamp(16px, 3vw, 40px); align-items: center; padding-block: clamp(40px, 7vw, 90px) 20px; }
+  .hero-copy { display: grid; gap: 22px; container-type: inline-size; }
+  /* each sentence on its own line, sized to the column it sits in (10.4cqi fits "Watch in Japanese." exactly) */
+  .hero-title { font-size: clamp(34px, 10.4cqi, 78px); line-height: 1.04; }
+  .hero-title .line { display: block; white-space: nowrap; }
   .grad { background: var(--brand-gradient); -webkit-background-clip: text; background-clip: text; color: transparent; }
   .hero-cta { display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-start; }
   .hero-points { display: flex; flex-wrap: wrap; gap: 8px 20px; list-style: none; margin: 0; padding: 0; }

@@ -9,7 +9,10 @@ const out = process.argv[3] || 'shots';
 const pages = (process.env.PAGES || 'home,pricing,download,about,tip,support,press,privacy,terms,nope').split(',').map((n) => (n === 'home' ? '/' : '/' + n));
 const sizes = (process.env.SIZES || 'desktop,phone').split(',');
 const schemes = (process.env.SCHEMES || 'dark').split(',');
-const viewport = { desktop: { width: 1366, height: 800 }, phone: { width: 390, height: 844 } };
+const viewport = {
+  wide: { width: 1920, height: 1080 }, desktop: { width: 1366, height: 800 }, small: { width: 1024, height: 768 },
+  tablet: { width: 768, height: 1024 }, phone: { width: 390, height: 844 }, mini: { width: 360, height: 740 },
+};
 fs.mkdirSync(out, { recursive: true });
 
 const browser = await chromium.launch({ channel: 'msedge', headless: true });
