@@ -8,7 +8,7 @@ The owner has handed the rest of the launch to you. You have no memory of earlie
 
 ### Latest (2026-09-30 13:08): final installer, engine download moved to hoshidub.com
 - `dubit.runtimeBase` is now https://hoshidub.com/downloads/runtime (grey-woodpecker-803820.hostingersite.com no longer resolves from the owner's PC). Rebuilt, VMP-signed, sha256 7d86662044102b4e5363c84c76c9dcb157139d5ca82c712fb296e5e7e42f405a (115,387,932 bytes). Uploaded by the PC agent over SSH to public_html/downloads/Hoshidub-Setup-0.1.0.exe (hash checked on the server), also in release-files/ and Release v0.1.0.
-- The runtime parts are being uploaded by `tools/upload-runtime.sh` (SSH key hoshidub-pc-upload; remove it from ~/.ssh/authorized_keys when uploads are done).
+- **Done 15:21 (SAST):** runtime pack v2 is live at https://hoshidub.com/downloads/runtime/: manifest.json (version 2) plus runtime.zip.001-008. All 8 pass `sha256sum -c` on the server against the manifest, the manifest loads over HTTPS, and a Range request returns 206 with no compression. Uploaded with `tools/upload-runtime.sh` (SSH key hoshidub-pc-upload; remove it from ~/.ssh/authorized_keys now that uploads are done). A fresh install's first-run download can now work end to end; still to be tested on a second PC.
 
 ### Earlier (2026-09-30 12:31): installer rebuilt with the Stripe licence server
 - `dist/Hoshidub-Setup-0.1.0.exe` rebuilt from commit 1d26d56: `licenseApi` = https://hoshidub.com/api/license, "Get Pro" = /api/checkout.php?plan=monthly, VMP-signed (valid, 1387 days), includes `hoshi.yaml`. Unit tests 17/17.

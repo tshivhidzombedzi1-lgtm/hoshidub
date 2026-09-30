@@ -16,12 +16,19 @@ sha_of() { python -c "import json,sys; m=json.load(open(sys.argv[1])); print(nex
 "${SSH[@]}" "mkdir -p $DEST"
 for f in "$SRC"/runtime.zip.0*; do
   name=$(basename "$f"); want=$(sha_of "$name")
-  have=$("${SSH[@]}" "sha256sum $DEST/$name 2>/dev/null | cut -d' ' -f1")
+  have=$("${SSH[@]}" "sha256sum $DEST/$name 2>/dev/null | cut -d' ' -f1; echo ok")
+  for check in 1 2 3; do [ -n "$have" ] && break; sleep 30; have=$("${SSH[@]}" "sha256sum $DEST/$name 2>/dev/null | cut -d' ' -f1; echo ok"); done
+  have=$(printf '%s\n' "$have" | head -1); [ "$have" = ok ] && have=""
   if [ "$have" = "$want" ]; then echo "$name already on the server"; continue; fi
-  for attempt in 1 2 3; do
+  for attempt in 1 2 3 4 5 6; do
     start=$(date +%s)
     if scp -i "$KEY" -P "$PORT" -o BatchMode=yes -o ServerAliveInterval=30 -q "$f" "$HOST:$DEST/$name.uploading"; then
-      got=$("${SSH[@]}" "sha256sum $DEST/$name.uploading | cut -d' ' -f1")
+      got=""
+      for check in 1 2 3 4 5; do                 # a dropped connection during the check must not force a re-upload
+        got=$("${SSH[@]}" "sha256sum $DEST/$name.uploading | cut -d' ' -f1")
+        [ -n "$got" ] && break
+        sleep 30
+      done
       if [ "$got" = "$want" ]; then
         "${SSH[@]}" "mv -f $DEST/$name.uploading $DEST/$name"
         echo "$name uploaded and verified in $(( $(date +%s) - start )) s"; break
@@ -30,7 +37,8 @@ for f in "$SRC"/runtime.zip.0*; do
     else
       echo "$name upload failed (attempt $attempt), retrying"
     fi
-    [ "$attempt" = 3 ] && { echo "GIVING UP on $name"; exit 1; }
+    [ "$attempt" = 6 ] && { echo "GIVING UP on $name"; exit 1; }
+    sleep 90                                   # the host briefly refuses new connections after a drop
   done
 done
 scp -i "$KEY" -P "$PORT" -o BatchMode=yes -q "$SRC/manifest.json" "$HOST:$DEST/manifest.json" && echo "manifest.json uploaded (last)"
