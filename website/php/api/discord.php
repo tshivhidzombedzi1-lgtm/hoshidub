@@ -12,7 +12,7 @@ if (!dc_verify($body)) { http_response_code(401); header('Content-Type: applicat
 $i = json_decode($body, true) ?: [];
 if (($i['type'] ?? 0) === 1) reply(['type' => 1]);
 if (($i['type'] ?? 0) !== 2 || ($i['data']['name'] ?? '') !== 'hoshidub') reply(['error' => 'unsupported'], 400);
-if (($i['guild_id'] ?? '') !== dc_env('DISCORD_GUILD_ID')) say('Use this command inside the official server.');
+if (($i['guild_id'] ?? '') !== dc_guild()) say('Use this command inside the official server.');
 
 function say(string $t, bool $private = true): never { reply(['type' => 4, 'data' => ['content' => mb_substr($t, 0, 1900), 'flags' => $private ? 64 : 0, 'allowed_mentions' => ['parse' => []]]]); }
 
@@ -101,7 +101,7 @@ switch ($sub) {
 
   case 'admin setup':
     dc_defer();
-    $g = dc_env('DISCORD_GUILD_ID'); $log = [];
+    $g = dc_guild(); $log = [];
     $ensure = function (string $kind, string $name, array $create) use ($g, &$log): ?array {
       $found = dc_find($kind, $name); if ($found) { $log[] = "• $name already there"; return $found; }
       $r = dc_call('POST', "/guilds/$g/" . ($kind === 'role' ? 'roles' : 'channels'), $create + ['name' => $name]);

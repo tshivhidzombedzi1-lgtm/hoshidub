@@ -18,7 +18,9 @@ function dc_env(string $key): string {
   return $env[$key] ?? '';
 }
 
-function dc_enabled(): bool { return dc_env('DISCORD_BOT_TOKEN') !== '' && dc_env('DISCORD_GUILD_ID') !== ''; }
+// which server the Hoshidub commands live in: config.php discord_guild_id (the Hoshidub server) else the MCP Automation server
+function dc_guild(): string { return (string) (cfg()['discord_guild_id'] ?? '') ?: dc_env('DISCORD_GUILD_ID'); }
+function dc_enabled(): bool { return dc_env('DISCORD_BOT_TOKEN') !== '' && dc_guild() !== ''; }
 
 function dc_call(string $method, string $path, ?array $json = null): array {
   $ch = curl_init('https://discord.com/api/v10' . $path);
@@ -41,7 +43,7 @@ function dc_verify(string $body): bool {
   try { $s = hex2bin($sig); $k = hex2bin($pk); return $s !== false && $k !== false && sodium_crypto_sign_verify_detached($s, $ts . $body, $k); } catch (Throwable) { return false; }
 }
 function dc_find(string $kind, string $name): ?array {
-  $g = dc_env('DISCORD_GUILD_ID');
+  $g = dc_guild();
   foreach (dc_call('GET', "/guilds/$g/" . ($kind === 'role' ? 'roles' : 'channels'))['body'] as $x) if (($x['name'] ?? '') === $name) return $x;
   return null;
 }
@@ -51,7 +53,7 @@ function dc_set_pro(string $discordId, bool $on): bool {
   if (!dc_enabled() || !preg_match('/^\d{17,20}$/', $discordId)) return false;
   $role = dc_find('role', DC_PRO_ROLE);
   if (!$role) return false;
-  $r = dc_call($on ? 'PUT' : 'DELETE', '/guilds/' . dc_env('DISCORD_GUILD_ID') . "/members/$discordId/roles/{$role['id']}");
+  $r = dc_call($on ? 'PUT' : 'DELETE', '/guilds/' . dc_guild() . "/members/$discordId/roles/{$role['id']}");
   return $r['code'] >= 200 && $r['code'] < 300;
 }
 

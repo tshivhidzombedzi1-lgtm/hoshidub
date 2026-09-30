@@ -6,7 +6,7 @@ declare(strict_types=1);
 require __DIR__ . '/api/lib.php';
 require __DIR__ . '/api/discord-lib.php';
 if (!dc_enabled()) { fwrite(STDERR, "Set 'discord_env_file' in config.php (the .env with DISCORD_BOT_TOKEN and DISCORD_GUILD_ID).\n"); exit(1); }
-$app = dc_env('DISCORD_APP_ID'); $g = dc_env('DISCORD_GUILD_ID');
+$app = dc_env('DISCORD_APP_ID'); $g = dc_guild();
 $S = 1; $G = 2; $STR = 3; $BOOL = 5;
 $opt = fn(int $t, string $n, string $d, bool $req = false, array $extra = []) => ['type' => $t, 'name' => $n, 'description' => $d, 'required' => $req] + $extra;
 $hoshidub = ['name' => 'hoshidub', 'description' => 'Hoshidub: get Pro, activate your key, get help', 'options' => [
