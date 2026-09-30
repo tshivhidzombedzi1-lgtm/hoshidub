@@ -6,6 +6,12 @@ Read this first if you are a new session (human or AI) picking up the project. I
 
 The owner has handed the rest of the launch to you. You have no memory of earlier sessions, and this file is the memory. Everything is on GitHub (private): code in https://github.com/tshivhidzombedzi1-lgtm/hoshidub, and the signed installer plus the voice engine parts in its **Release v0.1.0** (a private backup; customers can't download from a private repo, so public downloads come from the website). The owner's Apex MQL5 EA is backed up in `apex-ea/` (a separate product; leave it alone unless he asks).
 
+### Latest (2026-09-30 12:31): installer rebuilt with the Stripe licence server
+- `dist/Hoshidub-Setup-0.1.0.exe` rebuilt from commit 1d26d56: `licenseApi` = https://hoshidub.com/api/license, "Get Pro" = /api/checkout.php?plan=monthly, VMP-signed (valid, 1387 days), includes `hoshi.yaml`. Unit tests 17/17.
+- Uploaded to GitHub Release v0.1.0 (replaces the older asset) and installed on the owner's PC over the old copy (via Explorer).
+- Checked: the licence API answers a script/app request with JSON (a fake key gives 404 "license_key not found"; Hostinger's browser check doesn't block it), and checkout redirects (303) to live Stripe checkout.
+- **Not yet done:** the owner's activation test with his gift key (activate, deactivate, re-activate), uploading the new exe to `public_html/downloads/`, and the empty `public_html/downloads/runtime/` (manifest + 8 parts from Release v0.1.0 via FTP).
+
 ### Decisions already made (don't reopen them)
 - **Payments: Stripe** (the owner has a verified Stripe account). **Not Lemon Squeezy.** Earlier docs and code mention Lemon Squeezy; see "Switch to Stripe" below.
 - **Licensing: our own small licence server in PHP on the Hostinger hosting** (`website/php/`), because Stripe doesn't issue licence keys. No customer accounts or passwords on the site: customers get their key by email and manage billing in Stripe's customer portal ("My account" link).
