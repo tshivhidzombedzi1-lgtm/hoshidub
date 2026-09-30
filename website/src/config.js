@@ -19,7 +19,7 @@ export const links = {
   kofi: '',             // e.g. https://ko-fi.com/hoshidub
   paypal: '',           // e.g. https://paypal.me/yourname
   tipCheckout: '/api/checkout.php?plan=tip&amount=5',      // Stripe one-time "customer chooses price" Payment Link
-  discord: 'https://discord.gg/5SBWbgG7Xp',
+  discord: 'https://discord.gg/bs7xXRbTaW',
   youtube: 'https://www.youtube.com/@FTMORangeBreakoutProea',
   linkedin: 'https://www.linkedin.com/in/tshivhidzo-mbedzi-a74040233/',
   email: '',            // e.g. hello@hoshidub.com
