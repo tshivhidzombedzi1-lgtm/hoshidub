@@ -11,6 +11,12 @@ $body = $GLOBALS['__body'] ?? (file_get_contents('php://input') ?: '');   // __b
 if (!dc_verify($body)) { http_response_code(401); header('Content-Type: application/json'); exit('{"error":"invalid request signature"}'); }
 $i = json_decode($body, true) ?: [];
 if (($i['type'] ?? 0) === 1) reply(['type' => 1]);
+// ticket buttons and forms (custom_id starts with hd_)
+if (in_array($i['type'] ?? 0, [3, 5], true) && str_starts_with((string) ($i['data']['custom_id'] ?? ''), 'hd_')) {
+  require_once __DIR__ . '/discord-tickets.php';
+  if (($i['guild_id'] ?? '') !== dc_guild()) reply(['type' => 4, 'data' => ['content' => 'Use this inside the official server.', 'flags' => 64]]);
+  ticket_interaction($i);
+}
 if (($i['type'] ?? 0) !== 2 || ($i['data']['name'] ?? '') !== 'hoshidub') reply(['error' => 'unsupported'], 400);
 if (($i['guild_id'] ?? '') !== dc_guild()) say('Use this command inside the official server.');
 
@@ -104,7 +110,7 @@ switch ($sub) {
     $mo = $c("SELECT COUNT(*) FROM licenses WHERE status='active' AND plan='monthly'"); $yr = $c("SELECT COUNT(*) FROM licenses WHERE status='active' AND plan='yearly'");
     say('**Hoshidub**' . "\nActive keys: " . $c("SELECT COUNT(*) FROM licenses WHERE status='active'") . " ($mo monthly, $yr yearly)\nEst. monthly revenue: $" . number_format($mo * 6.99 + $yr * 49 / 12, 2)
       . "\nNew keys (7 days): " . $c('SELECT COUNT(*) FROM licenses WHERE created_at > ?', [time() - 604800]) . "\nDownloads (7 days): " . $c('SELECT COUNT(*) FROM downloads WHERE at > ?', [time() - 604800])
-      . "\nPCs activated: " . $c('SELECT COUNT(*) FROM activations') . "\nFull dashboard: $site/admin");
+      . "\nPCs activated: " . $c('SELECT COUNT(*) FROM activations') . "\nOpen tickets: " . $c('SELECT COUNT(*) FROM tickets WHERE closed_at IS NULL') . "\nFull dashboard: $site/admin");
 
   case 'admin announce':
     $ch = null; foreach (dc_call('GET', '/guilds/' . dc_guild() . '/channels')['body'] as $x) if (str_contains($x['name'] ?? '', 'announcements')) $ch = $x; if (!$ch) say('There is no announcements channel.');

@@ -42,6 +42,7 @@ function db(): PDO {
   $pdo->exec('CREATE TABLE IF NOT EXISTS admin_auth (id INTEGER PRIMARY KEY, hash VARCHAR(255) NOT NULL, must_change INTEGER NOT NULL, updated_at INTEGER NOT NULL)');
   $pdo->exec('CREATE TABLE IF NOT EXISTS downloads (id VARCHAR(24) PRIMARY KEY, at INTEGER NOT NULL, ip_hash VARCHAR(64), file VARCHAR(120))');
   $pdo->exec('CREATE TABLE IF NOT EXISTS stripe_log (id VARCHAR(24) PRIMARY KEY, at INTEGER NOT NULL, type VARCHAR(60), email VARCHAR(255), detail VARCHAR(255))');
+  $pdo->exec('CREATE TABLE IF NOT EXISTS tickets (id INTEGER PRIMARY KEY, channel_id VARCHAR(24), user_id VARCHAR(24), topic VARCHAR(120), created_at INTEGER NOT NULL, closed_at INTEGER)');
   $pdo->exec('CREATE TABLE IF NOT EXISTS events (id VARCHAR(120) PRIMARY KEY, created_at INTEGER NOT NULL)');
   return $pdo;
 }

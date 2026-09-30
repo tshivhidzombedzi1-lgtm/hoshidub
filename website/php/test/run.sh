@@ -102,4 +102,15 @@ ok "discord: admin stats for admins" "$(dcmd '[{"type":2,"name":"admin","options
 ok "discord: admin lookup by email" "$(dcmd '[{"type":2,"name":"admin","options":[{"type":1,"name":"lookup","options":[{"name":"query","value":"buyer@example.com"}]}]}]' 8)" 'buyer@example.com'
 ok "discord: admin grant makes a key" "$(dcmd '[{"type":2,"name":"admin","options":[{"type":1,"name":"grant","options":[{"name":"email","value":"gift@x.com"},{"name":"plan","value":"comp"}]}]}]' 8)" 'Created `HD-'
 ok "discord: admin disable switches the key off for the app" "$(dcmd '[{"type":2,"name":"admin","options":[{"type":1,"name":"disable","options":[{"name":"key","value":"'$KEY'"}]}]}]' 8 >/dev/null; api validate)" '"valid":false'
+# ---- ticket buttons (only the paths that never call Discord) ----
+dcraw() { local b="$1" ts=$(date +%s); env H_SCRIPT=discord.php H_BODY="$b" H_FTS=$ts H_FSIG=$(php -r 'echo hash_hmac("sha256", $argv[1].".".$argv[2], "fwd-test-secret");' $ts "$b") php "$HERE/test/harness.php" 2>&1; }
+BASE='"guild_id":"111111111111111111","channel_id":"999","member":{"permissions":"0","user":{"id":"444444444444444444","username":"buyer"}}'
+ok "ticket: Open button shows the form" "$(dcraw '{"type":3,'"$BASE"',"data":{"custom_id":"hd_ticket_open"}}')" '"type":9'
+ok "ticket: form asks what you need" "$(dcraw '{"type":3,'"$BASE"',"data":{"custom_id":"hd_ticket_open"}}')" 'What do you need help with'
+ok "ticket: close on a non-ticket channel is refused" "$(dcraw '{"type":3,'"$BASE"',"data":{"custom_id":"hd_ticket_close"}}')" 'not an open ticket'
+ok "ticket: unknown button is harmless" "$(dcraw '{"type":3,'"$BASE"',"data":{"custom_id":"hd_nope"}}')" 'not active'
+ok "ticket: buttons from other bots are ignored (not hd_)" "$(dcraw '{"type":3,'"$BASE"',"data":{"custom_id":"other"}}')" '#400'
+php -r '$d=new PDO("sqlite:'$T'/hoshidub-data/licenses.sqlite"); $d->exec("INSERT INTO tickets (id, channel_id, user_id, topic, created_at) VALUES (1, \"555\", \"444444444444444444\", \"test\", ".time().")");'
+ok "ticket: second ticket blocked while one is open" "$(dcraw '{"type":3,'"$BASE"',"data":{"custom_id":"hd_ticket_open"}}')" 'already have an open ticket'
+ok "ticket: someone else cannot close it" "$(dcraw '{"type":3,"guild_id":"111111111111111111","channel_id":"555","member":{"permissions":"0","user":{"id":"777777777777777777","username":"other"}},"data":{"custom_id":"hd_ticket_close"}}')" 'Only the ticket owner'
 rm -rf $T; [ $fail = 0 ] && echo "all passed"; exit $fail
