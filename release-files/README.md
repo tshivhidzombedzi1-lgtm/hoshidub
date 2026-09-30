@@ -1,6 +1,6 @@
 # Built files for the website
 
-`Hoshidub-Setup-0.1.0.exe` (the signed Windows installer, built 2026-09-30 12:31 from commit 1d26d56, licence server = hoshidub.com) is stored here in two pieces, because GitHub doesn't accept files over 100 MB. A normal `git pull` brings them along; no GitHub Release login needed.
+`Hoshidub-Setup-0.1.0.exe` (the signed Windows installer, built 2026-09-30 13:08: licence server and engine download both on hoshidub.com) is stored here in two pieces, because GitHub doesn't accept files over 100 MB. A normal `git pull` brings them along; no GitHub Release login needed.
 
 Join them back into the installer:
 
@@ -13,7 +13,7 @@ Join them back into the installer:
 Check it's identical to the original:
 
     sha256sum Hoshidub-Setup-0.1.0.exe
-    a8ecdbac73e275554b1d4a5539eec86f5d978804ef249feb852288297e76fc32   (115,387,979 bytes)
+    7d86662044102b4e5363c84c76c9dcb157139d5ca82c712fb296e5e7e42f405a   (115,387,932 bytes)
 
 Then put it at `public_html/downloads/Hoshidub-Setup-0.1.0.exe`, same name, replacing the old one.
 

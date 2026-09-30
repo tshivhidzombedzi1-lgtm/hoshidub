@@ -83,7 +83,7 @@
     "afterSign": "tools/after-pack.js"
   },
   "dubit": {
-    "runtimeBase": "https://grey-woodpecker-803820.hostingersite.com/downloads/runtime",
+    "runtimeBase": "https://hoshidub.com/downloads/runtime",
     "licenseApi": "https://hoshidub.com/api/license",
     "productId": "",
     "checkoutUrl": "https://hoshidub.com/api/checkout.php?plan=monthly"
