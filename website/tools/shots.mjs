@@ -6,7 +6,7 @@ import fs from 'node:fs';
 const base = process.argv[2] || 'http://localhost:4321';
 const out = process.argv[3] || 'shots';
 // page names without slashes (Git Bash rewrites leading slashes into Windows paths)
-const pages = (process.env.PAGES || 'home,pricing,download,about,tip,support,press,privacy,terms,nope').split(',').map((n) => (n === 'home' ? '/' : '/' + n));
+const pages = (process.env.PAGES || 'home,pricing,download,about,tip,support,press,privacy,terms,nope,how-live-anime-dubbing-works,watch-crunchyroll-english-dub').split(',').map((n) => (n === 'home' ? '/' : '/' + n));
 const sizes = (process.env.SIZES || 'desktop,phone').split(',');
 const schemes = (process.env.SCHEMES || 'dark').split(',');
 const viewport = {

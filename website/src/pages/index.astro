@@ -235,6 +235,16 @@ const app = {
   @keyframes flatten { to { transform: none; } }
   @keyframes rise { from { opacity: 0.2; translate: 0 40px; } to { opacity: 1; translate: 0 0; } }
   @media (prefers-reduced-motion: reduce) { .shot-stage :global(.shot-win) { transform: none; } .co { animation: none; } }
+  /* the callouts only float beside the window when there's room for them outside it (they used to cover the
+     app screenshot's headline and side panel between 900 and 1500 px); below that they form a row under it */
+  @media (max-width: 1499px) {
+    .callouts { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 10px; margin: 16px auto 0; max-width: 960px; }
+    .co { position: static; max-width: none; animation: none; }
+  }
+  @media (min-width: 1500px) {
+    .shot.wrap { max-width: 1440px; }
+    .co { max-width: 200px; }
+  }
   @media (max-width: 900px) {
     .shot-stage { perspective: none; }
     .shot-stage :global(.shot-win) { transform: none !important; animation: none !important; }
